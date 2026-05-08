@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0"
+            stylesheets="@../css/style.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.TriageAddController">
+
+   <!-- ── SIDEBAR ── -->
+   <left>
+      <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+         <VBox styleClass="logo-wrap">
+            <ImageView fitWidth="170.0" preserveRatio="true" pickOnBounds="true">
+               <image><Image url="@../images/logo.png" /></image>
+            </ImageView>
+            <Label styleClass="logo-sub" text="Systeme de Gestion des Urgences" />
+         </VBox>
+         <Label styleClass="nav-section" text="MENU" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="🏠  Tableau de Bord" onAction="#goDashboard" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="📋  Triages" onAction="#goTriageList" />
+         <Button mnemonicParsing="false" styleClass="nav-item, active" text="➕  Nouveau Triage" onAction="#goTriageAdd" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="🏥  Salles d'Attente" onAction="#goSalleList" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="◎  Surveillance" onAction="#goSurveillance" />
+         <Label styleClass="nav-section" text="NAVIGATION" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="←  Retour a la Liste" onAction="#goTriageList" />
+         <Region VBox.vgrow="ALWAYS" />
+         <VBox styleClass="sidebar-card">
+            <Label styleClass="sc-title" text="CONSEIL" />
+            <Label style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 11px;" wrapText="true"
+                   text="Remplissez toutes les constantes pour un calcul precis." />
+            <Button mnemonicParsing="false" styleClass="sc-btn" text="Deconnexion" onAction="#deconnexion" />
+         </VBox>
+      </VBox>
+   </left>
+
+   <!-- ── MAIN ── -->
+   <center>
+      <VBox styleClass="main" BorderPane.alignment="CENTER">
+
+         <!-- Topbar -->
+         <!-- Topbar -->
+         <HBox styleClass="topbar">
+            <VBox spacing="2">
+               <Label styleClass="page-title" text="Nouveau Triage" />
+               <Label styleClass="page-sub" text="Enregistrement d&apos;un patient" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <HBox styleClass="user-chip">
+               <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                  <Label fx:id="lblUserName" styleClass="user-name" text="..." />
+                  <Label styleClass="user-role" text="Infirmier Triage" />
+               </VBox>
+               <Label styleClass="user-av" text="U" />
+            </HBox>
+         </HBox>
+         <Region styleClass="topbar-stripe" />
+
+         <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+            <content>
+               <HBox spacing="20.0" style="-fx-padding: 20px 28px 28px;">
+
+                  <!-- ── LEFT FORM ── -->
+                  <VBox spacing="16.0" HBox.hgrow="ALWAYS">
+
+                     <!-- Patient Selection -->
+                     <VBox styleClass="card" spacing="10">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                           <Label text="👤" style="-fx-font-size: 18px;" />
+                           <VBox spacing="2">
+                              <Label styleClass="card-title" text="Selection du Patient" />
+                              <Label style="-fx-text-fill: #64748B; -fx-font-size: 11px;"
+                                     text="Choisir une admission active" />
+                           </VBox>
+                        </HBox>
+                        <Separator style="-fx-background-color: #E2E8F0;" />
+                        <HBox spacing="10.0" alignment="BOTTOM_LEFT">
+                           <VBox spacing="4" HBox.hgrow="ALWAYS">
+                              <Label styleClass="field-label" text="Admission Active *" />
+                              <ComboBox fx:id="cbAdmission" promptText="— Selectionner une admission —" maxWidth="Infinity"
+                                        style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-font-size: 13px;" />
+                           </VBox>
+                        </HBox>
+                     </VBox>
+
+                     <!-- Vitals -->
+                     <VBox styleClass="card" spacing="14">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                           <Label text="🩺" style="-fx-font-size: 18px;" />
+                           <VBox spacing="2">
+                              <Label styleClass="card-title" text="Constantes Vitales" />
+                              <Label style="-fx-text-fill: #64748B; -fx-font-size: 11px;"
+                                     text="Tous les champs sont obligatoires" />
+                           </VBox>
+                        </HBox>
+                        <Separator style="-fx-background-color: #E2E8F0;" />
+
+                        <HBox spacing="16.0">
+                           <VBox spacing="4" HBox.hgrow="ALWAYS">
+                              <Label styleClass="field-label" text="Tension Sys. (mmHg)" />
+                              <TextField fx:id="tfTaSys" promptText="ex: 120"
+                                         style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-padding: 9 12; -fx-font-size: 13px;" />
+                           </VBox>
+                           <VBox spacing="4" HBox.hgrow="ALWAYS">
+                              <Label styleClass="field-label" text="Tension Dia. (mmHg)" />
+                              <TextField fx:id="tfTaDia" promptText="ex: 80"
+                                         style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-padding: 9 12; -fx-font-size: 13px;" />
+                           </VBox>
+                        </HBox>
+                        <HBox spacing="16.0">
+                           <VBox spacing="4" HBox.hgrow="ALWAYS">
+                              <Label styleClass="field-label" text="Pouls (bpm)" />
+                              <TextField fx:id="tfPouls" promptText="ex: 72"
+                                         style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-padding: 9 12; -fx-font-size: 13px;" />
+                           </VBox>
+                           <VBox spacing="4" HBox.hgrow="ALWAYS">
+                              <Label styleClass="field-label" text="Temperature (deg.C)" />
+                              <TextField fx:id="tfTemp" promptText="ex: 37.2"
+                                         style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-padding: 9 12; -fx-font-size: 13px;" />
+                           </VBox>
+                        </HBox>
+                        <HBox spacing="16.0">
+                           <VBox spacing="4" HBox.hgrow="ALWAYS">
+                              <Label styleClass="field-label" text="SpO2 (%)" />
+                              <TextField fx:id="tfSpo2" promptText="ex: 98"
+                                         style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-padding: 9 12; -fx-font-size: 13px;" />
+                           </VBox>
+                           <VBox spacing="4" HBox.hgrow="ALWAYS">
+                              <Label styleClass="field-label" text="Glycemie (g/L)" />
+                              <TextField fx:id="tfGlyc" promptText="ex: 0.9"
+                                         style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-padding: 9 12; -fx-font-size: 13px;" />
+                           </VBox>
+                        </HBox>
+                        <HBox spacing="16.0">
+                           <VBox spacing="4" HBox.hgrow="ALWAYS">
+                              <Label styleClass="field-label" text="GCS Score (3-15)" />
+                              <TextField fx:id="tfGcs" promptText="ex: 15"
+                                         style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-padding: 9 12; -fx-font-size: 13px;" />
+                           </VBox>
+                           <VBox spacing="4" HBox.hgrow="ALWAYS">
+                              <Label styleClass="field-label" text="Freq. Respiratoire (/min)" />
+                              <TextField fx:id="tfFreqResp" promptText="ex: 16"
+                                         style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-padding: 9 12; -fx-font-size: 13px;" />
+                           </VBox>
+                        </HBox>
+
+                        <!-- Pain -->
+                        <VBox spacing="4">
+                           <Label styleClass="field-label" text="Score Douleur (0-10)" />
+                           <HBox spacing="12" alignment="CENTER"
+                                 style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-width: 1.5px; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-padding: 10px 14px;">
+                              <Label style="-fx-font-size: 12px; -fx-text-fill: #94A3B8;" text="0" />
+                              <Slider fx:id="sliderDouleur" min="0" max="10" value="0" HBox.hgrow="ALWAYS" />
+                              <Label style="-fx-font-size: 12px; -fx-text-fill: #94A3B8;" text="10" />
+                              <Label fx:id="lblDouleurVal"
+                                     style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2; -fx-min-width: 32px;"
+                                     text="0" />
+                           </HBox>
+                        </VBox>
+
+                        <!-- Symptoms -->
+                        <VBox spacing="4">
+                           <Label styleClass="field-label" text="Symptomes *" />
+                           <TextArea fx:id="taSymptomes" promptText="Decrire les symptomes du patient..."
+                                     prefHeight="80.0"
+                                     style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-padding: 9 12; -fx-font-size: 13px;" />
+                        </VBox>
+                     </VBox>
+
+                     <!-- Action Buttons -->
+                     <HBox spacing="12.0">
+                        <Button mnemonicParsing="false" styleClass="btn, btn-secondary" text="📊  Calculer Score"
+                                HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#calculerScore" />
+                        <Button mnemonicParsing="false" styleClass="btn, btn-primary" text="✅  Enregistrer Triage"
+                                HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#enregistrer" />
+                        <Button mnemonicParsing="false" styleClass="btn, btn-secondary, btn-sm" text="✕  Effacer"
+                                onAction="#effacer" />
+                     </HBox>
+
+                  </VBox>
+
+                  <!-- ── RIGHT PANEL ── -->
+                  <VBox spacing="16.0" prefWidth="300.0">
+
+                     <!-- Score display -->
+                     <VBox style="-fx-background-color: white; -fx-background-radius: 16px; -fx-padding: 24px 20px;
+                                  -fx-alignment: center; -fx-spacing: 8px;
+                                  -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.12),14,0,0,4);
+                                  -fx-border-color: #DBEAFE; -fx-border-width: 1.5px; -fx-border-radius: 16px;">
+                        <Label style="-fx-font-size: 10px; -fx-text-fill: #94A3B8; -fx-font-weight: bold;
+                                      -fx-letter-spacing: 1px;" text="SCORE DE GRAVITE" />
+                        <Label fx:id="lblScore" style="-fx-font-size: 52px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2;" text="--" />
+                        <Label fx:id="lblNiveauLabel" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #64748B;" text="Saisir les constantes" />
+                        <Label fx:id="lblAnalyse"
+                               style="-fx-font-size: 12px; -fx-text-fill: #475569; -fx-background-color: #F8FAFC;
+                                      -fx-background-radius: 10px; -fx-padding: 12px; -fx-border-color: #E2E8F0;
+                                      -fx-border-width: 1px; -fx-border-radius: 10px;"
+                               wrapText="true"
+                               text="L'analyse automatique apparaitra apres le calcul..." />
+                     </VBox>
+
+                     <!-- Level Guide -->
+                     <VBox styleClass="card" spacing="10">
+                        <Label styleClass="card-title" text="📊  Niveaux de Gravite" />
+                        <Separator style="-fx-background-color: #E2E8F0;" />
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                           <Label styleClass="badge, b1" text="Niveau 1" />
+                           <Label style="-fx-font-size: 11px; -fx-text-fill: #475569;" text="CRITIQUE  ≥ 20 pts" />
+                        </HBox>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                           <Label styleClass="badge, b2" text="Niveau 2" />
+                           <Label style="-fx-font-size: 11px; -fx-text-fill: #475569;" text="TRES URGENT  14-19" />
+                        </HBox>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                           <Label styleClass="badge, b3" text="Niveau 3" />
+                           <Label style="-fx-font-size: 11px; -fx-text-fill: #475569;" text="URGENT  8-13" />
+                        </HBox>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                           <Label styleClass="badge, b4" text="Niveau 4" />
+                           <Label style="-fx-font-size: 11px; -fx-text-fill: #475569;" text="STANDARD  3-7" />
+                        </HBox>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                           <Label styleClass="badge, b5" text="Niveau 5" />
+                           <Label style="-fx-font-size: 11px; -fx-text-fill: #475569;" text="MINEUR  0-2" />
+                        </HBox>
+                     </VBox>
+
+                     <!-- Contexte Épidémiologique (optionnel) -->
+                     <VBox style="-fx-background-color: white; -fx-background-radius: 14px;
+                                  -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.10),12,0,0,3);
+                                  -fx-border-color: #E2E8F0; -fx-border-width: 1.5px; -fx-border-radius: 14px;
+                                  -fx-padding: 16px;" spacing="10">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                           <Label text="◎" style="-fx-font-size: 16px; -fx-text-fill: #6366F1;" />
+                           <VBox HBox.hgrow="ALWAYS" spacing="2">
+                              <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"
+                                     text="Contexte Epidemiologique" />
+                              <Label style="-fx-font-size: 11px; -fx-text-fill: #94A3B8;"
+                                     text="Optionnel — a remplir si suspect" />
+                           </VBox>
+                           <Button fx:id="btnToggleEpi" mnemonicParsing="false"
+                                   text="Activer" onAction="#toggleEpiContext"
+                                   style="-fx-background-color: #EEF2FF; -fx-text-fill: #6366F1;
+                                          -fx-font-weight: bold; -fx-background-radius: 20;
+                                          -fx-padding: 5 14; -fx-font-size: 11px; -fx-cursor: hand;" />
+                        </HBox>
+                        <VBox fx:id="epiContextBox" spacing="10" visible="false" managed="false">
+                           <VBox spacing="4">
+                              <Label styleClass="field-label" text="Syndrome principal" />
+                              <ComboBox fx:id="cbSyndrome" maxWidth="Infinity"
+                                        promptText="— Selectionner —"
+                                        style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-font-size: 13px;" />
+                           </VBox>
+                           <VBox spacing="4">
+                              <Label styleClass="field-label" text="Duree des symptomes" />
+                              <ComboBox fx:id="cbDuree" maxWidth="Infinity"
+                                        promptText="— Selectionner —"
+                                        style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-font-size: 13px;" />
+                           </VBox>
+                           <VBox spacing="4">
+                              <Label styleClass="field-label" text="Voyage recent ?" />
+                              <HBox spacing="8">
+                                 <Button fx:id="btnVoyageOui" mnemonicParsing="false" text="Oui"
+                                         onAction="#setVoyageOui"
+                                         style="-fx-background-color: #F1F5F9; -fx-text-fill: #64748B; -fx-background-radius: 6; -fx-padding: 4 12; -fx-cursor: hand;" />
+                                 <Button fx:id="btnVoyageNon" mnemonicParsing="false" text="Non"
+                                         onAction="#setVoyageNon"
+                                         style="-fx-background-color: #0B4EA2; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 4 12; -fx-cursor: hand;" />
+                              </HBox>
+                           </VBox>
+                           <VBox fx:id="voyageDestBox" spacing="4" visible="false" managed="false">
+                              <Label styleClass="field-label" text="Destination du voyage" />
+                              <TextField fx:id="tfVoyageDest" promptText="ex: Maroc, Espagne..."
+                                         style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E1; -fx-padding: 9 12; -fx-font-size: 13px;" />
+                           </VBox>
+                        </VBox>
+                     </VBox>
+
+                     <!-- Result Panel -->
+                     <VBox fx:id="resultPanel" spacing="10" visible="false" managed="false"
+                           style="-fx-background-color: #DCFCE7; -fx-border-color: #22C55E;
+                                  -fx-border-width: 1.5px; -fx-border-radius: 14px;
+                                  -fx-background-radius: 14px; -fx-padding: 16px;">
+                        <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #15803D;"
+                               text="✅  Triage enregistre avec succes !" />
+                        <HBox spacing="6">
+                           <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="ID Triage:" />
+                           <Label fx:id="lblResultId"
+                                  style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" text="..." />
+                        </HBox>
+                        <HBox spacing="6">
+                           <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Niveau:" />
+                           <Label fx:id="lblResultNiveau"
+                                  style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" text="..." />
+                        </HBox>
+                        <HBox spacing="6">
+                           <Label style="-fx-font-size: 12px; -fx-text-fill: #64748B;" text="Salle:" />
+                           <Label fx:id="lblResultSalle"
+                                  style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" text="..." />
+                        </HBox>
+                     </VBox>
+
+                  </VBox>
+
+               </HBox>
+            </content>
+         </ScrollPane>
+
+      </VBox>
+   </center>
+</BorderPane>

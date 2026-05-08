@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0"
+            stylesheets="@../css/style.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.TriageDeleteController"
+            style="-fx-background-color: #EEF4FB;">
+
+   <!-- ── SIDEBAR ── -->
+   <left>
+      <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+         <VBox styleClass="logo-wrap">
+            <ImageView fitWidth="170.0" preserveRatio="true" pickOnBounds="true">
+               <image><Image url="@../images/logo.png" /></image>
+            </ImageView>
+            <Label styleClass="logo-sub" text="Systeme de Gestion des Urgences" />
+         </VBox>
+         <Label styleClass="nav-section" text="MENU" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="🏠  Tableau de Bord" onAction="#goDashboard" />
+         <Button mnemonicParsing="false" styleClass="nav-item, active" text="📋  Triages" onAction="#goTriageList" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="➕  Nouveau Triage" onAction="#goTriageAdd" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="🏥  Salles d'Attente" onAction="#goSalleList" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="◎  Surveillance" onAction="#goSurveillance" />
+         <Label styleClass="nav-section" text="NAVIGATION" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="←  Retour a la Liste" onAction="#goTriageList" />
+         <Region VBox.vgrow="ALWAYS" />
+         <VBox styleClass="sidebar-card">
+            <Label styleClass="sc-title" text="SUPPRESSION" />
+            <Label styleClass="sc-alert" text="⚠ Action irreversible !" />
+            <Button mnemonicParsing="false" styleClass="sc-btn" text="Deconnexion" onAction="#deconnexion" />
+         </VBox>
+      </VBox>
+   </left>
+
+   <!-- ── MAIN ── -->
+   <center>
+      <StackPane style="-fx-background-color: #EEF4FB;" BorderPane.alignment="CENTER">
+
+         <!-- Gradient Header Strip (top of page) -->
+         <VBox StackPane.alignment="TOP_CENTER" maxHeight="6"
+               style="-fx-background-color: linear-gradient(to right,#22C55E,#0E9B8A,#0B4EA2);" />
+
+         <!-- Centered Dialog Card -->
+         <VBox StackPane.alignment="CENTER" maxWidth="500"
+               style="-fx-background-color: white; -fx-background-radius: 20px;
+                      -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.15),24,0,0,8);
+                      -fx-padding: 40px 44px; -fx-spacing: 14px;" alignment="CENTER">
+
+            <!-- Icon -->
+            <Label style="-fx-font-size: 52px; -fx-padding: 0 0 4px 0;" text="🗑" />
+
+            <!-- Title -->
+            <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"
+                   text="Confirmer la Suppression" />
+            <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B; -fx-padding: 0 0 10px 0;"
+                   wrapText="true" textAlignment="CENTER"
+                   text="Vous etes sur le point de supprimer definitivement ce triage. Cette action ne peut pas etre annulee." />
+
+            <!-- Triage Info Box -->
+            <VBox style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                         -fx-border-width: 1.5px; -fx-border-radius: 12px;
+                         -fx-background-radius: 12px; -fx-padding: 16px; -fx-spacing: 10px;"
+                  maxWidth="Infinity">
+               <HBox alignment="CENTER">
+                  <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="Patient" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="lblPatient"
+                         style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" text="..." />
+               </HBox>
+               <HBox alignment="CENTER">
+                  <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="ID Triage" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="lblId"
+                         style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" text="..." />
+               </HBox>
+               <HBox alignment="CENTER">
+                  <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="Niveau de Gravite" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="lblNiveau" styleClass="badge, b1" style="-fx-font-size: 10px;" text="..." />
+               </HBox>
+               <HBox alignment="CENTER">
+                  <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="Salle Assignee" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="lblSalle"
+                         style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" text="..." />
+               </HBox>
+               <HBox alignment="CENTER">
+                  <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="Date du Triage" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="lblDate"
+                         style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" text="..." />
+               </HBox>
+            </VBox>
+
+            <!-- Warning Box -->
+            <HBox style="-fx-background-color: #FEF2F2; -fx-border-color: #EF4444;
+                         -fx-border-width: 0 0 0 4px; -fx-border-radius: 8px;
+                         -fx-background-radius: 8px; -fx-padding: 12px 16px;"
+                  spacing="10" alignment="CENTER_LEFT" maxWidth="Infinity">
+               <Label style="-fx-font-size: 16px;" text="⚠" />
+               <Label fx:id="lblWarning"
+                      style="-fx-font-size: 12px; -fx-text-fill: #DC2626;" wrapText="true"
+                      HBox.hgrow="ALWAYS"
+                      text="Attention: La suppression de ce triage est irreversible." />
+            </HBox>
+
+            <!-- Buttons -->
+            <HBox spacing="12.0" maxWidth="Infinity">
+               <Button mnemonicParsing="false" text="✕  Annuler"
+                       HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#goTriageList"
+                       style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
+                              -fx-border-color: #0B4EA2; -fx-border-radius: 10;
+                              -fx-background-radius: 10; -fx-font-weight: bold;
+                              -fx-padding: 13 20; -fx-font-size: 13px; -fx-cursor: hand;" />
+               <Button mnemonicParsing="false" text="🗑  Oui, Supprimer"
+                       HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#confirmerSuppression"
+                       style="-fx-background-color: #EF4444; -fx-text-fill: white;
+                              -fx-font-weight: bold; -fx-background-radius: 10;
+                              -fx-padding: 13 20; -fx-font-size: 13px; -fx-cursor: hand;" />
+            </HBox>
+
+         </VBox>
+      </StackPane>
+   </center>
+</BorderPane>
