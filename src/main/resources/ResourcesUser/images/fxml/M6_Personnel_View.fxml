@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/user.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersUser.M6PersonnelViewController">
+
+   <top>
+      <VBox>
+         <StackPane prefHeight="88" style="-fx-background-color: linear-gradient(to right, #0B4EA2, #0E9B8A);">
+            <HBox alignment="CENTER_LEFT" spacing="0" style="-fx-background-color: transparent;">
+               <HBox styleClass="header-logo-zone" alignment="CENTER" spacing="8">
+                  <ImageView fitWidth="150" fitHeight="65" preserveRatio="true">
+                     <image><Image url="@../images/logo_revive.png"/></image>
+                  </ImageView>
+               </HBox>
+               <Region style="-fx-background-color: rgba(255,255,255,0.30); -fx-min-width: 1px; -fx-pref-width: 1px; -fx-min-height: 88px;" />
+               <VBox styleClass="header-title-zone" spacing="2">
+                  <Label fx:id="lblPageSub" styleClass="header-module-label" text="Gestion du Personnel" />
+                  <Label fx:id="lblPageTitle" styleClass="header-page-title" text="Details Personnel" />
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <HBox alignment="CENTER" style="-fx-padding: 0 16 0 0;" spacing="8">
+                  <Button mnemonicParsing="false" styleClass="btn, btn-warning" text="✏ Modifier" onAction="#edit" />
+                  <Button mnemonicParsing="false" styleClass="btn, btn-danger" text="🗑 Supprimer" onAction="#delete" />
+                  <HBox styleClass="user-chip">
+                     <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label fx:id="lblUserName" styleClass="user-name" text="Admin" />
+                        <Label fx:id="lblUserRole" styleClass="user-role" text="Administrateur" />
+                     </VBox>
+                     <Label styleClass="user-av" text="👤" />
+                  </HBox>
+               </HBox>
+            </HBox>
+         </StackPane>
+         <Region styleClass="header-strip" />
+      </VBox>
+   </top>
+
+   <!-- SIDEBAR -->
+   <left>
+      <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+         <Label styleClass="nav-section" text="NAVIGATION" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="▣  Tableau de Bord" onAction="#goDashboard" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item, active" text="👥  Gestion Personnel" onAction="#goPersonnel" maxWidth="Infinity" />
+         <Region VBox.vgrow="ALWAYS" />
+         <VBox styleClass="sidebar-card">
+            <Label fx:id="lblSidebarTitle" styleClass="sc-title" text="Profil" />
+            <Label fx:id="lblSidebarRole" styleClass="sc-alert" text="—" />
+            <Button mnemonicParsing="false" styleClass="sc-btn" text="Deconnexion" onAction="#deconnexion" />
+         </VBox>
+      </VBox>
+   </left>
+
+   <!-- CENTER -->
+   <center>
+      <VBox styleClass="main" BorderPane.alignment="CENTER">
+         <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+            <content>
+               <HBox spacing="20.0" style="-fx-padding: 4px 4px 20px;">
+
+                  <!-- LEFT -->
+                  <VBox spacing="14.0" HBox.hgrow="ALWAYS">
+
+                     <!-- Header card -->
+                     <HBox styleClass="card" spacing="16.0" alignment="CENTER_LEFT">
+                        <Label fx:id="lblAvatar"
+                               style="-fx-min-width:60px;-fx-min-height:60px;-fx-background-color:#DBEAFE;
+                                      -fx-background-radius:50%;-fx-alignment:center;
+                                      -fx-font-size:26px;-fx-font-weight:bold;-fx-text-fill:#1E40AF;" text="??" />
+                        <VBox HBox.hgrow="ALWAYS">
+                           <Label fx:id="lblFullName" style="-fx-font-size:20px;-fx-font-weight:700;-fx-text-fill:#1A1D23;" text="Nom Complet" />
+                           <Label fx:id="lblSubInfo" style="-fx-font-size:12px;-fx-text-fill:#6B7280;-fx-padding:2px 0 0 0;" text="Identifiant" />
+                           <HBox spacing="8.0" alignment="CENTER_LEFT" style="-fx-padding:8px 0 0 0;">
+                              <Label fx:id="lblRoleBadge" styleClass="badge, badge-xx" text="Role" />
+                           </HBox>
+                        </VBox>
+                     </HBox>
+
+                     <!-- Info Grid -->
+                     <VBox styleClass="card">
+                        <Label style="-fx-font-size:14px;-fx-font-weight:700;-fx-text-fill:#0B4EA2;-fx-padding:0 0 14px 0;" text="ℹ️ Informations du Personnel" />
+                        <GridPane hgap="24.0" vgap="16.0">
+                           <columnConstraints>
+                              <ColumnConstraints minWidth="170.0" prefWidth="170.0" />
+                              <ColumnConstraints hgrow="ALWAYS" />
+                           </columnConstraints>
+                           <Label text="Identifiant" style="-fx-text-fill:#6B7280;-fx-font-size:13px;-fx-font-weight:bold;" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                           <Label fx:id="lblIdentifiant" style="-fx-font-size:16px;-fx-font-weight:bold;-fx-text-fill:#1E40AF;" text="—" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                           <Label text="Role" style="-fx-text-fill:#6B7280;-fx-font-size:13px;-fx-font-weight:bold;" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                           <Label fx:id="lblRoleDetail" style="-fx-font-size:14px;-fx-font-weight:bold;-fx-text-fill:#1A1D23;" text="—" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                           <Label text="Date de naissance" style="-fx-text-fill:#6B7280;-fx-font-size:13px;-fx-font-weight:bold;" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                           <Label fx:id="lblInfoDateNaissance" style="-fx-font-size:14px;-fx-text-fill:#1A1D23;" text="—" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                           <Label text="Age" style="-fx-text-fill:#6B7280;-fx-font-size:13px;-fx-font-weight:bold;" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                           <Label fx:id="lblInfoAge" style="-fx-font-size:16px;-fx-font-weight:bold;-fx-text-fill:#0B4EA2;" text="—" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                           <Label text="Telephone" style="-fx-text-fill:#6B7280;-fx-font-size:13px;-fx-font-weight:bold;" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                           <Label fx:id="lblInfoTelephone" style="-fx-font-size:14px;-fx-text-fill:#1A1D23;" text="—" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                           <Label text="Email" style="-fx-text-fill:#6B7280;-fx-font-size:13px;-fx-font-weight:bold;" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                           <Label fx:id="lblInfoEmail" style="-fx-font-size:14px;-fx-text-fill:#1E40AF;" text="—" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        </GridPane>
+                     </VBox>
+
+                     <!-- Actions -->
+                     <FlowPane hgap="10.0" vgap="10.0">
+                        <Button mnemonicParsing="false" styleClass="btn, btn-warning" text="✏ Modifier le Profil" onAction="#edit" />
+                        <Button mnemonicParsing="false" styleClass="btn, btn-secondary" text="⬅ Retour a la Liste" onAction="#goPersonnel" />
+                        <Button mnemonicParsing="false" styleClass="btn, btn-danger" text="🗑 Supprimer" onAction="#delete" />
+                     </FlowPane>
+
+                  </VBox>
+
+                  <!-- RIGHT sidebar -->
+                  <VBox spacing="14.0" prefWidth="250.0">
+                     <VBox styleClass="card" spacing="8.0">
+                        <Label style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#0B4EA2;-fx-padding:0 0 8px 0;" text="🏷 Code d'Acces" />
+                        <VBox alignment="CENTER" spacing="6.0"
+                              style="-fx-background-color:#DBEAFE;-fx-background-radius:10px;-fx-padding:14px;">
+                           <Label style="-fx-font-size:10px;-fx-text-fill:#6B7280;-fx-font-weight:bold;" text="IDENTIFIANT" />
+                           <Label fx:id="lblIdentifiantBig" style="-fx-font-size:20px;-fx-font-weight:bold;-fx-text-fill:#1E40AF;" text="——" />
+                        </VBox>
+                     </VBox>
+                     <VBox styleClass="card" spacing="6.0">
+                        <Label style="-fx-font-size:12px;-fx-font-weight:700;-fx-text-fill:#334155;-fx-padding:0 0 8px 0;" text="ℹ️ Fiche Resume" />
+                        <HBox><Label style="-fx-font-size:12px;-fx-text-fill:#6B7280;" text="Nom: " /><Label fx:id="lblInfoNom" style="-fx-font-size:12px;-fx-text-fill:#1A1D23;-fx-font-weight:700;" text="—" /></HBox>
+                        <HBox><Label style="-fx-font-size:12px;-fx-text-fill:#6B7280;" text="Role: " /><Label fx:id="lblInfoRole" style="-fx-font-size:12px;-fx-text-fill:#1A1D23;-fx-font-weight:700;" text="—" /></HBox>
+                        <HBox><Label style="-fx-font-size:12px;-fx-text-fill:#6B7280;" text="Tel: " /><Label fx:id="lblInfoTelephone" style="-fx-font-size:12px;-fx-text-fill:#1A1D23;-fx-font-weight:700;" text="—" /></HBox>
+                        <HBox><Label style="-fx-font-size:12px;-fx-text-fill:#6B7280;" text="Email: " /><Label fx:id="lblInfoEmail" style="-fx-font-size:12px;-fx-text-fill:#1E40AF;-fx-font-weight:700;" text="—" /></HBox>
+                     </VBox>
+                  </VBox>
+
+               </HBox>
+            </content>
+         </ScrollPane>
+      </VBox>
+   </center>
+
+   <!-- FOOTER -->
+   <bottom>
+      <HBox styleClass="app-footer">
+         <Label styleClass="footer-label" text="REVIVE — Systeme de Gestion des Urgences Medicales" />
+      </HBox>
+   </bottom>
+
+</BorderPane>

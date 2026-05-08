@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane prefHeight="750.0" prefWidth="1100.0" stylesheets="@../css/user.css"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="pro.revive.controllers.ControllersUser.FirstLoginController"
+           style="-fx-background-color: #EEF4FB;">
+
+   <VBox alignment="CENTER" maxWidth="480"
+         style="-fx-background-color: #ffffff; -fx-background-radius: 20px;
+                -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 24, 0, 0, 6);">
+
+      <!-- Header -->
+      <VBox alignment="CENTER" spacing="6"
+            style="-fx-background-color: linear-gradient(to right, #0B4EA2, #0E9B8A);
+                   -fx-background-radius: 20px 20px 0 0; -fx-padding: 28px 40px 24px;">
+         <ImageView fitWidth="120" fitHeight="52" preserveRatio="true">
+            <image><Image url="@../images/logo_revive.png"/></image>
+         </ImageView>
+         <Label text="Premiere Connexion"
+                style="-fx-text-fill: rgba(255,255,255,0.85); -fx-font-size: 13px;" />
+      </VBox>
+
+      <!-- Form -->
+      <VBox spacing="14" style="-fx-padding: 28px 36px 32px;">
+
+         <Label fx:id="lblWelcome"
+                text="Bienvenue ! Veuillez choisir votre mot de passe."
+                style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1A1D23;"
+                wrapText="true" />
+
+         <Label text="Vous devez changer votre mot de passe temporaire avant de continuer."
+                style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" wrapText="true" />
+
+         <!-- Warning box -->
+         <VBox style="-fx-background-color: #FEF3C7; -fx-border-color: #F59E0B; -fx-border-width: 1.5px;
+                      -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-padding: 10px 14px;">
+            <Label text="⚠️ Cette etape est obligatoire. Vous ne pouvez pas ignorer ce changement."
+                   style="-fx-font-size: 11px; -fx-text-fill: #92400E;" wrapText="true" />
+         </VBox>
+
+         <VBox spacing="5">
+            <Label text="Nouveau mot de passe *" styleClass="label" />
+            <PasswordField fx:id="pfNewPassword" promptText="••••••••" styleClass="text-input" />
+            <Label fx:id="lblPasswordStrength" text="" />
+         </VBox>
+
+         <VBox spacing="5">
+            <Label text="Confirmer le mot de passe *" styleClass="label" />
+            <PasswordField fx:id="pfConfirm" promptText="••••••••" styleClass="text-input" />
+         </VBox>
+
+         <Label fx:id="lblError" text="" styleClass="error-label" visible="false" managed="false" />
+
+         <Button text="✔ Confirmer mon mot de passe" maxWidth="Infinity"
+                 mnemonicParsing="false" onAction="#handleChangePassword"
+                 style="-fx-background-color: #0B4EA2; -fx-text-fill: #ffffff;
+                        -fx-background-radius: 10px; -fx-padding: 12px;
+                        -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand;" />
+
+      </VBox>
+   </VBox>
+</StackPane>

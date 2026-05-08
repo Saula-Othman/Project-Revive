@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/user.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersUser.InscriptionRequestsController">
+
+   <top>
+      <VBox>
+         <StackPane prefHeight="88" style="-fx-background-color: linear-gradient(to right, #0B4EA2, #0E9B8A);">
+            <HBox alignment="CENTER_LEFT" spacing="0" style="-fx-background-color: transparent;">
+               <HBox styleClass="header-logo-zone" alignment="CENTER" spacing="8">
+                  <ImageView fitWidth="150" fitHeight="65" preserveRatio="true">
+                     <image><Image url="@../images/logo_revive.png"/></image>
+                  </ImageView>
+               </HBox>
+               <Region style="-fx-background-color: rgba(255,255,255,0.30); -fx-min-width: 1px; -fx-pref-width: 1px; -fx-min-height: 88px;" />
+               <VBox styleClass="header-title-zone" spacing="2">
+                  <Label styleClass="header-module-label" text="Gestion du Personnel" />
+                  <Label styleClass="header-page-title" text="Demandes d'Inscription" />
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <HBox alignment="CENTER" style="-fx-padding: 0 16 0 0;" spacing="8">
+                  <Button mnemonicParsing="false" styleClass="btn, btn-secondary" text="🔄 Actualiser" onAction="#refresh" />
+                  <HBox styleClass="user-chip">
+                     <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label fx:id="lblUserName" styleClass="user-name" text="Admin" />
+                        <Label fx:id="lblUserRole" styleClass="user-role" text="Administrateur" />
+                     </VBox>
+                     <Label styleClass="user-av" text="👤" />
+                  </HBox>
+               </HBox>
+            </HBox>
+         </StackPane>
+         <Region styleClass="header-strip" />
+      </VBox>
+   </top>
+
+   <left>
+      <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+         <Label styleClass="nav-section" text="NAVIGATION" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="▣  Tableau de Bord" onAction="#goDashboard" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="👥  Gestion Personnel" onAction="#goPersonnel" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item, active" text="📩  Inscriptions" maxWidth="Infinity" />
+         <Region VBox.vgrow="ALWAYS" />
+         <VBox styleClass="sidebar-card">
+            <Label styleClass="sc-title" text="Inscriptions" />
+            <Label styleClass="sc-alert" text="Demandes en attente" />
+            <Button mnemonicParsing="false" styleClass="sc-btn" text="Deconnexion" onAction="#deconnexion" />
+         </VBox>
+      </VBox>
+   </left>
+
+   <center>
+      <VBox styleClass="main" BorderPane.alignment="CENTER">
+         <Label fx:id="lblCount" styleClass="page-sub" text="0 demande(s) en attente" />
+         <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+            <content>
+               <VBox fx:id="vbRequests" spacing="10" style="-fx-padding: 4px 4px 20px;" />
+            </content>
+         </ScrollPane>
+      </VBox>
+   </center>
+
+   <bottom>
+      <HBox styleClass="app-footer">
+         <Label styleClass="footer-label" text="REVIVE — Systeme de Gestion des Urgences Medicales" />
+      </HBox>
+   </bottom>
+
+</BorderPane>

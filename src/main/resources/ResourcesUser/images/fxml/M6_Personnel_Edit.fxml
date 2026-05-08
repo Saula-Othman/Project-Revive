@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/user.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersUser.M6PersonnelEditController">
+
+   <top>
+      <VBox>
+         <StackPane prefHeight="88" style="-fx-background-color: linear-gradient(to right, #0B4EA2, #0E9B8A);">
+            <HBox alignment="CENTER_LEFT" spacing="0" style="-fx-background-color: transparent;">
+               <HBox styleClass="header-logo-zone" alignment="CENTER" spacing="8">
+                  <ImageView fitWidth="150" fitHeight="65" preserveRatio="true">
+                     <image><Image url="@../images/logo_revive.png"/></image>
+                  </ImageView>
+               </HBox>
+               <Region style="-fx-background-color: rgba(255,255,255,0.30); -fx-min-width: 1px; -fx-pref-width: 1px; -fx-min-height: 88px;" />
+               <VBox styleClass="header-title-zone" spacing="2">
+                  <Label styleClass="header-module-label" text="Gestion du Personnel" />
+                  <Label fx:id="lblEditSub" styleClass="header-page-title" text="Modifier Personnel" />
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <HBox alignment="CENTER" style="-fx-padding: 0 16 0 0;" spacing="8">
+                  <Button mnemonicParsing="false" styleClass="btn, btn-danger" text="🗑 Supprimer" onAction="#delete" />
+                  <HBox styleClass="user-chip">
+                     <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label fx:id="lblUserName" styleClass="user-name" text="Admin" />
+                        <Label fx:id="lblUserRole" styleClass="user-role" text="Administrateur" />
+                     </VBox>
+                     <Label styleClass="user-av" text="👤" />
+                  </HBox>
+               </HBox>
+            </HBox>
+         </StackPane>
+         <Region styleClass="header-strip" />
+      </VBox>
+   </top>
+
+   <!-- SIDEBAR -->
+   <left>
+      <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+         <Label styleClass="nav-section" text="NAVIGATION" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="▣  Tableau de Bord" onAction="#goDashboard" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item, active" text="👥  Gestion Personnel" onAction="#goPersonnel" maxWidth="Infinity" />
+         <Region VBox.vgrow="ALWAYS" />
+         <VBox styleClass="sidebar-card">
+            <Label styleClass="sc-title" text="Modification" />
+            <Label fx:id="lblSidebarName" styleClass="sc-alert" text="..." />
+            <Button mnemonicParsing="false" styleClass="sc-btn" text="Deconnexion" onAction="#deconnexion" />
+         </VBox>
+      </VBox>
+   </left>
+
+   <!-- CENTER -->
+   <center>
+      <VBox styleClass="main" BorderPane.alignment="CENTER">
+         <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+            <content>
+               <HBox spacing="20.0" style="-fx-padding: 4px 4px 20px;">
+
+                  <!-- LEFT: Form -->
+                  <VBox spacing="14.0" HBox.hgrow="ALWAYS">
+
+                     <!-- Identifiant readonly -->
+                     <VBox styleClass="card">
+                        <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2; -fx-padding: 0 0 10px 0;" text="🔖 Identifiant" />
+                        <VBox styleClass="field-group">
+                           <Label styleClass="label" text="Identifiant (non modifiable)" />
+                           <TextField fx:id="tfIdentifiant" disable="true" styleClass="text-input"
+                                      style="-fx-background-color: #F1F5F9; -fx-opacity: 0.8;" />
+                        </VBox>
+                     </VBox>
+
+                     <!-- Identite -->
+                     <VBox styleClass="card">
+                        <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2; -fx-padding: 0 0 10px 0;" text="👤 Identite" />
+                        <HBox spacing="14.0">
+                           <VBox styleClass="field-group" HBox.hgrow="ALWAYS">
+                              <Label styleClass="label" text="Nom *" />
+                              <TextField fx:id="tfNom" styleClass="text-input" />
+                           </VBox>
+                           <VBox styleClass="field-group" HBox.hgrow="ALWAYS">
+                              <Label styleClass="label" text="Prenom *" />
+                              <TextField fx:id="tfPrenom" styleClass="text-input" />
+                           </VBox>
+                        </HBox>
+                        <VBox styleClass="field-group">
+                           <Label styleClass="label" text="Role *" />
+                           <ComboBox fx:id="cbRole" maxWidth="Infinity" />
+                        </VBox>
+                        <HBox spacing="14.0" alignment="CENTER_LEFT">
+                           <VBox styleClass="field-group" HBox.hgrow="ALWAYS">
+                              <Label styleClass="label" text="Date de naissance *" />
+                              <DatePicker fx:id="dpDateNaissance" maxWidth="Infinity" />
+                              <Label fx:id="lblAgeError" text=""
+                                     style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #EF4444;"
+                                     visible="false" managed="false" />
+                           </VBox>
+                           <VBox styleClass="field-group" alignment="CENTER_LEFT">
+                              <Label styleClass="label" text="Age" />
+                              <Label fx:id="lblAge" text="—"
+                                     style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2; -fx-padding: 6px 0 0 0;" />
+                           </VBox>
+                        </HBox>
+                     </VBox>
+
+                     <!-- Contact -->
+                     <VBox styleClass="card">
+                        <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2; -fx-padding: 0 0 10px 0;" text="📞 Contact" />
+                        <VBox styleClass="field-group">
+                           <Label styleClass="label" text="Telephone *" />
+                           <HBox spacing="8.0">
+                              <ComboBox fx:id="cbPays" prefWidth="210.0" />
+                              <TextField fx:id="tfTelephone" styleClass="text-input" HBox.hgrow="ALWAYS" />
+                           </HBox>
+                        </VBox>
+                        <VBox styleClass="field-group">
+                           <Label styleClass="label" text="Email *" />
+                           <TextField fx:id="tfEmail" styleClass="text-input" />
+                           <Label fx:id="lblEmailStatus" text=""
+                                  style="-fx-font-size: 11px; -fx-font-weight: bold;" />
+                        </VBox>
+                     </VBox>
+
+                     <!-- Password -->
+                     <VBox styleClass="card">
+                        <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2; -fx-padding: 0 0 10px 0;" text="🔐 Changer le Mot de Passe" />
+                        <VBox styleClass="field-group">
+                           <Label styleClass="label" text="Nouveau mot de passe (laisser vide si inchange)" />
+                           <PasswordField fx:id="pfNewPassword" promptText="Nouveau mot de passe..." styleClass="text-input" />
+                           <Label fx:id="lblPasswordStrength" text="" />
+                        </VBox>
+                     </VBox>
+
+                     <Label fx:id="lblError" text="" styleClass="error-label" visible="false" managed="false" />
+
+                     <HBox spacing="12.0">
+                        <Button mnemonicParsing="false" styleClass="btn, btn-secondary" text="Annuler" onAction="#cancel" />
+                        <Button mnemonicParsing="false" styleClass="btn, btn-primary" text="✔ Mettre a Jour" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#update" />
+                     </HBox>
+
+                  </VBox>
+
+                  <!-- RIGHT: Current info -->
+                  <VBox spacing="14.0" prefWidth="260.0">
+                     <VBox styleClass="card" spacing="8.0">
+                        <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2; -fx-padding: 0 0 8px 0;" text="ℹ Informations actuelles" />
+                        <Label fx:id="lblCurrentName" style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1A1D23;" text="—" />
+                        <Label fx:id="lblCurrentRole" styleClass="badge, badge-xx" text="—" />
+                     </VBox>
+                  </VBox>
+
+               </HBox>
+            </content>
+         </ScrollPane>
+      </VBox>
+   </center>
+
+   <!-- FOOTER -->
+   <bottom>
+      <HBox styleClass="app-footer">
+         <Label styleClass="footer-label" text="REVIVE — Systeme de Gestion des Urgences Medicales" />
+      </HBox>
+   </bottom>
+
+</BorderPane>

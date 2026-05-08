@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/user.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersUser.M6DashboardController">
+
+   <top>
+      <VBox>
+         <StackPane prefHeight="88" style="-fx-background-color: linear-gradient(to right, #0B4EA2, #0E9B8A);">
+            <!-- GIF background full width -->
+            <!-- removed -->
+            <!-- Content over gif -->
+            <HBox alignment="CENTER_LEFT" spacing="0" style="-fx-background-color: transparent;">
+               <HBox styleClass="header-logo-zone" alignment="CENTER" spacing="8">
+                  <ImageView fitWidth="150" fitHeight="65" preserveRatio="true">
+                     <image><Image url="@../images/logo_revive.png"/></image>
+                  </ImageView>
+               </HBox>
+               <Region style="-fx-background-color: rgba(255,255,255,0.30); -fx-min-width: 1px; -fx-pref-width: 1px; -fx-min-height: 88px;" />
+               <VBox styleClass="header-title-zone" spacing="2">
+                  <Label styleClass="header-module-label" text="Gestion du Personnel" />
+                  <Label fx:id="lblWelcome" styleClass="header-page-title" text="Tableau de Bord" />
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <HBox alignment="CENTER" style="-fx-padding: 0 16 0 0;" spacing="8">
+                  <Label styleClass="header-badge" text="Module 6" />
+                  <HBox styleClass="user-chip">
+                     <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label fx:id="lblUserName" styleClass="user-name" text="Admin" />
+                        <Label fx:id="lblUserRole" styleClass="user-role" text="Administrateur" />
+                     </VBox>
+                     <Label styleClass="user-av" text="👤" />
+                  </HBox>
+               </HBox>
+            </HBox>
+         </StackPane>
+         <Region styleClass="header-strip" />
+      </VBox>
+   </top>
+
+   <left>
+      <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+         <Label styleClass="nav-section" text="NAVIGATION" />
+         <Button mnemonicParsing="false" styleClass="nav-item, active" text="▣  Tableau de Bord" onAction="#goDashboard" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="👥  Gestion Personnel" onAction="#goPersonnel" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="📩  Inscriptions" onAction="#goInscriptions" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="📋  Historique" onAction="#goHistorique" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="🕐  Shifts" onAction="#goShifts" maxWidth="Infinity" />
+         <Region VBox.vgrow="ALWAYS" />
+         <VBox styleClass="sidebar-card">
+            <Label styleClass="sc-title" text="Module actif" />
+            <Label styleClass="sc-alert" text="Gestion du Personnel" />
+            <Button mnemonicParsing="false" styleClass="sc-btn" text="Deconnexion" onAction="#deconnexion" />
+         </VBox>
+      </VBox>
+   </left>
+
+   <center>
+      <VBox styleClass="main" BorderPane.alignment="CENTER">
+         <HBox styleClass="stats-row" spacing="14.0">
+            <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS">
+               <Label styleClass="stat-lbl" text="TOTAL PERSONNEL" />
+               <Label fx:id="lblTotal" styleClass="stat-val, blue" text="0" />
+               <Label styleClass="stat-hint" text="employes enregistres" />
+            </VBox>
+            <VBox styleClass="stat-card, green" HBox.hgrow="ALWAYS">
+               <Label styleClass="stat-lbl" text="MEDECINS" />
+               <Label fx:id="lblMedecins" styleClass="stat-val, green" text="0" />
+               <Label styleClass="stat-hint" text="medecins urgentistes" />
+            </VBox>
+            <VBox styleClass="stat-card, orange" HBox.hgrow="ALWAYS">
+               <Label styleClass="stat-lbl" text="INFIRMIERS" />
+               <Label fx:id="lblInfirmiers" styleClass="stat-val, orange" text="0" />
+               <Label styleClass="stat-hint" text="infirmiers triage" />
+            </VBox>
+            <VBox styleClass="stat-card, red" HBox.hgrow="ALWAYS">
+               <Label styleClass="stat-lbl" text="AUTRES ROLES" />
+               <Label fx:id="lblAutres" styleClass="stat-val, red" text="0" />
+               <Label styleClass="stat-hint" text="autres categories" />
+            </VBox>
+         </HBox>
+         <HBox styleClass="filters" spacing="10.0" alignment="CENTER_LEFT">
+            <Button mnemonicParsing="false" styleClass="btn, btn-primary" text="➕ Ajouter Personnel" onAction="#goAddPersonnel" />
+            <Button mnemonicParsing="false" styleClass="btn, btn-secondary" text="👥 Voir tout le Personnel" onAction="#goPersonnel" />
+         </HBox>
+         <VBox styleClass="content-row" VBox.vgrow="ALWAYS">
+            <HBox styleClass="panel-hdr">
+               <Label styleClass="section-title" text="Apercu du Personnel" />
+               <Region HBox.hgrow="ALWAYS" />
+               <Label fx:id="lblPanelCount" styleClass="panel-cnt" text="0 employes" />
+            </HBox>
+            <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+               <content>
+                  <FlowPane fx:id="flowStaff" hgap="14" vgap="14" style="-fx-padding: 4px 0;" />
+               </content>
+            </ScrollPane>
+         </VBox>
+      </VBox>
+   </center>
+
+   <bottom>
+      <HBox styleClass="app-footer">
+         <Label styleClass="footer-label" text="REVIVE — Systeme de Gestion des Urgences Medicales" />
+      </HBox>
+   </bottom>
+
+</BorderPane>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/user.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersUser.M6PersonnelDeleteController">
+
+   <top>
+      <VBox>
+         <StackPane prefHeight="88" style="-fx-background-color: linear-gradient(to right, #0B4EA2, #0E9B8A);">
+            <HBox alignment="CENTER_LEFT" spacing="0" style="-fx-background-color: transparent;">
+               <HBox styleClass="header-logo-zone" alignment="CENTER" spacing="8">
+                  <ImageView fitWidth="150" fitHeight="65" preserveRatio="true">
+                     <image><Image url="@../images/logo_revive.png"/></image>
+                  </ImageView>
+               </HBox>
+               <Region style="-fx-background-color: rgba(255,255,255,0.30); -fx-min-width: 1px; -fx-pref-width: 1px; -fx-min-height: 88px;" />
+               <VBox styleClass="header-title-zone" spacing="2">
+                  <Label styleClass="header-module-label" text="Gestion du Personnel" />
+                  <Label styleClass="header-page-title" text="Suppression" />
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+            </HBox>
+         </StackPane>
+         <Region styleClass="header-strip" />
+      </VBox>
+   </top>
+
+   <!-- SIDEBAR -->
+   <left>
+      <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+         <Label styleClass="nav-section" text="NAVIGATION" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="▣  Tableau de Bord" onAction="#goDashboard" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item, active" text="👥  Gestion Personnel" onAction="#goPersonnel" maxWidth="Infinity" />
+         <Region VBox.vgrow="ALWAYS" />
+         <VBox styleClass="sidebar-card">
+            <Label styleClass="sc-title" text="Suppression" />
+            <Label styleClass="sc-alert" text="Action irreversible !" />
+            <Button mnemonicParsing="false" styleClass="sc-btn" text="Deconnexion" onAction="#deconnexion" />
+         </VBox>
+      </VBox>
+   </left>
+
+   <!-- CENTER: dialog -->
+   <center>
+      <VBox alignment="CENTER" style="-fx-background-color: #EEF4FB;" BorderPane.alignment="CENTER">
+         <VBox alignment="CENTER" styleClass="dialog"
+               style="-fx-background-color: #fff; -fx-background-radius: 20px; -fx-padding: 40px; -fx-max-width: 500px;">
+            <Label style="-fx-font-size: 52px; -fx-padding: 0 0 14px 0;" text="🗑️" />
+            <Label style="-fx-font-size: 20px; -fx-font-weight: 700; -fx-text-fill: #1A1D23; -fx-padding: 0 0 8px 0;"
+                   text="Confirmer la Suppression" />
+            <Label style="-fx-font-size: 13px; -fx-text-fill: #6B7280; -fx-padding: 0 0 20px 0; -fx-alignment: center;"
+                   text="Vous etes sur le point de supprimer definitivement cet employe.&#10;Cette action ne peut pas etre annulee."
+                   textAlignment="CENTER" wrapText="true" />
+
+            <!-- Staff Info -->
+            <VBox style="-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-border-width: 1.5px;
+                         -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 14px;">
+               <VBox.margin><Insets bottom="20.0" /></VBox.margin>
+               <HBox style="-fx-padding: 0 0 8px 0;" alignment="CENTER">
+                  <Label style="-fx-font-size: 13px; -fx-text-fill: #6B7280;" text="Nom complet" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="lblNomPrenom" style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #1A1D23;" text="—" />
+               </HBox>
+               <HBox style="-fx-padding: 0 0 8px 0;" alignment="CENTER">
+                  <Label style="-fx-font-size: 13px; -fx-text-fill: #6B7280;" text="Identifiant" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="lblIdentifiant" style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #1E40AF;" text="—" />
+               </HBox>
+               <HBox alignment="CENTER">
+                  <Label style="-fx-font-size: 13px; -fx-text-fill: #6B7280;" text="Role" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="lblRole" styleClass="badge, badge-xx" style="-fx-font-size: 10px;" text="—" />
+               </HBox>
+            </VBox>
+
+            <!-- Warning -->
+            <VBox style="-fx-background-color: #EFF6FF; -fx-border-color: #38BDF8; -fx-border-width: 1.5px;
+                         -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-padding: 12px 16px;">
+               <VBox.margin><Insets bottom="20.0" /></VBox.margin>
+               <Label style="-fx-font-size: 12px; -fx-text-fill: #0369A1;"
+                      text="⚠️ Attention : La suppression de cet employe va :&#10;• Retirer son acces au systeme&#10;• Supprimer son profil definitivement&#10;• Cette operation est irreversible"
+                      wrapText="true" />
+            </VBox>
+
+            <!-- Buttons -->
+            <HBox spacing="12.0">
+               <Button mnemonicParsing="false" styleClass="btn, btn-secondary" style="-fx-padding: 12px;"
+                       text="❌ Annuler" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#cancel" />
+               <Button mnemonicParsing="false" styleClass="btn, btn-danger" style="-fx-padding: 12px;"
+                       text="🗑 Oui, Supprimer" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#confirmDelete" />
+            </HBox>
+         </VBox>
+      </VBox>
+   </center>
+
+   <!-- FOOTER -->
+   <bottom>
+      <HBox styleClass="app-footer">
+         <Label styleClass="footer-label" text="REVIVE — Systeme de Gestion des Urgences Medicales" />
+      </HBox>
+   </bottom>
+
+</BorderPane>

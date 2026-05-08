@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/user.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersUser.M6PersonnelListController">
+
+   <top>
+      <VBox>
+         <StackPane prefHeight="88" style="-fx-background-color: linear-gradient(to right, #0B4EA2, #0E9B8A);">
+            <HBox alignment="CENTER_LEFT" spacing="0" style="-fx-background-color: transparent;">
+               <HBox styleClass="header-logo-zone" alignment="CENTER" spacing="8">
+                  <ImageView fitWidth="150" fitHeight="65" preserveRatio="true">
+                     <image><Image url="@../images/logo_revive.png"/></image>
+                  </ImageView>
+               </HBox>
+               <Region style="-fx-background-color: rgba(255,255,255,0.30); -fx-min-width: 1px; -fx-pref-width: 1px; -fx-min-height: 88px;" />
+               <VBox styleClass="header-title-zone" spacing="2">
+                  <Label styleClass="header-module-label" text="Gestion du Personnel" />
+                  <Label styleClass="header-page-title" text="Liste du Personnel" />
+               </VBox>
+               <Region HBox.hgrow="ALWAYS" />
+               <HBox alignment="CENTER" style="-fx-padding: 0 16 0 0;" spacing="8">
+                  <Button mnemonicParsing="false" styleClass="btn, btn-primary" text="➕ Nouveau" onAction="#goAdd" />
+                  <HBox styleClass="user-chip">
+                     <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label fx:id="lblUserName" styleClass="user-name" text="Admin" />
+                        <Label fx:id="lblUserRole" styleClass="user-role" text="Administrateur" />
+                     </VBox>
+                     <Label styleClass="user-av" text="👤" />
+                  </HBox>
+               </HBox>
+            </HBox>
+         </StackPane>
+         <Region styleClass="header-strip" />
+      </VBox>
+   </top>
+
+   <!-- SIDEBAR -->
+   <left>
+      <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+         <Label styleClass="nav-section" text="NAVIGATION" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="▣  Tableau de Bord" onAction="#goDashboard" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item, active" text="👥  Gestion Personnel" onAction="#goPersonnel" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="📩  Inscriptions" onAction="#goInscriptions" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="📋  Historique" onAction="#goHistorique" maxWidth="Infinity" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="🕐  Shifts" onAction="#goShifts" maxWidth="Infinity" />
+         <Region VBox.vgrow="ALWAYS" />
+         <VBox styleClass="sidebar-card">
+            <Label styleClass="sc-title" text="Module actif" />
+            <Label styleClass="sc-alert" text="Gestion du Personnel" />
+            <Button mnemonicParsing="false" styleClass="sc-btn" text="Deconnexion" onAction="#deconnexion" />
+         </VBox>
+      </VBox>
+   </left>
+
+   <!-- CENTER -->
+   <center>
+      <VBox styleClass="main" BorderPane.alignment="CENTER">
+
+         <Label fx:id="lblSubtitle" styleClass="page-sub" text="0 employes enregistres" />
+
+         <!-- Selection toolbar -->
+         <HBox spacing="12" alignment="CENTER_LEFT"
+               style="-fx-background-color: #ffffff; -fx-background-radius: 10px;
+                      -fx-padding: 10px 16px;
+                      -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.07),8,0,0,2);">
+            <CheckBox fx:id="cbSelectAll" text="Tout selectionner" onAction="#handleSelectAll"
+                      style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #334155;" />
+            <Label fx:id="lblSelectionCount" text=""
+                   style="-fx-font-size: 12px; -fx-text-fill: #0B4EA2; -fx-font-weight: bold;"
+                   visible="false" managed="false" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnDeleteSelected" text="🗑 Supprimer la selection"
+                    mnemonicParsing="false" onAction="#deleteSelected"
+                    visible="false" managed="false"
+                    style="-fx-background-color: #38BDF8; -fx-text-fill: #ffffff;
+                           -fx-background-radius: 8px; -fx-padding: 8px 16px;
+                           -fx-font-size: 12px; -fx-font-weight: bold; -fx-cursor: hand;" />
+         </HBox>
+
+         <!-- Filters -->
+         <VBox spacing="8.0">
+            <HBox styleClass="filters" spacing="10.0" alignment="CENTER_LEFT">
+               <Button fx:id="btnFilterTous" mnemonicParsing="false" styleClass="filter-btn, active" text="Tous" onAction="#filterTous" />
+               <Button fx:id="btnFilterMedecin" mnemonicParsing="false" text="Medecin Urgentiste" onAction="#filterMedecin"
+                       style="-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF; -fx-border-color: #93C5FD;
+                              -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-border-width: 1.5px;
+                              -fx-padding: 7px 16px; -fx-font-size: 12px; -fx-font-weight: bold; -fx-cursor: hand;" />
+               <Button fx:id="btnFilterInfirmier" mnemonicParsing="false" text="Infirmier Triage" onAction="#filterInfirmier"
+                       style="-fx-background-color: #D1FAE5; -fx-text-fill: #065F46; -fx-border-color: #6EE7B7;
+                              -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-border-width: 1.5px;
+                              -fx-padding: 7px 16px; -fx-font-size: 12px; -fx-font-weight: bold; -fx-cursor: hand;" />
+               <Button fx:id="btnFilterAgent" mnemonicParsing="false" text="Agent Accueil" onAction="#filterAgent"
+                       style="-fx-background-color: #FEF3C7; -fx-text-fill: #92400E; -fx-border-color: #FCD34D;
+                              -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-border-width: 1.5px;
+                              -fx-padding: 7px 16px; -fx-font-size: 12px; -fx-font-weight: bold; -fx-cursor: hand;" />
+               <Region HBox.hgrow="ALWAYS" />
+               <HBox alignment="CENTER_LEFT"
+                     style="-fx-max-width: 300px; -fx-background-color: #fff; -fx-border-color: #CBD5E1;
+                            -fx-border-width: 1.5px; -fx-background-radius: 10px; -fx-border-radius: 10px;">
+                  <Label style="-fx-padding: 0 0 0 12px; -fx-text-fill: #9CA3AF;" text="🔍" />
+                  <TextField fx:id="tfSearch" promptText="Rechercher par nom..."
+                             style="-fx-background-color: transparent; -fx-border-width: 0;"
+                             HBox.hgrow="ALWAYS" />
+               </HBox>
+            </HBox>
+            <HBox styleClass="filters" spacing="10.0" alignment="CENTER_LEFT">
+               <Button fx:id="btnFilterBiologiste" mnemonicParsing="false" text="Biologiste Radiologue" onAction="#filterBiologiste"
+                       style="-fx-background-color: #EDE9FE; -fx-text-fill: #5B21B6; -fx-border-color: #C4B5FD;
+                              -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-border-width: 1.5px;
+                              -fx-padding: 7px 16px; -fx-font-size: 12px; -fx-font-weight: bold; -fx-cursor: hand;" />
+               <Button fx:id="btnFilterLogistique" mnemonicParsing="false" text="Responsable Logistique" onAction="#filterLogistique"
+                       style="-fx-background-color: #CFFAFE; -fx-text-fill: #0E7490; -fx-border-color: #67E8F9;
+                              -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-border-width: 1.5px;
+                              -fx-padding: 7px 16px; -fx-font-size: 12px; -fx-font-weight: bold; -fx-cursor: hand;" />
+               <Button fx:id="btnFilterAdmin" mnemonicParsing="false" text="Administrateur" onAction="#filterAdmin"
+                       style="-fx-background-color: #F1F5F9; -fx-text-fill: #334155; -fx-border-color: #CBD5E1;
+                              -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-border-width: 1.5px;
+                              -fx-padding: 7px 16px; -fx-font-size: 12px; -fx-font-weight: bold; -fx-cursor: hand;" />
+            </HBox>
+         </VBox>
+
+         <!-- Staff list -->
+         <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+            <content>
+               <VBox fx:id="vbStaffList" spacing="10.0" style="-fx-padding: 8px 4px 20px;" />
+            </content>
+         </ScrollPane>
+
+      </VBox>
+   </center>
+
+   <!-- FOOTER -->
+   <bottom>
+      <HBox styleClass="app-footer">
+         <Label styleClass="footer-label" text="REVIVE — Systeme de Gestion des Urgences Medicales" />
+      </HBox>
+   </bottom>
+
+</BorderPane>
