@@ -13,7 +13,7 @@ public class App extends Application {
         stage.setTitle("REVIVE — Module 2 : Triage");
         stage.setMinWidth(1100);
         stage.setMinHeight(700);
-        Navigator.goTo("Dashboard");
+        Navigator.goTo("DashboardTriage");
         stage.show();
     }
 

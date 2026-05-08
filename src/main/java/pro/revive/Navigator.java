@@ -42,7 +42,7 @@ public class Navigator {
     public static void login(String fullName, int personnelId) {
         currentUserName    = fullName;
         currentPersonnelId = personnelId;
-        goTo("Dashboard");
+        goTo("DashboardTriage");
     }
 
     /**
@@ -54,7 +54,7 @@ public class Navigator {
         currentPersonnelId = -1;
         currentTriageId    = -1;
         currentSalleId     = -1;
-        goTo("Dashboard"); // replace "Dashboard" with "Login" once the login screen is ready
+        goTo("DashboardTriage"); // replace "Dashboard" with "Login" once the login screen is ready
     }
 
     // ── Typed navigation helpers ─────────────────────────────────
@@ -91,7 +91,7 @@ public class Navigator {
 
     public static void goTo(String fxmlName, Object controller) {
         try {
-            String path = "/fxml/" + fxmlName + ".fxml";
+            String path = "/TriageResources/fxml/" + fxmlName + ".fxml";
             FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(path));
             if (controller != null) {
                 loader.setController(controller);
