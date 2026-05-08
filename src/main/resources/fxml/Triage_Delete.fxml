@@ -78,13 +78,7 @@
                   <Label fx:id="lblPatient"
                          style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" text="..." />
                </HBox>
-               <HBox alignment="CENTER">
-                  <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="ID Triage" />
-                  <Region HBox.hgrow="ALWAYS" />
-                  <Label fx:id="lblId"
-                         style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" text="..." />
-               </HBox>
-               <HBox alignment="CENTER">
+<HBox alignment="CENTER">
                   <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="Niveau de Gravite" />
                   <Region HBox.hgrow="ALWAYS" />
                   <Label fx:id="lblNiveau" styleClass="badge, b1" style="-fx-font-size: 10px;" text="..." />

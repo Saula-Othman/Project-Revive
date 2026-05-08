@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 
 public class TriageDeleteController implements Initializable {
 
-    @FXML private Label lblPatient, lblId, lblNiveau, lblSalle, lblDate, lblWarning;
+    @FXML private Label lblPatient, lblNiveau, lblSalle, lblDate, lblWarning;
 
     private final TriageService service = new TriageService();
     private final RoomAssignmentService roomService = new RoomAssignmentService();
@@ -25,7 +25,6 @@ public class TriageDeleteController implements Initializable {
         if (current == null) { Navigator.goTo("Triage_List"); return; }
 
         lblPatient.setText(current.getNomPatient() + " " + current.getPrenomPatient());
-        lblId.setText(String.valueOf(current.getIdTriage()));
         lblNiveau.setText("Niveau " + current.getNiveauFinal());
         lblSalle.setText(current.getNomSalle() != null ? current.getNomSalle() : "En Attente");
         lblDate.setText(current.getDateHeureTriage() != null ? current.getDateHeureTriage().toString() : "N/A");
