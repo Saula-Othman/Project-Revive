@@ -8,8 +8,8 @@ public class Triage {
     private int idAdmission;
     private int idPersonnel;
     private int idSalle;
-    private int constancesTaSys;
-    private int constancesTaDia;
+    private float constancesTaSys;
+    private float constancesTaDia;
     private int constancesPouls;
     private float constancesTemperature;
     private int spo2;
@@ -44,7 +44,7 @@ public class Triage {
     public Triage() {
     }
 
-    public Triage(int idAdmission, int idPersonnel, int constancesTaSys, int constancesTaDia,
+    public Triage(int idAdmission, int idPersonnel, float constancesTaSys, float constancesTaDia,
                   int constancesPouls, float constancesTemperature, int spo2, float glycemie,
                   int scoreDouleur, int gcsScore, int frequenceRespiratoire, String symptomes) {
         this.idAdmission = idAdmission;
@@ -71,10 +71,10 @@ public class Triage {
     public void setIdPersonnel(int idPersonnel) { this.idPersonnel = idPersonnel; }
     public int getIdSalle() { return idSalle; }
     public void setIdSalle(int idSalle) { this.idSalle = idSalle; }
-    public int getConstancesTaSys() { return constancesTaSys; }
-    public void setConstancesTaSys(int constancesTaSys) { this.constancesTaSys = constancesTaSys; }
-    public int getConstancesTaDia() { return constancesTaDia; }
-    public void setConstancesTaDia(int constancesTaDia) { this.constancesTaDia = constancesTaDia; }
+    public float getConstancesTaSys() { return constancesTaSys; }
+    public void setConstancesTaSys(float constancesTaSys) { this.constancesTaSys = constancesTaSys; }
+    public float getConstancesTaDia() { return constancesTaDia; }
+    public void setConstancesTaDia(float constancesTaDia) { this.constancesTaDia = constancesTaDia; }
     public int getConstancesPouls() { return constancesPouls; }
     public void setConstancesPouls(int constancesPouls) { this.constancesPouls = constancesPouls; }
     public float getConstancesTemperature() { return constancesTemperature; }

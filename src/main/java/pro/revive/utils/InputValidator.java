@@ -94,12 +94,7 @@ public class InputValidator {
         tf.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == null) return;
             String filtered = newVal.replaceAll("[^0-9]", "");
-            if (!filtered.isEmpty()) {
-                try {
-                    int val = Integer.parseInt(filtered);
-                    if (val > max) filtered = String.valueOf(max);
-                } catch (NumberFormatException ignored) {}
-            }
+            // No capping while typing — out-of-range values are flagged red on focus-lost
             if (!filtered.equals(newVal)) {
                 tf.setText(filtered);
                 tf.positionCaret(filtered.length());
@@ -107,6 +102,62 @@ public class InputValidator {
         });
         tf.focusedProperty().addListener((obs, wasFocused, focused) -> {
             if (!focused) checkIntRangeNow(tf, min, max);
+        });
+    }
+
+    /**
+     * Decimal field with auto-dot and decimal place limit.
+     *
+     * @param dotAfterDigits   auto-insert "." after this many integer digits are typed
+     * @param maxDecimalPlaces max digits allowed after the dot
+     * @param min              mark red on focus-lost if below this value
+     * @param max              cap input at this value while typing
+     *
+     * Examples:
+     *   Glycemie   → dotAfterDigits=1, maxDecimalPlaces=2  →  "5.45"
+     *   Temperature → dotAfterDigits=2, maxDecimalPlaces=2  → "36.75"
+     *   Tension    → dotAfterDigits=2, maxDecimalPlaces=1  → "12.5"
+     */
+    public static void attachDecimalAutoDotListener(TextField tf, int dotAfterDigits,
+                                                     int maxDecimalPlaces, float min, float max) {
+        tf.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == null) return;
+            // Allow only digits and one dot
+            String filtered = newVal.replaceAll("[^0-9.]", "");
+            int firstDot = filtered.indexOf('.');
+            if (firstDot != -1) {
+                String before = filtered.substring(0, firstDot + 1);
+                String after  = filtered.substring(firstDot + 1).replace(".", "");
+                // Limit digits after the dot
+                if (after.length() > maxDecimalPlaces) after = after.substring(0, maxDecimalPlaces);
+                filtered = before + after;
+            }
+            // Auto-insert dot after exactly dotAfterDigits integer digits (only if no dot yet)
+            // Skip if the user just manually deleted the dot — don't re-insert it
+            boolean userDeletedDot = oldVal != null && oldVal.contains(".")
+                                     && !newVal.contains(".")
+                                     && newVal.length() < oldVal.length();
+            if (!userDeletedDot && filtered.indexOf('.') == -1) {
+                long digits = filtered.chars().filter(Character::isDigit).count();
+                if (digits >= dotAfterDigits) {
+                    int insertAt = 0, seen = 0;
+                    for (int i = 0; i < filtered.length(); i++) {
+                        if (Character.isDigit(filtered.charAt(i)) && ++seen == dotAfterDigits) {
+                            insertAt = i + 1;
+                            break;
+                        }
+                    }
+                    filtered = filtered.substring(0, insertAt) + "." + filtered.substring(insertAt);
+                }
+            }
+            // No capping while typing — out-of-range values are flagged red on focus-lost
+            if (!filtered.equals(newVal)) {
+                tf.setText(filtered);
+                tf.positionCaret(filtered.length());
+            }
+        });
+        tf.focusedProperty().addListener((obs, wasFocused, focused) -> {
+            if (!focused) checkDecimalRangeNow(tf, min, max);
         });
     }
 
@@ -171,6 +222,8 @@ public class InputValidator {
     private static void checkDecimalRangeNow(TextField tf, float min, float max) {
         String v = tf.getText() == null ? "" : tf.getText().trim();
         if (v.isEmpty()) return;
+        // Strip trailing dot before parsing
+        if (v.endsWith(".")) v = v.substring(0, v.length() - 1);
         try {
             float val = Float.parseFloat(v);
             if (val < min || val > max) markError(tf);
@@ -224,8 +277,8 @@ public class InputValidator {
             TextField tfGcs,   TextField tfFreqResp) {
 
         Result r = new Result();
-        checkIntRange  (tfTaSys,    "Tension Systolique",   50,   300,  r);
-        checkIntRange  (tfTaDia,    "Tension Diastolique",  20,   200,  r);
+        checkFloatRange(tfTaSys,    "Tension Systolique",    5.0f,  30.0f, r);
+        checkFloatRange(tfTaDia,    "Tension Diastolique",   2.0f,  20.0f, r);
         checkIntRange  (tfPouls,    "Pouls",                20,   300,  r);
         checkFloatRange(tfTemp,     "Temperature",          30.0f, 45.0f, r);
         checkIntRange  (tfSpo2,     "SpO2",                 50,   100,  r);

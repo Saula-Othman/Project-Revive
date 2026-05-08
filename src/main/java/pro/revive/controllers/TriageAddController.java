@@ -55,12 +55,12 @@ public class TriageAddController implements Initializable {
         );
 
         // ── Restrictive input controls (digits only + cap at max, red if below min on leave) ──
-        InputValidator.attachIntRestrictiveListener(tfTaSys,    50,  300);
-        InputValidator.attachIntRestrictiveListener(tfTaDia,    20,  200);
+        InputValidator.attachDecimalAutoDotListener(tfTaSys, 2, 1, 5.0f, 30.0f);
+        InputValidator.attachDecimalAutoDotListener(tfTaDia, 2, 1, 2.0f, 20.0f);
         InputValidator.attachIntRestrictiveListener(tfPouls,    20,  300);
-        InputValidator.attachDecimalRestrictiveListener(tfTemp, 30.0f, 45.0f);
+        InputValidator.attachDecimalAutoDotListener(tfTemp, 2, 2, 30.0f, 45.0f);
         InputValidator.attachIntRestrictiveListener(tfSpo2,     50,  100);
-        InputValidator.attachDecimalRestrictiveListener(tfGlyc, 0.1f, 10.0f);
+        InputValidator.attachDecimalAutoDotListener(tfGlyc, 1, 2, 0.1f, 10.0f);
         InputValidator.attachIntRestrictiveListener(tfGcs,      3,   15);
         InputValidator.attachIntRestrictiveListener(tfFreqResp, 1,   60);
 
@@ -106,8 +106,8 @@ public class TriageAddController implements Initializable {
 
         // Build a temporary triage just for score calculation (admission not needed)
         try {
-            int taSys   = Integer.parseInt(tfTaSys.getText().trim());
-            int taDia   = Integer.parseInt(tfTaDia.getText().trim());
+            float taSys = Float.parseFloat(tfTaSys.getText().trim());
+            float taDia = Float.parseFloat(tfTaDia.getText().trim());
             int pouls   = Integer.parseInt(tfPouls.getText().trim());
             float temp  = Float.parseFloat(tfTemp.getText().trim());
             int spo2    = Integer.parseInt(tfSpo2.getText().trim());
@@ -255,8 +255,8 @@ public class TriageAddController implements Initializable {
     private Triage buildTriageFromForm() {
         try {
             int idAdmission = cbAdmission.getValue().getId();
-            int taSys   = Integer.parseInt(tfTaSys.getText().trim());
-            int taDia   = Integer.parseInt(tfTaDia.getText().trim());
+            float taSys = Float.parseFloat(tfTaSys.getText().trim());
+            float taDia = Float.parseFloat(tfTaDia.getText().trim());
             int pouls   = Integer.parseInt(tfPouls.getText().trim());
             float temp  = Float.parseFloat(tfTemp.getText().trim());
             int spo2    = Integer.parseInt(tfSpo2.getText().trim());

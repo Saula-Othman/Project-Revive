@@ -16,7 +16,7 @@ public class GravityCalculator {
         else if (pouls < 60 || pouls > 130) { score += 3; reasons.add("Pouls anormal (" + pouls + " bpm)"); }
 
         // Blood Pressure
-        int taSys = t.getConstancesTaSys();
+        float taSys = t.getConstancesTaSys();
         if (taSys < 80 || taSys > 180) { score += 5; reasons.add("Tension critique (" + taSys + " mmHg)"); }
         else if (taSys < 90 || taSys > 160) { score += 3; reasons.add("Tension anormale (" + taSys + " mmHg)"); }
 
@@ -93,7 +93,7 @@ public class GravityCalculator {
         return "";
     }
 
-    public static String getTensionStatus(int taSys) {
+    public static String getTensionStatus(float taSys) {
         if (taSys < 80 || taSys > 180) return "crit";
         if (taSys < 90 || taSys > 160) return "warn";
         return "";

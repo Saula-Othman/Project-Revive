@@ -111,8 +111,8 @@ public class TriageViewController implements Initializable {
         vitalsGrid.setVgap(12);
 
         int p     = current.getConstancesPouls();
-        int taSys = current.getConstancesTaSys();
-        int taDia = current.getConstancesTaDia();
+        float taSys = current.getConstancesTaSys();
+        float taDia = current.getConstancesTaDia();
         float temp = current.getConstancesTemperature();
         int spo2  = current.getSpo2();
         float gl  = current.getGlycemie();
@@ -156,8 +156,8 @@ public class TriageViewController implements Initializable {
 
     // ── Clinical status labels ───────────────────────────────────
     private String pulseLabel(int v)   { return v<40||v>150?"CRITIQUE":v<60?"BAS":v>100?"ÉLEVÉ":""; }
-    private String taSysLabel(int v)   { return v<80||v>180?"CRITIQUE":v<90?"BAS":v>140?"ÉLEVÉ":""; }
-    private String taDiaLabel(int v)   { return v<40||v>120?"CRITIQUE":v<=60?"BAS":v>90?"ÉLEVÉ":""; }
+    private String taSysLabel(float v) { return v<80||v>180?"CRITIQUE":v<90?"BAS":v>140?"ÉLEVÉ":""; }
+    private String taDiaLabel(float v) { return v<40||v>120?"CRITIQUE":v<=60?"BAS":v>90?"ÉLEVÉ":""; }
     private String tempLabel(float v)  { return v<35||v>40?"CRITIQUE":v<36?"BAS":v>=38?"ÉLEVÉE":""; }
     private String spo2Label(int v)    { return v<85?"CRITIQUE":v<92?"BAS":""; }
     private String glycLabel(float v)  { return v<0.5f||v>3f?"CRITIQUE":v<0.7f?"BAS":v>2f?"ÉLEVÉE":""; }

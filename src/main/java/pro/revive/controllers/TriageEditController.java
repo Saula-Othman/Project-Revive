@@ -52,12 +52,12 @@ public class TriageEditController implements Initializable {
             lblDouleurVal.setText(String.valueOf(n.intValue())));
 
         // ── Restrictive input controls (digits only + cap at max, red if below min on leave) ──
-        InputValidator.attachIntRestrictiveListener(tfTaSys,    50,  300);
-        InputValidator.attachIntRestrictiveListener(tfTaDia,    20,  200);
+        InputValidator.attachDecimalAutoDotListener(tfTaSys, 2, 1, 5.0f, 30.0f);
+        InputValidator.attachDecimalAutoDotListener(tfTaDia, 2, 1, 2.0f, 20.0f);
         InputValidator.attachIntRestrictiveListener(tfPouls,    20,  300);
-        InputValidator.attachDecimalRestrictiveListener(tfTemp, 30.0f, 45.0f);
+        InputValidator.attachDecimalAutoDotListener(tfTemp, 2, 2, 30.0f, 45.0f);
         InputValidator.attachIntRestrictiveListener(tfSpo2,     50,  100);
-        InputValidator.attachDecimalRestrictiveListener(tfGlyc, 0.1f, 10.0f);
+        InputValidator.attachDecimalAutoDotListener(tfGlyc, 1, 2, 0.1f, 10.0f);
         InputValidator.attachIntRestrictiveListener(tfGcs,      3,   15);
         InputValidator.attachIntRestrictiveListener(tfFreqResp, 1,   60);
 
@@ -136,8 +136,8 @@ public class TriageEditController implements Initializable {
         }
 
         try {
-            current.setConstancesTaSys(Integer.parseInt(tfTaSys.getText().trim()));
-            current.setConstancesTaDia(Integer.parseInt(tfTaDia.getText().trim()));
+            current.setConstancesTaSys(Float.parseFloat(tfTaSys.getText().trim()));
+            current.setConstancesTaDia(Float.parseFloat(tfTaDia.getText().trim()));
             current.setConstancesPouls(Integer.parseInt(tfPouls.getText().trim()));
             current.setConstancesTemperature(Float.parseFloat(tfTemp.getText().trim()));
             current.setSpo2(Integer.parseInt(tfSpo2.getText().trim()));

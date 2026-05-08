@@ -67,8 +67,8 @@ public class TriageService implements IService<Triage> {
              PreparedStatement pst = c.prepareStatement(requete, Statement.RETURN_GENERATED_KEYS)) {
             pst.setInt(1, triage.getIdAdmission());
             pst.setInt(2, triage.getIdPersonnel());
-            pst.setInt(3, triage.getConstancesTaSys());
-            pst.setInt(4, triage.getConstancesTaDia());
+            pst.setFloat(3, triage.getConstancesTaSys());
+            pst.setFloat(4, triage.getConstancesTaDia());
             pst.setInt(5, triage.getConstancesPouls());
             pst.setFloat(6, triage.getConstancesTemperature());
             pst.setInt(7, triage.getSpo2());
@@ -136,8 +136,8 @@ public class TriageService implements IService<Triage> {
                 "patient_state=? " +
                 "WHERE id_triage=?";
         try (Connection c = getCnx(); PreparedStatement pst = c.prepareStatement(requete)) {
-            pst.setInt(1, triage.getConstancesTaSys());
-            pst.setInt(2, triage.getConstancesTaDia());
+            pst.setFloat(1, triage.getConstancesTaSys());
+            pst.setFloat(2, triage.getConstancesTaDia());
             pst.setInt(3, triage.getConstancesPouls());
             pst.setFloat(4, triage.getConstancesTemperature());
             pst.setInt(5, triage.getSpo2());
@@ -354,8 +354,8 @@ public class TriageService implements IService<Triage> {
         int idSalle = rs.getInt("id_salle");
         t.setIdSalle(rs.wasNull() ? 0 : idSalle);
 
-        t.setConstancesTaSys(rs.getInt("constantes_ta_sys"));
-        t.setConstancesTaDia(rs.getInt("constantes_ta_dia"));
+        t.setConstancesTaSys(rs.getFloat("constantes_ta_sys"));
+        t.setConstancesTaDia(rs.getFloat("constantes_ta_dia"));
         t.setConstancesPouls(rs.getInt("constantes_pouls"));
         t.setConstancesTemperature(rs.getFloat("constantes_temperature"));
         t.setSpo2(rs.getInt("spo2"));
