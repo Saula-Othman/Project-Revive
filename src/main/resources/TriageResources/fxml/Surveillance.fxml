@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0"
+            stylesheets="@../css/styleTriage.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.SurveillanceController"
+            style="-fx-background-color: #EEF4FB;">
+
+   <!-- ── SIDEBAR ── -->
+   <left>
+      <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+         <VBox styleClass="logo-wrap">
+            <ImageView fitWidth="170.0" preserveRatio="true" pickOnBounds="true">
+               <image><Image url="@../images/logo.png" /></image>
+            </ImageView>
+            <Label styleClass="logo-sub" text="Systeme de Gestion des Urgences" />
+         </VBox>
+         <Label styleClass="nav-section" text="MENU" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="&#127968;  Tableau de Bord" onAction="#goDashboard" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="&#128203;  Triages" onAction="#goTriageList" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="&#10133;  Nouveau Triage" onAction="#goTriageAdd" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="&#127973;  Salles d'Attente" onAction="#goSalleList" />
+         <Button mnemonicParsing="false" styleClass="nav-item, active" text="&#9673;  Surveillance" onAction="#goSurveillance" />
+         <Region VBox.vgrow="ALWAYS" />
+         <VBox styleClass="sidebar-card">
+            <Label fx:id="lblThreatSide" styleClass="sc-title" text="Niveau : Nominal" />
+            <Label fx:id="lblThreatSubSide" styleClass="sc-alert" text="Aucun signal detecte" />
+            <Button mnemonicParsing="false" styleClass="sc-btn" text="Deconnexion" onAction="#deconnexion" />
+         </VBox>
+      </VBox>
+   </left>
+
+   <!-- ── MAIN ── -->
+   <center>
+      <VBox styleClass="main" BorderPane.alignment="CENTER">
+
+         <!-- Topbar -->
+         <HBox styleClass="topbar">
+            <VBox spacing="2">
+               <Label styleClass="page-title" text="Surveillance Epidemiologique" />
+               <Label fx:id="lblPageSub" styleClass="page-sub" text="Chargement en cours..." />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <HBox styleClass="user-chip">
+               <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                  <Label fx:id="lblUserName" styleClass="user-name" text="..." />
+                  <Label styleClass="user-role" text="Infirmier Triage" />
+               </VBox>
+               <Label styleClass="user-av" text="U" />
+            </HBox>
+         </HBox>
+         <Region styleClass="topbar-stripe" />
+
+         <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+            <content>
+               <VBox spacing="20.0" style="-fx-padding: 20px 28px 28px;">
+
+                  <!-- ── NIVEAU DE MENACE ── -->
+                  <HBox fx:id="threatBanner" spacing="20" alignment="CENTER_LEFT"
+                        style="-fx-background-color: #22C55E; -fx-background-radius: 16px;
+                               -fx-padding: 20px 28px;">
+                     <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.7);
+                                      -fx-font-weight: bold;" text="NIVEAU DE MENACE ACTUEL" />
+                        <Label fx:id="lblThreatLabel"
+                               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"
+                               text="Nominal" />
+                        <Label fx:id="lblThreatDesc"
+                               style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.85);"
+                               wrapText="true" text="Chargement..." />
+                     </VBox>
+                     <VBox alignment="CENTER" spacing="8">
+                        <Label fx:id="lblThreatIcon"
+                               style="-fx-font-size: 52px;" text="&#9679;" />
+                        <Label fx:id="lblThreatUpdate"
+                               style="-fx-font-size: 10px; -fx-text-fill: rgba(255,255,255,0.6);"
+                               text="Mise a jour..." />
+                     </VBox>
+                  </HBox>
+
+                  <!-- ── STATS RAPIDES ── -->
+                  <HBox spacing="12">
+                     <VBox fx:id="statContagieux" HBox.hgrow="ALWAYS"
+                           style="-fx-background-color: white; -fx-background-radius: 12px;
+                                  -fx-padding: 16px; -fx-alignment: center;
+                                  -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),10,0,0,2);">
+                        <Label fx:id="lblNbContagieux"
+                               style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #EF4444;"
+                               text="0" />
+                        <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;"
+                               text="Contagieux en attente" />
+                     </VBox>
+                     <VBox HBox.hgrow="ALWAYS"
+                           style="-fx-background-color: white; -fx-background-radius: 12px;
+                                  -fx-padding: 16px; -fx-alignment: center;
+                                  -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),10,0,0,2);">
+                        <Label fx:id="lblNbClusters"
+                               style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #F59E0B;"
+                               text="0" />
+                        <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;"
+                               text="Clusters detectes (48h)" />
+                     </VBox>
+                     <VBox HBox.hgrow="ALWAYS"
+                           style="-fx-background-color: white; -fx-background-radius: 12px;
+                                  -fx-padding: 16px; -fx-alignment: center;
+                                  -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),10,0,0,2);">
+                        <Label fx:id="lblNbWHO"
+                               style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #6366F1;"
+                               text="0" />
+                        <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;"
+                               text="Alertes OMS actives" />
+                     </VBox>
+                     <VBox HBox.hgrow="ALWAYS"
+                           style="-fx-background-color: white; -fx-background-radius: 12px;
+                                  -fx-padding: 16px; -fx-alignment: center;
+                                  -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),10,0,0,2);">
+                        <Label fx:id="lblSaison"
+                               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2;"
+                               text="..." />
+                        <Label style="-fx-font-size: 11px; -fx-text-fill: #64748B;"
+                               text="Saison actuelle" />
+                     </VBox>
+                  </HBox>
+
+                  <!-- ── CONTENU PRINCIPAL : WHO + SURVEILLANCE LOCALE ── -->
+                  <HBox spacing="20">
+
+                     <!-- ── FLUX OMS ── -->
+                     <VBox HBox.hgrow="ALWAYS" spacing="0"
+                           style="-fx-background-color: white; -fx-background-radius: 14px;
+                                  -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.10),14,0,0,3);">
+                        <HBox style="-fx-padding: 16px 18px 12px;" alignment="CENTER_LEFT" spacing="10">
+                           <Label text="&#9679;" style="-fx-font-size: 16px; -fx-text-fill: #6366F1;" />
+                           <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"
+                                  text="Flux Alertes OMS" HBox.hgrow="ALWAYS" />
+                           <Label style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"
+                                  text="who.int — Maladies emergentes" />
+                        </HBox>
+                        <Region style="-fx-background-color: #E2E8F0; -fx-pref-height: 1;" />
+                        <ScrollPane fitToWidth="true" prefHeight="480"
+                                    style="-fx-background-color: transparent; -fx-background: transparent;">
+                           <content>
+                              <VBox fx:id="whoFeedBox" spacing="0"
+                                    style="-fx-padding: 0;" />
+                           </content>
+                        </ScrollPane>
+                     </VBox>
+
+                     <!-- ── SURVEILLANCE LOCALE + PROPAGATION ── -->
+                     <VBox prefWidth="360" spacing="14">
+
+                        <!-- Syndromes locaux -->
+                        <VBox style="-fx-background-color: white; -fx-background-radius: 14px;
+                                     -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.10),14,0,0,3);
+                                     -fx-padding: 16px;" spacing="10">
+                           <HBox alignment="CENTER_LEFT" spacing="8">
+                              <Label text="&#9670;" style="-fx-font-size: 14px; -fx-text-fill: #0B4EA2;" />
+                              <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"
+                                     text="Syndromes — 24h" />
+                           </HBox>
+                           <Region style="-fx-background-color: #E2E8F0; -fx-pref-height: 1;" />
+                           <VBox fx:id="syndromeStatsBox" spacing="8" />
+                        </VBox>
+
+                        <!-- Propagation interne -->
+                        <VBox style="-fx-background-color: white; -fx-background-radius: 14px;
+                                     -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.10),14,0,0,3);
+                                     -fx-padding: 16px;" spacing="10">
+                           <HBox alignment="CENTER_LEFT" spacing="8">
+                              <Label text="&#9888;" style="-fx-font-size: 14px; -fx-text-fill: #EF4444;" />
+                              <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"
+                                     text="Propagation Interne" />
+                           </HBox>
+                           <Region style="-fx-background-color: #E2E8F0; -fx-pref-height: 1;" />
+                           <VBox fx:id="exposureBox" spacing="8" />
+                        </VBox>
+
+                        <!-- Prévision saisonnière -->
+                        <VBox style="-fx-background-color: white; -fx-background-radius: 14px;
+                                     -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.10),14,0,0,3);
+                                     -fx-padding: 16px;" spacing="10">
+                           <HBox alignment="CENTER_LEFT" spacing="8">
+                              <Label text="&#9733;" style="-fx-font-size: 14px; -fx-text-fill: #F59E0B;" />
+                              <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"
+                                     text="Prevision Saisonniere" />
+                           </HBox>
+                           <Region style="-fx-background-color: #E2E8F0; -fx-pref-height: 1;" />
+                           <Label fx:id="lblSeasonForecast"
+                                  style="-fx-font-size: 12px; -fx-text-fill: #374151;"
+                                  wrapText="true" text="Chargement..." />
+                           <Button mnemonicParsing="false" text="&#9733;  Analyse IA Complete"
+                                   onAction="#genererAnalyseIA"
+                                   style="-fx-background-color: #6366F1; -fx-text-fill: white;
+                                          -fx-font-weight: bold; -fx-background-radius: 8;
+                                          -fx-padding: 8 16; -fx-font-size: 12px; -fx-cursor: hand;
+                                          -fx-max-width: Infinity;" maxWidth="Infinity" />
+                        </VBox>
+
+                        <!-- Analyse IA (affichée après génération) -->
+                        <VBox fx:id="aiAnalysisBox" spacing="10" visible="false" managed="false"
+                              style="-fx-background-color: #EEF2FF; -fx-background-radius: 14px;
+                                     -fx-border-color: #6366F1; -fx-border-width: 1.5px;
+                                     -fx-border-radius: 14px; -fx-padding: 16px;">
+                           <Label style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #4338CA;"
+                                  text="&#9733; Analyse IA — Evaluation epidemiologique" />
+                           <Label fx:id="lblAIAnalysis"
+                                  style="-fx-font-size: 12px; -fx-text-fill: #374151;"
+                                  wrapText="true" text="" />
+                        </VBox>
+
+                     </VBox>
+
+                  </HBox>
+
+               </VBox>
+            </content>
+         </ScrollPane>
+
+      </VBox>
+   </center>
+</BorderPane>
