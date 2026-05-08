@@ -9,7 +9,6 @@ import pro.revive.services.GravityCalculator;
 import pro.revive.services.RoomAssignmentService;
 import pro.revive.services.TriageService;
 import pro.revive.utils.InputValidator;
-import pro.revive.utils.UIUtils;
 
 import java.util.Set;
 
@@ -44,18 +43,7 @@ public class TriageEditController implements Initializable {
         // États en français dans l'UI — valeurs DB conservées en anglais
         cbState.getItems().addAll("WaitingRoom", "InRoom", "InConsultation",
                 "Discharged", "Cancelled", "LeftWithoutSeen", "Quarantine");
-        cbState.setButtonCell(new javafx.scene.control.ListCell<>() {
-            @Override protected void updateItem(String s, boolean empty) {
-                super.updateItem(s, empty);
-                setText(empty || s == null ? null : etatFrancais(s));
-            }
-        });
-        cbState.setCellFactory(lv -> new javafx.scene.control.ListCell<>() {
-            @Override protected void updateItem(String s, boolean empty) {
-                super.updateItem(s, empty);
-                setText(empty || s == null ? null : etatFrancais(s));
-            }
-        });
+        // No translation — show raw DB values directly in the dropdown
         cbOverrideNiveau.getItems().addAll("Garder le niveau auto", "Niveau 1 - Critique",
             "Niveau 2 - Tres Urgent", "Niveau 3 - Urgent", "Niveau 4 - Standard", "Niveau 5 - Mineur");
         cbOverrideNiveau.getSelectionModel().selectFirst();
@@ -91,7 +79,7 @@ public class TriageEditController implements Initializable {
         lblCurrentNiveau.setText("Niveau " + current.getNiveauFinal());
         lblCurrentScore.setText(String.valueOf(current.getScoreCalcule()));
         lblCurrentSalle.setText(current.getNomSalle() != null ? current.getNomSalle() : "En Attente");
-        lblCurrentState.setText(current.getPatientState() != null ? etatFrancais(current.getPatientState()) : "N/A");
+        lblCurrentState.setText(current.getPatientState() != null ? current.getPatientState() : "N/A");
 
         lblNiveauBig.setText(String.valueOf(current.getNiveauFinal()));
         lblNiveauBadge.setText("Niveau " + current.getNiveauFinal());
@@ -212,10 +200,6 @@ public class TriageEditController implements Initializable {
         Alert a = new Alert(Alert.AlertType.WARNING, msg);
         a.setTitle("Attention");
         a.showAndWait();
-    }
-
-    private String etatFrancais(String state) {
-        return UIUtils.etatFrancais(state);
     }
 
     @FXML public void goDashboard()    { Navigator.goTo("Dashboard"); }

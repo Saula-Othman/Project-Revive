@@ -125,7 +125,7 @@ public class SalleViewController implements Initializable {
         Label badge = new Label("N" + t.getNiveauFinal());
         badge.getStyleClass().addAll("badge", "b" + t.getNiveauFinal());
         badge.setStyle("-fx-font-size: 10px;");
-        Label state = new Label(t.getPatientState() != null ? pro.revive.utils.UIUtils.etatFrancais(t.getPatientState()) : "N/A");
+        Label state = new Label(t.getPatientState() != null ? t.getPatientState() : "N/A");
         state.getStyleClass().addAll("state-tag", "InRoom".equals(t.getPatientState()) ? "state-in" : "state-consult");
         right.getChildren().addAll(badge, state);
 

@@ -6,24 +6,6 @@ package pro.revive.utils;
 public class UIUtils {
 
     /**
-     * Converts a DB patient state string to French display text.
-     */
-    public static String etatFrancais(String state) {
-        if (state == null) return "Inconnu";
-        switch (state) {
-            case "Triaged":           return "Triage";
-            case "WaitingRoom":       return "Salle d'attente";
-            case "InRoom":            return "En salle";
-            case "InConsultation":    return "En consultation";
-            case "Discharged":        return "Sorti";
-            case "Cancelled":         return "Annule";
-            case "LeftWithoutSeen":   return "Parti sans consultation";
-            case "Quarantine":        return "Quarantaine";
-            default:                  return state;
-        }
-    }
-
-    /**
      * Returns the level color hex for a given severity level (1-5).
      */
     public static String niveauColor(int niveau) {

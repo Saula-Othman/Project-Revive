@@ -13,7 +13,6 @@ import pro.revive.entities.Triage;
 import pro.revive.services.TriageService;
 import pro.revive.services.GravityCalculator;
 import pro.revive.services.RoomAssignmentService;
-import pro.revive.utils.UIUtils;
 
 import java.net.URL;
 import java.time.Duration;
@@ -60,7 +59,7 @@ public class TriageViewController implements Initializable {
         lblPatientInfo.setText("Admission #" + current.getIdAdmission() + " • Triage ID: " + current.getIdTriage());
         lblNiveauBadge.setText("Niveau " + current.getNiveauFinal());
         lblNiveauBadge.getStyleClass().setAll("badge", "b" + current.getNiveauFinal());
-        lblStateBadge.setText(etatFrancais(current.getPatientState()));
+        lblStateBadge.setText(current.getPatientState());
 
         // Badge contagion
         String flag = current.getContagionFlag();
@@ -228,7 +227,7 @@ public class TriageViewController implements Initializable {
         String state = current.getPatientState();
         boolean discharged = "Discharged".equals(state) || "Cancelled".equals(state) || "LeftWithoutSeen".equals(state);
         addTimelineStep("Sortie / Fin",
-            discharged ? etatFrancais(state) : "En cours de prise en charge",
+            discharged ? state : "En cours de prise en charge",
             discharged);
     }
 
@@ -248,10 +247,6 @@ public class TriageViewController implements Initializable {
         info.getChildren().addAll(t, s);
         row.getChildren().addAll(dot, info);
         timelineBox.getChildren().add(row);
-    }
-
-    private String etatFrancais(String state) {
-        return UIUtils.etatFrancais(state);
     }
 
     private void stopAutoRefresh() { if (autoRefresh != null) autoRefresh.stop(); }
