@@ -47,14 +47,29 @@ public class Navigator {
 
     /**
      * Call this when the user logs out.
-     * Resets user state and navigates back to the Dashboard (or a Login screen once it exists).
+     * Resets user state and navigates back to the Login screen.
      */
     public static void logout() {
         currentUserName    = "";
         currentPersonnelId = -1;
         currentTriageId    = -1;
         currentSalleId     = -1;
-        goTo("DashboardTriage"); // replace "Dashboard" with "Login" once the login screen is ready
+        // Navigate back to the Login screen
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                Navigator.class.getResource("/ResourcesUser/images/fxml/Login.fxml"));
+            javafx.scene.Parent root = loader.load();
+            if (App.primaryStage.getScene() == null) {
+                App.primaryStage.setScene(new javafx.scene.Scene(root, 1100, 750));
+            } else {
+                App.primaryStage.getScene().setRoot(root);
+            }
+            App.primaryStage.setTitle("REVIVE");
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            // Fallback: go to triage dashboard if login screen fails to load
+            goTo("DashboardTriage");
+        }
     }
 
     // ── Typed navigation helpers ─────────────────────────────────
