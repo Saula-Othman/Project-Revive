@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 public class GoogleAuthService {
 
-    private static final String CLIENT_ID     = "id";
-    private static final String CLIENT_SECRET = "key";
+    private static final String CLIENT_ID     = "710292721526-gmmemp885k7del38hbp1jth80fghhh71.apps.googleusercontent.com";
+    private static final String CLIENT_SECRET = "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";
     private static final String REDIRECT_URI  = "http://localhost:9876/callback";
     private static final String SCOPE         = "openid email profile";
 

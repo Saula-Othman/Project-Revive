@@ -11,7 +11,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import pro.revive.Navigator;
 import pro.revive.entities.EntitiesUser.Personne;
 import pro.revive.services.ServicesUser.AuditService;
 import pro.revive.services.ServicesUser.CaptchaService;
@@ -94,9 +93,9 @@ public class LoginController implements Initializable {
             return;
         }
 
-        // 4. Role check — block roles that have no access to any dashboard
+        // 4. Role check — only for dashboard access, not for first login
+        // First login popup works for ALL roles
         if (user.isPremierConnexion()) {
-            // First login flow works for ALL roles
             attemptSvc.resetAttempts(id);
             auditSvc.log(user.getIdPersonnel(), "CONNEXION",
                     "Premiere connexion", user.getIdentifiant());
@@ -105,16 +104,8 @@ public class LoginController implements Initializable {
             return;
         }
 
-        String role = user.getRole();
-        boolean isAdmin   = "Administrateur".equals(role);
-        boolean isTriage  = "Infirmier Triage".equals(role)
-                         || "Medecin Urgentiste".equals(role)
-                         || "Agent Accueil".equals(role)
-                         || "Biologiste Radiologue".equals(role)
-                         || "Responsable Logistique".equals(role);
-
-        if (!isAdmin && !isTriage) {
-            showError("Acces refuse. Role non reconnu : " + role);
+        if (!"Administrateur".equals(user.getRole())) {
+            showError("Acces refuse. Cette interface est reservee aux Administrateurs.");
             captcha.generate(captchaCanvas);
             tfCaptcha.clear();
             return;
@@ -123,7 +114,7 @@ public class LoginController implements Initializable {
         // 5. Success
         attemptSvc.resetAttempts(id);
         auditSvc.log(user.getIdPersonnel(), "CONNEXION",
-                "Connexion reussie (" + role + ")", user.getIdentifiant());
+                "Connexion reussie depuis l'interface admin", user.getIdentifiant());
         hideError();
         openDashboard(user);
     }
@@ -136,14 +127,7 @@ public class LoginController implements Initializable {
                 if (email == null) { showError("Connexion Google annulee ou echouee."); return; }
                 Personne user = service.getByEmail(email);
                 if (user == null) { showError("Aucun compte REVIVE associe a ce compte Google (" + email + ")."); return; }
-                String role = user.getRole();
-                boolean isAdmin  = "Administrateur".equals(role);
-                boolean isTriage = "Infirmier Triage".equals(role)
-                                || "Medecin Urgentiste".equals(role)
-                                || "Agent Accueil".equals(role)
-                                || "Biologiste Radiologue".equals(role)
-                                || "Responsable Logistique".equals(role);
-                if (!isAdmin && !isTriage) { showError("Acces refuse. Role non reconnu : " + role); return; }
+                if (!"Administrateur".equals(user.getRole())) { showError("Acces refuse. Ce compte Google n'est pas Administrateur."); return; }
                 attemptSvc.resetAttempts(user.getIdentifiant());
                 auditSvc.log(user.getIdPersonnel(), "CONNEXION", "Connexion via Google OAuth", user.getIdentifiant());
                 hideError();
@@ -176,7 +160,7 @@ public class LoginController implements Initializable {
 
     private void openDashboard(Personne user) {
         try {
-            // First login — force password change (all roles)
+            // Check if first login — force password change
             if (user.isPremierConnexion()) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/ResourcesUser/images/fxml/FirstLogin.fxml"));
                 Parent root = loader.load();
@@ -187,26 +171,12 @@ public class LoginController implements Initializable {
                 return;
             }
 
-            String role = user.getRole();
-
-            // Triage roles → Triage Dashboard (via Navigator)
-            if ("Infirmier Triage".equals(role)
-                    || "Medecin Urgentiste".equals(role)
-                    || "Agent Accueil".equals(role)
-                    || "Biologiste Radiologue".equals(role)
-                    || "Responsable Logistique".equals(role)) {
-                Navigator.login(user.getPrenom() + " " + user.getNom(), user.getIdPersonnel());
-                return;
-            }
-
-            // Administrateur → Personnel Dashboard
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ResourcesUser/images/fxml/M6_Dashboard.fxml"));
             Parent root = loader.load();
             M6DashboardController ctrl = loader.getController();
             ctrl.setCurrentUser(user);
             Stage stage = (Stage) tfIdentifiant.getScene().getWindow();
             AnimationUtil.navigateWithFade(stage, root, () -> stage.setTitle("REVIVE — Dashboard"));
-
         } catch (Exception e) {
             e.printStackTrace();
             showError("Erreur lors du chargement du tableau de bord.");

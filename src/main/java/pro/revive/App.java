@@ -10,35 +10,34 @@ import java.net.URL;
 
 public class App extends Application {
 
-    public static Stage primaryStage;
-
     @Override
-    public void start(Stage stage) throws Exception {
-        primaryStage = stage;
+    public void start(Stage primaryStage) {
+        try {
+            URL fxmlUrl = getClass().getResource("/ResourcesUser/images/fxml/Login.fxml");
+            if (fxmlUrl == null) {
+                throw new RuntimeException("Cannot find /fxml/Login.fxml in resources!");
+            }
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent root = loader.load();
 
-        // Load the Login screen (Personnel module entry point).
-        // After a successful login, the LoginController calls Navigator.login(name, id)
-        // which sets the current user and navigates to the Triage Dashboard.
-        URL fxmlUrl = getClass().getResource("/ResourcesUser/images/fxml/Login.fxml");
-        if (fxmlUrl == null) {
-            throw new RuntimeException("Cannot find /ResourcesUser/images/fxml/Login.fxml in resources!");
+            URL cssUrl = getClass().getResource("/ResourcesUser/images/css/user.css");
+            Scene scene = new Scene(root, 1100, 750);
+            if (cssUrl != null) {
+                scene.getStylesheets().add(cssUrl.toExternalForm());
+            }
+
+            primaryStage.setTitle("REVIVE — Gestion du Personnel");
+            primaryStage.setScene(scene);
+            primaryStage.setResizable(true);
+            primaryStage.setMinWidth(900);
+            primaryStage.setMinHeight(650);
+            primaryStage.setMaximized(true);
+            primaryStage.show();
+
+        } catch (Throwable e) {
+            System.err.println("=== STARTUP ERROR ===");
+            e.printStackTrace();
         }
-        FXMLLoader loader = new FXMLLoader(fxmlUrl);
-        Parent root = loader.load();
-
-        URL cssUrl = getClass().getResource("/ResourcesUser/images/css/user.css");
-        Scene scene = new Scene(root, 1100, 750);
-        if (cssUrl != null) {
-            scene.getStylesheets().add(cssUrl.toExternalForm());
-        }
-
-        stage.setTitle("REVIVE");
-        stage.setScene(scene);
-        stage.setResizable(true);
-        stage.setMinWidth(1100);
-        stage.setMinHeight(700);
-        stage.setMaximized(true);
-        stage.show();
     }
 
     public static void main(String[] args) {
