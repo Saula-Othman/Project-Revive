@@ -21,9 +21,41 @@ public class Navigator {
     // Shared state — set before navigating
     public static int currentTriageId = -1;
     public static int currentSalleId  = -1;
-    // Logged-in user (set at login or hardcoded for now)
-    public static String currentUserName = "Infirmier Triage";
-    public static int    currentPersonnelId = 1;  // default, replace at login
+
+    // ── Logged-in user ───────────────────────────────────────────
+    // Defaults are used only while the login module is not yet integrated.
+    // Once the login screen is ready, call Navigator.login(name, id) after
+    // a successful authentication and the name will appear everywhere in the UI.
+    public static String currentUserName    = "Infirmier Triage";
+    public static int    currentPersonnelId = 1;
+
+    /**
+     * Call this from the login controller after a successful authentication.
+     * Sets the logged-in user and navigates to the Dashboard.
+     *
+     * Example (from your login module):
+     *   Navigator.login("Dr. Ben Ali", 42);
+     *
+     * @param fullName      Full name of the logged-in user (shown in the top-right of every screen)
+     * @param personnelId   id_personnel from the DB (used for override tracking, audit trail, etc.)
+     */
+    public static void login(String fullName, int personnelId) {
+        currentUserName    = fullName;
+        currentPersonnelId = personnelId;
+        goTo("Dashboard");
+    }
+
+    /**
+     * Call this when the user logs out.
+     * Resets user state and navigates back to the Dashboard (or a Login screen once it exists).
+     */
+    public static void logout() {
+        currentUserName    = "";
+        currentPersonnelId = -1;
+        currentTriageId    = -1;
+        currentSalleId     = -1;
+        goTo("Dashboard"); // replace "Dashboard" with "Login" once the login screen is ready
+    }
 
     // ── Typed navigation helpers ─────────────────────────────────
 
