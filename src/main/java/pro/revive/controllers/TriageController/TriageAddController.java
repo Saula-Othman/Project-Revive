@@ -189,7 +189,7 @@ public class TriageAddController implements Initializable {
             lblResultNiveau.setText("Niveau " + t.getNiveauFinal());
             lblResultSalle.setText(t.getNomSalle() != null ? t.getNomSalle() : "En Attente");
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                    "Triage #" + t.getIdTriage() + " enregistre avec succes !\n" +
+                    "Triage enregistre avec succes !\n" +
                     "Niveau : " + t.getNiveauFinal() + " — " + pro.revive.services.GravityCalculator.levelLabel(t.getNiveauFinal()) + "\n" +
                     "Salle : " + (t.getNomSalle() != null ? t.getNomSalle() : "En Attente"));
             alert.setTitle("Triage enregistre");
@@ -304,5 +304,6 @@ public class TriageAddController implements Initializable {
     @FXML public void goTriageAdd()    { Navigator.goTo("Triage_Add"); }
     @FXML public void goSalleList()    { Navigator.goTo("Salle_List"); }
     @FXML public void deconnexion()    { Navigator.goTo("DashboardTriage"); }
+    @FXML public void goVisualAssistance() { Navigator.goTo("VisualAssistance"); }
     @FXML public void goSurveillance() { Navigator.goTo("Surveillance"); }
 }

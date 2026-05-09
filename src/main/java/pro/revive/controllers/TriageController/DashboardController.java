@@ -299,6 +299,7 @@ public class DashboardController implements Initializable {
     @FXML public void goTriageAdd()    { stopAutoRefresh(); Navigator.goTo("Triage_Add"); }
     @FXML public void goSalleList()    { stopAutoRefresh(); Navigator.goTo("Salle_List"); }
     @FXML public void deconnexion()    { stopAutoRefresh(); Navigator.goTo("DashboardTriage"); }
+    @FXML public void goVisualAssistance() { stopAutoRefresh(); Navigator.goTo("VisualAssistance"); }
     @FXML public void goSurveillance() { stopAutoRefresh(); Navigator.goTo("Surveillance"); }
 
     // ── Helpers ─────────────────────────────────────────────────

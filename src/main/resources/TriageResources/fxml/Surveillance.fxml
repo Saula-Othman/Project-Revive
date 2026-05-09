@@ -31,6 +31,7 @@
          <Button mnemonicParsing="false" styleClass="nav-item" text="&#128203;  Triages" onAction="#goTriageList" />
          <Button mnemonicParsing="false" styleClass="nav-item" text="&#10133;  Nouveau Triage" onAction="#goTriageAdd" />
          <Button mnemonicParsing="false" styleClass="nav-item" text="&#127973;  Salles d'Attente" onAction="#goSalleList" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="📷  Assistance Visuelle" onAction="#goVisualAssistance" />
          <Button mnemonicParsing="false" styleClass="nav-item, active" text="&#9673;  Surveillance" onAction="#goSurveillance" />
          <Region VBox.vgrow="ALWAYS" />
          <VBox styleClass="sidebar-card">

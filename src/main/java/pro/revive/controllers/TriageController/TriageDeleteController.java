@@ -60,5 +60,6 @@ public class TriageDeleteController implements Initializable {
     @FXML public void goTriageAdd()  { Navigator.goTo("Triage_Add"); }
     @FXML public void goSalleList()  { Navigator.goTo("Salle_List"); }
     @FXML public void deconnexion()  { Navigator.goTo("DashboardTriage"); } // placeholder until login screen exists
+    @FXML public void goVisualAssistance() { Navigator.goTo("VisualAssistance"); }
     @FXML public void goSurveillance() { Navigator.goTo("Surveillance"); }
 }

@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * Central navigation utility for Module 2.
  * Screens: Dashboard, Triage_List, Triage_Add, Triage_Edit,
- *          Triage_Delete, Triage_View, Salle_List, Salle_View, Surveillance
+ *          Triage_Delete, Triage_View, Salle_List, Salle_View, Surveillance, VisualAssistance
  *
  * Prefer the typed helpers (goToTriage, goToSalle) over the two-step pattern
  * of setting currentTriageId / currentSalleId and then calling goTo() — the
@@ -75,6 +75,11 @@ public class Navigator {
     public static void goToTriageDelete(int id) {
         currentTriageId = id;
         goTo("Triage_Delete");
+    }
+
+    /** Navigate to the Visual Assistance page. */
+    public static void goToVisualAssistance() {
+        goTo("VisualAssistance");
     }
 
     /** Navigate to the Salle detail view for the given id. */
