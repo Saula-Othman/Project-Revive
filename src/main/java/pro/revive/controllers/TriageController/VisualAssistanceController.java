@@ -48,9 +48,9 @@ public class VisualAssistanceController implements Initializable {
     private static final double MOTION_THRESHOLD   = 12.0; // avg pixel diff to trigger
 
     // ── Groq AI config ────────────────────────────────────────────
-    private static final String GROQ_API_KEY = loadGroqKey();
-    private static final String GROQ_URL     = "url";
-    private static final String MODEL        = "model";
+    private static final String GROQ_API_KEY = "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";
+    private static final String GROQ_URL     = "https://api.groq.com/openai/v1/chat/completions";
+    private static final String MODEL        = "meta-llama/llama-4-scout-17b-16e-instruct";
 
     private static String loadGroqKey() {
         try (java.io.InputStream in = VisualAssistanceController.class
