@@ -1,4 +1,4 @@
-package pro.revive.controllers;
+package pro.revive.controllers.TriageController;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,6 +13,7 @@ import pro.revive.services.TriageService;
 import pro.revive.utils.AdmissionItem;
 import pro.revive.utils.AppExecutor;
 import pro.revive.utils.InputValidator;
+import pro.revive.utils.UIUtils;
 
 import java.net.URL;
 import java.util.List;
@@ -123,7 +124,7 @@ public class TriageAddController implements Initializable {
             lblScore.setText(String.valueOf(t.getScoreCalcule()));
             lblNiveauLabel.setText("Niveau " + t.getNiveauFinal() + " — " + GravityCalculator.levelLabel(t.getNiveauFinal()));
             lblAnalyse.setText(t.getAnalyseAuto());
-            lblScore.setStyle("-fx-font-size: 52px; -fx-font-weight: bold; -fx-text-fill: " + niveauColor(t.getNiveauFinal()) + ";");
+            lblScore.setStyle("-fx-font-size: 52px; -fx-font-weight: bold; -fx-text-fill: " + UIUtils.niveauColor(t.getNiveauFinal()) + ";");
         } catch (NumberFormatException ex) {
             lblScore.setText("!");
             lblNiveauLabel.setText("Erreur de saisie");
@@ -279,17 +280,6 @@ public class TriageAddController implements Initializable {
         } catch (NumberFormatException ex) {
             showWarning("Veuillez verifier les valeurs numeriques saisies.");
             return null;
-        }
-    }
-
-    private String niveauColor(int n) {
-        switch (n) {
-            case 1: return "#EF4444";
-            case 2: return "#F97316";
-            case 3: return "#F59E0B";
-            case 4: return "#3B82F6";
-            case 5: return "#22C55E";
-            default: return "#64748B";
         }
     }
 

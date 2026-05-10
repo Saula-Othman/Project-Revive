@@ -2,7 +2,6 @@ package pro.revive.services;
 
 import pro.revive.entities.Salle;
 import pro.revive.entities.Triage;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,10 +39,4 @@ public class AlertService {
         }
     }
 
-    public void notifyDoctor(Triage triage) {
-        System.out.println("NOTIFICATION MEDECIN: Patient " + triage.getNomPatient() + " " +
-                triage.getPrenomPatient() + " - Niveau " + triage.getNiveauFinal() +
-                " - " + GravityCalculator.levelLabel(triage.getNiveauFinal()) +
-                " - Salle: " + (triage.getNomSalle() != null ? triage.getNomSalle() : "EN ATTENTE"));
-    }
 }

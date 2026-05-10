@@ -43,7 +43,6 @@ public class SurveillanceController implements Initializable {
     private final AIAnalysisService       aiService   = new AIAnalysisService();
     private final pro.revive.services.TriageService triageService = new pro.revive.services.TriageService();
 
-    private List<WHOFeedService.WHOAlert> cachedAlerts;
     private Timeline autoRefresh;
 
     @Override
@@ -62,7 +61,6 @@ public class SurveillanceController implements Initializable {
         // Tout charger en arrière-plan pour ne pas bloquer l'UI
         AppExecutor.run(() -> {
             List<WHOFeedService.WHOAlert> alerts = whoService.fetchAlerts();
-            cachedAlerts = alerts;
             EpidemiologicalDetector.ThreatLevel threat = detector.calculerNiveauMenace(alerts);
             // nbContagieux is already computed inside calculerNiveauMenace() and cached on the result —
             // reuse it here to avoid a second identical DB query.
@@ -292,7 +290,7 @@ public class SurveillanceController implements Initializable {
         aiAnalysisBox.setVisible(true);
         aiAnalysisBox.setManaged(true);
 
-        List<WHOFeedService.WHOAlert> alerts = cachedAlerts != null ? cachedAlerts : List.of();
+        List<WHOFeedService.WHOAlert> alerts = whoService.fetchAlerts();
         EpidemiologicalDetector.SeasonInfo saison = detector.getSaisonActuelle();
 
         AppExecutor.run(() -> {

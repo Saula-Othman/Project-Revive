@@ -52,24 +52,13 @@ public class VisualAssistanceController implements Initializable {
     private static final String GROQ_URL     = "https://api.groq.com/openai/v1/chat/completions";
     private static final String MODEL        = "meta-llama/llama-4-scout-17b-16e-instruct";
 
-    private static String loadGroqKey() {
-        try (java.io.InputStream in = VisualAssistanceController.class
-                .getResourceAsStream("/db.properties")) {
-            java.util.Properties p = new java.util.Properties();
-            p.load(in);
-            return p.getProperty("groq.api.key", "");
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
     private static final String PROMPT_JSON =
         "\"Analyse le haut du corps de ce patient en 2 lignes maximum.\\n" +
         "Ligne 1 — Mouvement : ce que le patient fait (ex: tient son bras droit, prot\\u00e8ge son \\u00e9paule gauche).\\n" +
         "Ligne 2 — Sympt\\u00f4me probable : la blessure ou douleur suspect\\u00e9e (ex: fracture, luxation, entorse).\\n" +
         "Sois court, direct, en fran\\u00e7ais. Pas d'explication. Termine par le niveau : \\u26a0 Critique / \\u2139 Mod\\u00e9r\\u00e9 / \\u2713 L\\u00e9ger.\"";
 
-    private final HttpClient httpClient = HttpClient.newBuilder()
+    private static final HttpClient httpClient = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(10))
         .build();
 

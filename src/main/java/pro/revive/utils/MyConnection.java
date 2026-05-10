@@ -3,10 +3,8 @@ package pro.revive.utils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * Thread-safe DB access via HikariCP connection pool.
@@ -24,30 +22,11 @@ public class MyConnection {
     private final HikariDataSource dataSource;
 
     private MyConnection() {
-        // ── Load credentials ──────────────────────────────────────
-        String url   = "jdbc:mysql://localhost:3306/revive";
-        String login = "root";
-        String pwd   = "";
-
-        try (InputStream in = MyConnection.class.getResourceAsStream("/db.properties")) {
-            if (in != null) {
-                Properties props = new Properties();
-                props.load(in);
-                url   = props.getProperty("db.url",      url);
-                login = props.getProperty("db.user",     login);
-                pwd   = props.getProperty("db.password", pwd);
-            } else {
-                System.out.println("db.properties not found, using defaults.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error loading db.properties: " + e.getMessage());
-        }
-
         // ── Configure HikariCP ────────────────────────────────────
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(url);
-        config.setUsername(login);
-        config.setPassword(pwd);
+        config.setJdbcUrl("jdbc:mysql://localhost:3306/revive");
+        config.setUsername("root");
+        config.setPassword("");
 
         // Pool sizing: small app, keep it lean
         config.setMinimumIdle(2);
