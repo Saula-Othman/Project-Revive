@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
  */
 public class EmailDiagnostic {
 
-    private static final String USERNAME = "waflm21@gmail.com";
-    private static final String PASSWORD = "crtvniylofexjmkx";
+    private static final String USERNAME = "";
+    private static final String PASSWORD = "";
 
     public static void main(String[] args) {
         System.out.println("╔══════════════════════════════════════════╗");
