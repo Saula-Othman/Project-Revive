@@ -1,4 +1,4 @@
-package pro.revive.utils;
+package pro.revive.utils.TriageUtils;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;

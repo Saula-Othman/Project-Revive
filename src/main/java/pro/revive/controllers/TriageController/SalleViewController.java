@@ -1,4 +1,4 @@
-package pro.revive.controllers;
+package pro.revive.controllers.TriageController;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -9,9 +9,9 @@ import javafx.util.Duration;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import pro.revive.Navigator;
-import pro.revive.entities.Salle;
-import pro.revive.entities.Triage;
-import pro.revive.services.SalleService;
+import pro.revive.entities.TriageEntities.Salle;
+import pro.revive.entities.TriageEntities.Triage;
+import pro.revive.services.TriageServices.SalleService;
 
 import java.net.URL;
 import java.util.List;
@@ -79,7 +79,7 @@ public class SalleViewController implements Initializable {
         lblPlacesLibres.setText(String.valueOf(libres));
 
         // Resync stale DB counter in background so other screens stay accurate too
-        pro.revive.utils.AppExecutor.run(() -> salleService.resyncNombreActuel(current.getIdSalle()));
+        pro.revive.utils.TriageUtils.AppExecutor.run(() -> salleService.resyncNombreActuel(current.getIdSalle()));
 
         long consult = patientsInRoom.stream().filter(t -> "InConsultation".equals(t.getPatientState())).count();
 
@@ -139,7 +139,7 @@ public class SalleViewController implements Initializable {
     @FXML public void goTriageList()   { stopAutoRefresh(); Navigator.goTo("Triage_List"); }
     @FXML public void goTriageAdd()    { stopAutoRefresh(); Navigator.goTo("Triage_Add"); }
     @FXML public void goSalleList()    { stopAutoRefresh(); Navigator.goTo("Salle_List"); }
-    @FXML public void deconnexion()    { stopAutoRefresh(); Navigator.goTo("DashboardTriage"); }
+    @FXML public void deconnexion()    { stopAutoRefresh(); Navigator.logout(); }
     @FXML public void goVisualAssistance() { stopAutoRefresh(); Navigator.goTo("VisualAssistance"); }
     @FXML public void goSurveillance() { stopAutoRefresh(); Navigator.goTo("Surveillance"); }
 }

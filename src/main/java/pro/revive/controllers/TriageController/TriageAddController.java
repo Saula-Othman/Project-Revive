@@ -5,15 +5,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import pro.revive.Navigator;
-import pro.revive.entities.Triage;
-import pro.revive.services.AIAnalysisService;
-import pro.revive.services.EpidemiologicalDetector;
-import pro.revive.services.GravityCalculator;
-import pro.revive.services.TriageService;
-import pro.revive.utils.AdmissionItem;
-import pro.revive.utils.AppExecutor;
-import pro.revive.utils.InputValidator;
-import pro.revive.utils.UIUtils;
+import pro.revive.entities.TriageEntities.Triage;
+import pro.revive.services.TriageServices.AIAnalysisService;
+import pro.revive.services.TriageServices.EpidemiologicalDetector;
+import pro.revive.services.TriageServices.GravityCalculator;
+import pro.revive.services.TriageServices.TriageService;
+import pro.revive.utils.TriageUtils.AdmissionItem;
+import pro.revive.utils.TriageUtils.AppExecutor;
+import pro.revive.utils.TriageUtils.InputValidator;
+import pro.revive.utils.TriageUtils.UIUtils;
 
 import java.net.URL;
 import java.util.List;
@@ -191,7 +191,7 @@ public class TriageAddController implements Initializable {
             lblResultSalle.setText(t.getNomSalle() != null ? t.getNomSalle() : "En Attente");
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
                     "Triage enregistre avec succes !\n" +
-                    "Niveau : " + t.getNiveauFinal() + " — " + pro.revive.services.GravityCalculator.levelLabel(t.getNiveauFinal()) + "\n" +
+                    "Niveau : " + t.getNiveauFinal() + " — " + pro.revive.services.TriageServices.GravityCalculator.levelLabel(t.getNiveauFinal()) + "\n" +
                     "Salle : " + (t.getNomSalle() != null ? t.getNomSalle() : "En Attente"));
             alert.setTitle("Triage enregistre");
             alert.showAndWait();
@@ -293,7 +293,7 @@ public class TriageAddController implements Initializable {
     @FXML public void goTriageList()   { Navigator.goTo("Triage_List"); }
     @FXML public void goTriageAdd()    { Navigator.goTo("Triage_Add"); }
     @FXML public void goSalleList()    { Navigator.goTo("Salle_List"); }
-    @FXML public void deconnexion()    { Navigator.goTo("DashboardTriage"); }
+    @FXML public void deconnexion()    { Navigator.logout(); }
     @FXML public void goVisualAssistance() { Navigator.goTo("VisualAssistance"); }
     @FXML public void goSurveillance() { Navigator.goTo("Surveillance"); }
 }

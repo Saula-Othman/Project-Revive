@@ -1,7 +1,7 @@
-package pro.revive.services;
+package pro.revive.services.TriageServices;
 
-import pro.revive.entities.Salle;
-import pro.revive.entities.Triage;
+import pro.revive.entities.TriageEntities.Salle;
+import pro.revive.entities.TriageEntities.Triage;
 
 import java.util.List;
 
@@ -51,32 +51,30 @@ public class RoomAssignmentService {
         int gravityLevel = t.getNiveauFinal();
 
         try {
-            pro.revive.utils.MyConnection.getInstance().runInTransaction(conn -> {
-                triageService.discharge(idTriage);
+            triageService.discharge(idTriage);
 
-                if (idSalle > 0) {
-                    salleService.updateEntity2(idSalle, -1);
+            if (idSalle > 0) {
+                salleService.updateEntity2(idSalle, -1);
 
-                    List<Triage> waiting = triageService.getData3();
-                    for (Triage wt : waiting) {
-                        if (wt.getNiveauFinal() == gravityLevel) {
-                            triageService.updateRoom(wt.getIdTriage(), idSalle, "InRoom");
-                            salleService.updateEntity2(idSalle, 1);
+                List<Triage> waiting = triageService.getData3();
+                for (Triage wt : waiting) {
+                    if (wt.getNiveauFinal() == gravityLevel) {
+                        triageService.updateRoom(wt.getIdTriage(), idSalle, "InRoom");
+                        salleService.updateEntity2(idSalle, 1);
 
-                            // Decrement waitlist on the highest-priority room for this level
-                            List<Salle> targetRooms = salleService.getData();
-                            for (Salle s : targetRooms) {
-                                if (s.getNiveauGraviteCible() == gravityLevel) {
-                                    salleService.decrementWaitlist(s.getIdSalle());
-                                    break;
-                                }
+                        // Decrement waitlist on the highest-priority room for this level
+                        List<Salle> targetRooms = salleService.getData();
+                        for (Salle s : targetRooms) {
+                            if (s.getNiveauGraviteCible() == gravityLevel) {
+                                salleService.decrementWaitlist(s.getIdSalle());
+                                break;
                             }
-                            System.out.println("Prochain patient assigne: " + wt.getNomPatient());
-                            break;
                         }
+                        System.out.println("Prochain patient assigne: " + wt.getNomPatient());
+                        break;
                     }
                 }
-            });
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Echec liberation salle: " + e.getMessage(), e);

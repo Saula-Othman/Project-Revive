@@ -1,4 +1,4 @@
-package pro.revive.entities;
+package pro.revive.entities.TriageEntities;
 
 import java.time.LocalDateTime;
 

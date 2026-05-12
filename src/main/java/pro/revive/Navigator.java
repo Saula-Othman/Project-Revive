@@ -47,14 +47,28 @@ public class Navigator {
 
     /**
      * Call this when the user logs out.
-     * Resets user state and navigates back to the Dashboard (or a Login screen once it exists).
+     * Clears the session and navigates back to the Login screen.
      */
     public static void logout() {
         currentUserName    = "";
         currentPersonnelId = -1;
         currentTriageId    = -1;
         currentSalleId     = -1;
-        goTo("DashboardTriage"); // replace "Dashboard" with "Login" once the login screen is ready
+        SessionManager.logout();
+        // Navigate back to Login
+        try {
+            java.net.URL fxmlUrl = Navigator.class.getResource("/ResourcesUser/images/fxml/Login.fxml");
+            if (fxmlUrl == null) return;
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(fxmlUrl);
+            javafx.scene.Parent root = loader.load();
+            java.net.URL cssUrl = Navigator.class.getResource("/ResourcesUser/images/css/user.css");
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            if (cssUrl != null) scene.getStylesheets().add(cssUrl.toExternalForm());
+            App.primaryStage.setScene(scene);
+            App.primaryStage.setTitle("REVIVE — Connexion");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // ── Typed navigation helpers ─────────────────────────────────

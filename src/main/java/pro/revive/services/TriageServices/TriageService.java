@@ -1,8 +1,8 @@
-package pro.revive.services;
+package pro.revive.services.TriageServices;
 
-import pro.revive.entities.Triage;
+import pro.revive.entities.TriageEntities.Triage;
 import pro.revive.interfaces.IService;
-import pro.revive.utils.AdmissionItem;
+import pro.revive.utils.TriageUtils.AdmissionItem;
 import pro.revive.utils.MyConnection;
 
 import java.sql.*;
@@ -201,7 +201,7 @@ public class TriageService implements IService<Triage> {
                 "JOIN admissions a ON t.id_admission = a.id_admission " +
                 "JOIN patients p ON a.id_patient = p.id_patient " +
                 "LEFT JOIN salles s ON t.id_salle = s.id_salle " +
-                "WHERE t.patient_state NOT IN ('Discharged','Cancelled','LeftWithoutSeen') " +
+                "WHERE (t.patient_state IS NULL OR t.patient_state NOT IN ('Discharged','Cancelled','LeftWithoutSeen')) " +
                 "ORDER BY t.niveau_final ASC, t.date_heure_triage ASC";
         try (Connection c = getCnx();
              Statement st = c.createStatement();
@@ -381,20 +381,23 @@ public class TriageService implements IService<Triage> {
         t.setPrenomPatient(rs.getString("prenom") != null ? rs.getString("prenom") : "");
         t.setNomSalle(rs.getString("nom_salle"));
 
-        t.setSyndromeCategory(rs.getString("syndrome_category"));
-        t.setDureeSymptomes(rs.getString("duree_symptomes"));
-        t.setContactCasSimilaires(rs.getString("contact_cas_similaires"));
-        t.setVoyageRecent(rs.getInt("voyage_recent") == 1);
-        t.setVoyageDestination(rs.getString("voyage_destination"));
-        t.setContagionFlag(rs.getString("contagion_flag") != null ? rs.getString("contagion_flag") : "aucun");
-        t.setSuspectedDisease(rs.getString("suspected_disease"));
+        // Surveillance columns — may not exist in older DB schemas; ignore safely
+        t.setSyndromeCategory(safeString(rs, "syndrome_category"));
+        t.setDureeSymptomes(safeString(rs, "duree_symptomes"));
+        t.setContactCasSimilaires(safeString(rs, "contact_cas_similaires"));
+        t.setVoyageRecent(safeInt(rs, "voyage_recent") == 1);
+        t.setVoyageDestination(safeString(rs, "voyage_destination"));
+        String cf = safeString(rs, "contagion_flag");
+        t.setContagionFlag(cf != null ? cf : "aucun");
+        t.setSuspectedDisease(safeString(rs, "suspected_disease"));
 
-        Timestamp tsOverride = rs.getTimestamp("date_override");
-        if (tsOverride != null) t.setDateOverride(tsOverride.toLocalDateTime());
+        try {
+            Timestamp tsOverride = rs.getTimestamp("date_override");
+            if (tsOverride != null) t.setDateOverride(tsOverride.toLocalDateTime());
+            int idPersOver = rs.getInt("id_personnel_override");
+            t.setIdPersonnelOverride(rs.wasNull() ? 0 : idPersOver);
+        } catch (SQLException ignored) {}
 
-        // BUG-9 fix: handle SQL NULL for id_personnel_override
-        int idPersOver = rs.getInt("id_personnel_override");
-        t.setIdPersonnelOverride(rs.wasNull() ? 0 : idPersOver);
         return t;
     }
 
@@ -440,5 +443,15 @@ public class TriageService implements IService<Triage> {
     private static String esc(String s) {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("'", "''");
+    }
+
+    /** Returns null if column doesn't exist in this ResultSet */
+    private static String safeString(ResultSet rs, String col) {
+        try { return rs.getString(col); } catch (SQLException e) { return null; }
+    }
+
+    /** Returns 0 if column doesn't exist in this ResultSet */
+    private static int safeInt(ResultSet rs, String col) {
+        try { return rs.getInt(col); } catch (SQLException e) { return 0; }
     }
 }

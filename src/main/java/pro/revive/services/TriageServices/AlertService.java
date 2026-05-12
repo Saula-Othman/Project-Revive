@@ -1,7 +1,7 @@
-package pro.revive.services;
+package pro.revive.services.TriageServices;
 
-import pro.revive.entities.Salle;
-import pro.revive.entities.Triage;
+import pro.revive.entities.TriageEntities.Salle;
+import pro.revive.entities.TriageEntities.Triage;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,4 +1,4 @@
-package pro.revive.controllers;
+package pro.revive.controllers.TriageController;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -9,10 +9,10 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import pro.revive.Navigator;
-import pro.revive.entities.Triage;
-import pro.revive.services.TriageService;
-import pro.revive.services.GravityCalculator;
-import pro.revive.services.RoomAssignmentService;
+import pro.revive.entities.TriageEntities.Triage;
+import pro.revive.services.TriageServices.TriageService;
+import pro.revive.services.TriageServices.GravityCalculator;
+import pro.revive.services.TriageServices.RoomAssignmentService;
 
 import java.net.URL;
 import java.time.Duration;
@@ -271,7 +271,7 @@ public class TriageViewController implements Initializable {
     @FXML public void goTriageList()   { stopAutoRefresh(); Navigator.goTo("Triage_List"); }
     @FXML public void goTriageAdd()    { stopAutoRefresh(); Navigator.goTo("Triage_Add"); }
     @FXML public void goSalleList()    { stopAutoRefresh(); Navigator.goTo("Salle_List"); }
-    @FXML public void deconnexion()    { stopAutoRefresh(); Navigator.goTo("DashboardTriage"); }
+    @FXML public void deconnexion()    { stopAutoRefresh(); Navigator.logout(); }
     @FXML public void goVisualAssistance() { stopAutoRefresh(); Navigator.goTo("VisualAssistance"); }
     @FXML public void goSurveillance() { stopAutoRefresh(); Navigator.goTo("Surveillance"); }
 }

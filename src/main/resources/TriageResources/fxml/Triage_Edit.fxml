@@ -19,7 +19,7 @@
             stylesheets="@../css/styleTriage.css"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="pro.revive.controllers.TriageEditController"
+            fx:controller="pro.revive.controllers.TriageController.TriageEditController"
             style="-fx-background-color: #EEF4FB;">
 
    <!-- ── SIDEBAR ── -->

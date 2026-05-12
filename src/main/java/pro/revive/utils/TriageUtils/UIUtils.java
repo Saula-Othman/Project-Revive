@@ -1,4 +1,4 @@
-package pro.revive.utils;
+package pro.revive.utils.TriageUtils;
 
 /**
  * Shared UI utility methods used across multiple controllers.

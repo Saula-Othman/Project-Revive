@@ -1,6 +1,6 @@
-package pro.revive.services;
+package pro.revive.services.TriageServices;
 
-import pro.revive.entities.Salle;
+import pro.revive.entities.TriageEntities.Salle;
 import pro.revive.interfaces.IService;
 import pro.revive.utils.MyConnection;
 
@@ -188,8 +188,8 @@ public class SalleService implements IService<Salle> {
     }
 
     // getPatientsByRoom — SELECT triages in a specific room
-    public List<pro.revive.entities.Triage> getPatientsByRoom(int idSalle) {
-        List<pro.revive.entities.Triage> list = new ArrayList<>();
+    public List<pro.revive.entities.TriageEntities.Triage> getPatientsByRoom(int idSalle) {
+        List<pro.revive.entities.TriageEntities.Triage> list = new ArrayList<>();
         String requete = "SELECT t.*, p.nom, p.prenom, s.nom_salle " +
                 "FROM triage t " +
                 "JOIN admissions a ON t.id_admission = a.id_admission " +
@@ -200,7 +200,7 @@ public class SalleService implements IService<Salle> {
             pst.setInt(1, idSalle);
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
-                    pro.revive.entities.Triage t = new pro.revive.entities.Triage();
+                    pro.revive.entities.TriageEntities.Triage t = new pro.revive.entities.TriageEntities.Triage();
                     t.setIdTriage(rs.getInt("id_triage"));
                     t.setIdAdmission(rs.getInt("id_admission"));
                     t.setIdSalle(rs.getInt("id_salle"));

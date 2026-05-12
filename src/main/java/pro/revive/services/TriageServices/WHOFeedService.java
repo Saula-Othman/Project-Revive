@@ -1,4 +1,4 @@
-package pro.revive.services;
+package pro.revive.services.TriageServices;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

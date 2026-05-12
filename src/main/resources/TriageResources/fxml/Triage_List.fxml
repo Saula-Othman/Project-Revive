@@ -14,7 +14,7 @@
             stylesheets="@../css/styleTriage.css"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="pro.revive.controllers.TriageListController">
+            fx:controller="pro.revive.controllers.TriageController.TriageListController">
 
    <!-- ── SIDEBAR ── -->
    <left>

@@ -1,4 +1,4 @@
-package pro.revive.controllers;
+package pro.revive.controllers.TriageController;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -9,14 +9,14 @@ import javafx.scene.layout.*;
 import javafx.application.Platform;
 import javafx.util.Duration;
 import pro.revive.Navigator;
-import pro.revive.utils.AppExecutor;
-import pro.revive.entities.Salle;
-import pro.revive.entities.Triage;
-import pro.revive.services.AlertService;
-import pro.revive.services.EpidemiologicalDetector;
-import pro.revive.services.SalleService;
-import pro.revive.services.TriageService;
-import pro.revive.services.WHOFeedService;
+import pro.revive.utils.TriageUtils.AppExecutor;
+import pro.revive.entities.TriageEntities.Salle;
+import pro.revive.entities.TriageEntities.Triage;
+import pro.revive.services.TriageServices.AlertService;
+import pro.revive.services.TriageServices.EpidemiologicalDetector;
+import pro.revive.services.TriageServices.SalleService;
+import pro.revive.services.TriageServices.TriageService;
+import pro.revive.services.TriageServices.WHOFeedService;
 
 import java.net.URL;
 import java.util.List;
@@ -298,7 +298,7 @@ public class DashboardController implements Initializable {
     @FXML public void goTriageList()   { stopAutoRefresh(); Navigator.goTo("Triage_List"); }
     @FXML public void goTriageAdd()    { stopAutoRefresh(); Navigator.goTo("Triage_Add"); }
     @FXML public void goSalleList()    { stopAutoRefresh(); Navigator.goTo("Salle_List"); }
-    @FXML public void deconnexion()    { stopAutoRefresh(); Navigator.goTo("DashboardTriage"); }
+    @FXML public void deconnexion()    { stopAutoRefresh(); pro.revive.Navigator.logout(); }
     @FXML public void goVisualAssistance() { stopAutoRefresh(); Navigator.goTo("VisualAssistance"); }
     @FXML public void goSurveillance() { stopAutoRefresh(); Navigator.goTo("Surveillance"); }
 

@@ -1,6 +1,6 @@
-package pro.revive.services;
+package pro.revive.services.TriageServices;
 
-import pro.revive.entities.Triage;
+import pro.revive.entities.TriageEntities.Triage;
 import pro.revive.utils.MyConnection;
 
 import java.sql.*;

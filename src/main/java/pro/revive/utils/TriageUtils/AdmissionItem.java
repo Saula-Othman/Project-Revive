@@ -1,4 +1,4 @@
-package pro.revive.utils;
+package pro.revive.utils.TriageUtils;
 
 /**
  * Simple wrapper for admission ComboBox display.

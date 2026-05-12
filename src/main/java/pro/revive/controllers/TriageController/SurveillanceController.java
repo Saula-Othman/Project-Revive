@@ -1,4 +1,4 @@
-package pro.revive.controllers;
+package pro.revive.controllers.TriageController;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -14,10 +14,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import pro.revive.Navigator;
-import pro.revive.services.AIAnalysisService;
-import pro.revive.services.EpidemiologicalDetector;
-import pro.revive.services.WHOFeedService;
-import pro.revive.utils.AppExecutor;
+import pro.revive.services.TriageServices.AIAnalysisService;
+import pro.revive.services.TriageServices.EpidemiologicalDetector;
+import pro.revive.services.TriageServices.WHOFeedService;
+import pro.revive.utils.TriageUtils.AppExecutor;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -41,7 +41,7 @@ public class SurveillanceController implements Initializable {
     private final WHOFeedService          whoService  = new WHOFeedService();
     private final EpidemiologicalDetector detector    = new EpidemiologicalDetector();
     private final AIAnalysisService       aiService   = new AIAnalysisService();
-    private final pro.revive.services.TriageService triageService = new pro.revive.services.TriageService();
+    private final pro.revive.services.TriageServices.TriageService triageService = new pro.revive.services.TriageServices.TriageService();
 
     private Timeline autoRefresh;
 
@@ -65,7 +65,7 @@ public class SurveillanceController implements Initializable {
             // nbContagieux is already computed inside calculerNiveauMenace() and cached on the result —
             // reuse it here to avoid a second identical DB query.
             int nbContagieux = threat.nbContagieux;
-            Map<String, List<pro.revive.entities.Triage>> clusters = detector.detecterClusters(
+            Map<String, List<pro.revive.entities.TriageEntities.Triage>> clusters = detector.detecterClusters(
                     triageService.getData());
             List<EpidemiologicalDetector.ExposureAlert> exposures = detector.detecterPropagationInterne();
             Map<String, Integer> syndromeStats = detector.getSyndromeStats24h();
@@ -314,5 +314,5 @@ public class SurveillanceController implements Initializable {
     @FXML public void goSalleList()    { stopAutoRefresh(); Navigator.goTo("Salle_List"); }
     @FXML public void goVisualAssistance() { stopAutoRefresh(); Navigator.goTo("VisualAssistance"); }
     @FXML public void goSurveillance() { stopAutoRefresh(); Navigator.goTo("Surveillance"); }
-    @FXML public void deconnexion()    { stopAutoRefresh(); Navigator.goTo("DashboardTriage"); }
+    @FXML public void deconnexion()    { stopAutoRefresh(); Navigator.logout(); }
 }

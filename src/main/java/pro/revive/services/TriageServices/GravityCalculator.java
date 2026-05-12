@@ -1,6 +1,6 @@
-package pro.revive.services;
+package pro.revive.services.TriageServices;
 
-import pro.revive.entities.Triage;
+import pro.revive.entities.TriageEntities.Triage;
 import java.util.ArrayList;
 import java.util.List;
 

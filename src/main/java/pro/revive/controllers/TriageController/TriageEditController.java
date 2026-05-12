@@ -1,14 +1,14 @@
-package pro.revive.controllers;
+package pro.revive.controllers.TriageController;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import pro.revive.Navigator;
-import pro.revive.entities.Triage;
-import pro.revive.services.GravityCalculator;
-import pro.revive.services.RoomAssignmentService;
-import pro.revive.services.TriageService;
-import pro.revive.utils.InputValidator;
+import pro.revive.entities.TriageEntities.Triage;
+import pro.revive.services.TriageServices.GravityCalculator;
+import pro.revive.services.TriageServices.RoomAssignmentService;
+import pro.revive.services.TriageServices.TriageService;
+import pro.revive.utils.TriageUtils.InputValidator;
 
 import java.util.Set;
 
@@ -206,7 +206,7 @@ public class TriageEditController implements Initializable {
     @FXML public void goTriageList()   { Navigator.goTo("Triage_List"); }
     @FXML public void goTriageAdd()    { Navigator.goTo("Triage_Add"); }
     @FXML public void goSalleList()    { Navigator.goTo("Salle_List"); }
-    @FXML public void deconnexion()    { Navigator.goTo("DashboardTriage"); }
+    @FXML public void deconnexion()    { Navigator.logout(); }
     @FXML public void goVisualAssistance() { Navigator.goTo("VisualAssistance"); }
     @FXML public void goSurveillance() { Navigator.goTo("Surveillance"); }
 }
