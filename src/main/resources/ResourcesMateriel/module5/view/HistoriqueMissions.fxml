@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMateriel.HistoriqueMissionsController"
+            stylesheets="@../css/styleMateriel.css">
+
+    <!-- SIDEBAR -->
+    <left>
+        <VBox styleClass="sidebar" prefWidth="250" spacing="0">
+            <VBox styleClass="logo-wrap" alignment="CENTER" spacing="4">
+                <Label text="🏥 REVIVE" styleClass="logo-fallback"/>
+                <Label text="Gestion des Urgences" styleClass="logo-sub"/>
+            </VBox>
+            <Label text="NAVIGATION" styleClass="nav-section"/>
+            <Button text="📊  Tableau de Bord"    styleClass="nav-item" maxWidth="Infinity" alignment="CENTER_LEFT" onAction="#onNavDashboard"/>
+            <Button text="🏠  Salles Physiques"    styleClass="nav-item" maxWidth="Infinity" alignment="CENTER_LEFT" onAction="#onNavSalles"/>
+            <Button text="🔧  Matériel d'Urgence"  styleClass="nav-item" maxWidth="Infinity" alignment="CENTER_LEFT" onAction="#onNavMateriel"/>
+            <Button text="🚑  Gestion Ambulances"  styleClass="nav-item" maxWidth="Infinity" alignment="CENTER_LEFT" onAction="#onNavAmbulances"/>
+            <Button text="🗺  Simulation Trajet"   styleClass="nav-item" maxWidth="Infinity" alignment="CENTER_LEFT" onAction="#onNavSimulation"/>
+            <Button text="📋  Historique Missions" styleClass="nav-item, active" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="🔓  Déconnexion"
+                    onAction="#onDeconnexion"
+                    maxWidth="Infinity" alignment="CENTER_LEFT"
+                    style="-fx-background-color: transparent; -fx-text-fill: #ef4444;
+                           -fx-font-size: 13px; -fx-font-weight: bold;
+                           -fx-padding: 12px 20px; -fx-cursor: hand;
+                           -fx-border-color: transparent;"/>
+            <VBox styleClass="sidebar-card" alignment="CENTER" spacing="2">
+                <Label text="Module actif" styleClass="sc-title"/>
+                <Label text="Logistique" styleClass="sc-alert"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- CONTENU -->
+    <center>
+        <VBox spacing="0">
+
+            <!-- HEADER -->
+            <VBox styleClass="topbar" spacing="4">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Ambulances &amp; Missions" styleClass="page-sub"/>
+                        <Label text="Historique des Missions" styleClass="page-title"/>
+                    </VBox>
+                    <Button text="📄  Exporter PDF" onAction="#onExportPdf"
+                            style="-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white;
+                                   -fx-border-color: rgba(255,255,255,0.40); -fx-border-width: 1px;
+                                   -fx-border-radius: 8px; -fx-background-radius: 8px;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-padding: 9px 18px; -fx-cursor: hand;"/>
+                    <Button text="⟳  Actualiser" onAction="#onActualiser" styleClass="btn, btn-secondary"/>
+                </HBox>
+            </VBox>
+
+            <!-- FILTRES -->
+            <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10px 18px; -fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-spacing: 10px;">
+                <Label text="Ambulance :" style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#334155;"/>
+                <ComboBox fx:id="cmbFiltreAmbulance" prefWidth="185" styleClass="combo-box"
+                          promptText="Toutes les ambulances"/>
+                <Label text="Statut :" style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#334155;"/>
+                <ComboBox fx:id="cmbFiltreStatut" prefWidth="135" styleClass="combo-box"
+                          promptText="Tous les statuts"/>
+                <Label text="Du :" style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#334155;"/>
+                <DatePicker fx:id="dpDebut" promptText="jj/mm/aaaa" prefWidth="125"/>
+                <Label text="Au :" style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#334155;"/>
+                <DatePicker fx:id="dpFin" promptText="jj/mm/aaaa" prefWidth="125"/>
+                <Button text="🔍 Filtrer" onAction="#onFiltrer"
+                        style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold;
+                               -fx-padding: 8 16; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                <Button text="✖" onAction="#onReinitialiser"
+                        style="-fx-background-color: transparent; -fx-border-color: #cbd5e1;
+                               -fx-border-radius: 8; -fx-text-fill: #94a3b8;
+                               -fx-padding: 8 12; -fx-cursor: hand; -fx-font-size: 14px;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblTotal" text="0 mission(s)" styleClass="stat-hint"/>
+            </HBox>
+
+            <!-- STATS RAPIDES -->
+            <HBox spacing="16" style="-fx-padding: 16 30; -fx-background-color: #EEF4FB;">
+                <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS" spacing="5">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="📋" style="-fx-font-size: 18px;"/>
+                        <Label text="TOTAL MISSIONS" styleClass="stat-lbl"/>
+                    </HBox>
+                    <Label fx:id="lblTotalMissions" text="0" styleClass="stat-val, blue" style="-fx-font-size: 32px;"/>
+                    <Label text="missions enregistrées" styleClass="stat-hint"/>
+                </VBox>
+                <VBox styleClass="stat-card, green" HBox.hgrow="ALWAYS" spacing="5">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="📏" style="-fx-font-size: 18px;"/>
+                        <Label text="DISTANCE TOTALE" styleClass="stat-lbl"/>
+                    </HBox>
+                    <Label fx:id="lblDistanceTotale" text="0 km" styleClass="stat-val, green" style="-fx-font-size: 26px;"/>
+                    <Label text="kilomètres parcourus" styleClass="stat-hint"/>
+                </VBox>
+                <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS" spacing="5">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="⏱" style="-fx-font-size: 18px;"/>
+                        <Label text="DURÉE MOYENNE" styleClass="stat-lbl"/>
+                    </HBox>
+                    <Label fx:id="lblDureeMoyenne" text="0 min" styleClass="stat-val, blue" style="-fx-font-size: 26px;"/>
+                    <Label text="par mission" styleClass="stat-hint"/>
+                </VBox>
+                <VBox styleClass="stat-card, orange" HBox.hgrow="ALWAYS" spacing="5">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="📅" style="-fx-font-size: 18px;"/>
+                        <Label text="AUJOURD'HUI" styleClass="stat-lbl"/>
+                    </HBox>
+                    <Label fx:id="lblMissionsAujourdhui" text="0" styleClass="stat-val, orange" style="-fx-font-size: 32px;"/>
+                    <Label text="missions ce jour" styleClass="stat-hint"/>
+                </VBox>
+            </HBox>
+
+            <!-- TABLEAU -->
+            <VBox VBox.vgrow="ALWAYS" style="-fx-padding: 0 30 16 30; -fx-background-color: #EEF4FB;">
+                <TableView fx:id="tableHistorique" VBox.vgrow="ALWAYS"
+                           fixedCellSize="40"
+                           style="-fx-background-color: white; -fx-background-radius: 12;
+                                  -fx-border-color: #e2e8f0; -fx-border-radius: 12;">
+                    <columns>
+                        <TableColumn fx:id="colDate"      text="📅 Date"/>
+                        <TableColumn fx:id="colAmbulance" text="🚑 Ambulance"/>
+                        <TableColumn fx:id="colDepart"    text="🏥 Départ"/>
+                        <TableColumn fx:id="colUrgence"   text="🚨 Urgence"/>
+                        <TableColumn fx:id="colDistance"  text="📏 Distance"/>
+                        <TableColumn fx:id="colDuree"     text="⏱ Durée"/>
+                        <TableColumn fx:id="colStatut"    text="📌 Statut"/>
+                    </columns>
+                    <placeholder>
+                        <VBox alignment="CENTER" spacing="12" style="-fx-padding: 40;">
+                            <Label text="📋" style="-fx-font-size: 40px;"/>
+                            <Label text="Aucune mission trouvée"
+                                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+                            <Label text="Modifiez les filtres ou lancez une simulation"
+                                   style="-fx-text-fill: #94a3b8;"/>
+                        </VBox>
+                    </placeholder>
+                </TableView>
+            </VBox>
+
+            <!-- FOOTER -->
+            <HBox alignment="CENTER_LEFT" style="-fx-padding: 8px 18px; -fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0;">
+                <Label fx:id="lblFooter" text="Cliquez sur une ligne pour voir les détails"
+                       styleClass="stat-hint"/>
+            </HBox>
+
+        </VBox>
+    </center>
+
+    <!-- FOOTER APP -->
+    <bottom>
+        <HBox alignment="CENTER" style="-fx-padding: 8px; -fx-background-color: linear-gradient(to bottom, #0B4EA2, #0E9B8A);">
+            <Label text="REVIVE — Historique des Missions" style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 11px;"/>
+        </HBox>
+    </bottom>
+</BorderPane>

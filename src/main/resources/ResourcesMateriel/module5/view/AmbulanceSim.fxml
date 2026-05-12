@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.web.WebView?>
+<?import javafx.scene.shape.SVGPath?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pro.revive.controllers.ControllersMateriel.AmbulanceSimController" stylesheets="@../css/styleMateriel.css">
+   <children>
+      <BorderPane>
+         <left>
+            <VBox prefWidth="250" spacing="0" styleClass="sidebar">
+               <children>
+                  <VBox alignment="CENTER" spacing="4" styleClass="logo-wrap">
+                     <children>
+                        <Label styleClass="logo-fallback" text="🏥 REVIVE" />
+                        <Label styleClass="logo-sub" text="Gestion des Urgences" />
+                     </children>
+                  </VBox>
+                  <Label styleClass="nav-section" text="NAVIGATION" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirDashboard" styleClass="nav-item" text="📊  Tableau de Bord" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirSalles" styleClass="nav-item" text="🏠  Salles Physiques" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirMateriel" styleClass="nav-item" text="🔧  Matériel d'Urgence" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirAmbulances" styleClass="nav-item" text="🚑  Gestion Ambulances" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" styleClass="nav-item, active" text="🗺  Simulation Trajet" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirHistorique" styleClass="nav-item" text="📋  Historique Missions" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirRecherche" styleClass="nav-item" text="🔍  Recherche Globale" />
+                  <Region VBox.vgrow="ALWAYS" />
+                  <Button text="🔓  Déconnexion"
+                          onAction="#onDeconnexion"
+                          maxWidth="Infinity" alignment="CENTER_LEFT"
+                          style="-fx-background-color: transparent; -fx-text-fill: #ef4444;
+                                 -fx-font-size: 13px; -fx-font-weight: bold;
+                                 -fx-padding: 12px 20px; -fx-cursor: hand;
+                                 -fx-border-color: transparent;" />
+                  <VBox alignment="CENTER" spacing="2" styleClass="sidebar-card">
+                     <children>
+                        <Label styleClass="sc-title" text="Module actif" />
+                        <Label styleClass="sc-alert" text="Logistique" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </left>
+         <center>
+            <VBox spacing="0">
+               <children>
+                  <VBox styleClass="topbar" spacing="4">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="16">
+                           <children>
+                              <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label styleClass="page-sub" text="Simulation &amp; Logistique" />
+                                    <Label styleClass="page-title" text="Suivi Ambulance en Temps Réel" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+
+                  <HBox VBox.vgrow="ALWAYS">
+                     <children>
+                        <!-- CONTROL PANEL -->
+                        <VBox prefWidth="300" spacing="20" styleClass="sidebar" style="-fx-padding: 20;">
+                           <children>
+                              <VBox styleClass="logo-wrap">
+                                 <Label text="📍  Configuration Mission" styleClass="logo-fallback" style="-fx-font-size: 14px;" />
+                              </VBox>
+
+                              <VBox spacing="8">
+                                 <children>
+                                    <Label text="Base de l'Ambulance (Fixe)" styleClass="sc-title" />
+                                    <TextField fx:id="txtBase" editable="false" styleClass="text-field" text="Clinique Hannibal, Tunis" style="-fx-opacity: 0.85;" />
+                                 </children>
+                              </VBox>
+
+                              <VBox spacing="8">
+                                 <children>
+                                    <Label text="Sélectionner Ambulance 🚑" styleClass="sc-title" />
+                                    <javafx.scene.control.ComboBox fx:id="cmbAmbulances" promptText="Choisir une ambulance..." styleClass="combo-box" prefWidth="260" />
+                                 </children>
+                              </VBox>
+
+                              <VBox spacing="8">
+                                 <children>
+                                    <Label text="Localisation Urgence 🚨" styleClass="sc-title" />
+                                    <TextField fx:id="txtUrgence" promptText="Cliquez ou attendez un mail..." styleClass="text-field" />
+                                 </children>
+                              </VBox>
+
+                              <Button fx:id="btnAIDispatch" onAction="#toggleAIDispatch" maxWidth="Infinity"
+                                      text="🤖  Activer Dispatch IA (E-mail)"
+                                      style="-fx-background-color: #8b5cf6; -fx-text-fill: white;
+                                             -fx-font-size: 13px; -fx-font-weight: bold;
+                                             -fx-padding: 12px; -fx-background-radius: 10px;
+                                             -fx-cursor: hand; -fx-border-width: 0;" />
+
+                              <Region prefHeight="1" style="-fx-background-color: rgba(255,255,255,0.15);" />
+
+                              <Button fx:id="btnStart" onAction="#onStartSimulation" maxWidth="Infinity"
+                                      text="🚀  Lancer Manuellement"
+                                      style="-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white;
+                                             -fx-border-color: rgba(255,255,255,0.40); -fx-border-width: 1px;
+                                             -fx-border-radius: 10px; -fx-background-radius: 10px;
+                                             -fx-font-size: 13px; -fx-font-weight: bold;
+                                             -fx-padding: 12px; -fx-cursor: hand;" />
+
+                              <Button onAction="#onClear" maxWidth="Infinity"
+                                      text="🗑  Effacer la Carte"
+                                      style="-fx-background-color: transparent; -fx-text-fill: #FCA5A5;
+                                             -fx-border-color: #FCA5A5; -fx-border-width: 1.5px;
+                                             -fx-border-radius: 10px; -fx-background-radius: 10px;
+                                             -fx-font-size: 13px; -fx-font-weight: bold;
+                                             -fx-padding: 12px; -fx-cursor: hand;" />
+
+                              <VBox fx:id="boxStatus" spacing="10" visible="false"
+                                    style="-fx-background-color: rgba(0,0,0,0.20); -fx-background-radius: 10px;
+                                           -fx-border-color: rgba(255,255,255,0.10); -fx-border-width: 1px;
+                                           -fx-border-radius: 10px; -fx-padding: 15px;">
+                                 <children>
+                                    <HBox spacing="20">
+                                       <children>
+                                          <VBox spacing="2">
+                                             <children>
+                                                <Label text="TEMPS" styleClass="sc-title" />
+                                                <Label fx:id="lblTime" text="0 min" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;" />
+                                             </children>
+                                          </VBox>
+                                          <VBox spacing="2">
+                                             <children>
+                                                <Label text="DISTANCE" styleClass="sc-title" />
+                                                <Label fx:id="lblDistance" text="0 km" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;" />
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </HBox>
+                                    <Region prefHeight="1" style="-fx-background-color: rgba(255,255,255,0.15);" />
+                                    <Label fx:id="lblSimStatus" text="En attente..." style="-fx-text-fill: rgba(255,255,255,0.80); -fx-font-size: 12px;" />
+                                    <Label fx:id="lblSimDetail" text="Configurez les points de mission." style="-fx-text-fill: rgba(255,255,255,0.50); -fx-font-size: 11px;" wrapText="true" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+
+                        <!-- MAP AREA -->
+                        <StackPane HBox.hgrow="ALWAYS" style="-fx-background-color: #111827;">
+                           <children>
+                              <WebView fx:id="webView"
+                                       maxWidth="Infinity" maxHeight="Infinity"
+                                       prefWidth="-1" prefHeight="-1" />
+                           </children>
+                        </StackPane>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
+   </children>
+</StackPane>

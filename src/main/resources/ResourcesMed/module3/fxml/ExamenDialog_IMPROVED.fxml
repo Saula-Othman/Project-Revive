@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMed.ExamenDialogController"
+            prefWidth="680" prefHeight="620"
+            stylesheets="@../css/revive-dark.css"
+            styleClass="main-pane">
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         HEADER
+         ══════════════════════════════════════════════════════════════════ -->
+    <top>
+        <VBox>
+            <HBox styleClass="topbar">
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Module 3 — Urgences" styleClass="page-sub"/>
+                    <Label fx:id="labelTitre" text="🔬  Demande d'examens" styleClass="page-title"/>
+                </VBox>
+                <VBox alignment="CENTER_RIGHT" spacing="4">
+                    <Label fx:id="labelPatient" text="" 
+                           style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                    <Label fx:id="labelConsultation" text="" 
+                           style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 11px;"/>
+                </VBox>
+            </HBox>
+            <Region styleClass="topbar-stripe" />
+        </VBox>
+    </top>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         CONTENU
+         ══════════════════════════════════════════════════════════════════ -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="scroll"
+                    hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+            <VBox style="-fx-background-color: #EEF4FB; -fx-padding: 16px 28px 24px 28px;" 
+                  spacing="16">
+
+                <!-- Statut actuel -->
+                <HBox fx:id="boxStatut" alignment="CENTER_LEFT" spacing="12"
+                      style="-fx-background-color: #F0FDF4; -fx-background-radius: 10px;
+                             -fx-border-color: #BBF7D0; -fx-border-radius: 10px; 
+                             -fx-border-width: 1.5px; -fx-padding: 12px 16px;">
+                    <Label text="📊" style="-fx-font-size: 16px;"/>
+                    <Label text="Statut :" 
+                           style="-fx-text-fill: #374151; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                    <Label fx:id="labelStatut" text="Non envoyee"
+                           style="-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #15803D;"/>
+                </HBox>
+
+                <!-- Info -->
+                <HBox style="-fx-background-color: #EFF6FF; -fx-background-radius: 10px;
+                             -fx-border-color: #BFDBFE; -fx-border-radius: 10px; 
+                             -fx-border-width: 1.5px; -fx-padding: 12px 16px;"
+                      alignment="CENTER_LEFT" spacing="10">
+                    <Label text="ℹ️" style="-fx-font-size: 16px;"/>
+                    <Label text="Remplissez les champs ci-dessous. Une demande sera envoyee au biologiste/radiologue."
+                           style="-fx-text-fill: #1D4ED8; -fx-font-size: 12px;" 
+                           wrapText="true" HBox.hgrow="ALWAYS"/>
+                </HBox>
+
+                <!-- Analyses biologiques -->
+                <VBox styleClass="card" spacing="12">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🧪  Analyses biologiques"
+                               style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #166534;"/>
+                        <Label text="NFS, CRP, Troponines..."
+                               style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;"/>
+                    </HBox>
+
+                    <!-- Boutons raccourcis analyses -->
+                    <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 4px 0;">
+                        <Label text="Raccourcis :" 
+                               style="-fx-text-fill: #64748B; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                        <Button text="NFS" onAction="#ajouterNFS"
+                                style="-fx-background-color: #DCFCE7; -fx-text-fill: #166534;
+                                       -fx-border-color: #86EFAC; -fx-border-radius: 8px;
+                                       -fx-background-radius: 8px; -fx-font-size: 11px; 
+                                       -fx-padding: 5px 12px; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                        <Button text="CRP" onAction="#ajouterCRP"
+                                style="-fx-background-color: #DCFCE7; -fx-text-fill: #166534;
+                                       -fx-border-color: #86EFAC; -fx-border-radius: 8px;
+                                       -fx-background-radius: 8px; -fx-font-size: 11px; 
+                                       -fx-padding: 5px 12px; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                        <Button text="Troponines" onAction="#ajouterTroponines"
+                                style="-fx-background-color: #DCFCE7; -fx-text-fill: #166534;
+                                       -fx-border-color: #86EFAC; -fx-border-radius: 8px;
+                                       -fx-background-radius: 8px; -fx-font-size: 11px; 
+                                       -fx-padding: 5px 12px; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                        <Button text="Bilan hepatique" onAction="#ajouterBilanHepatique"
+                                style="-fx-background-color: #DCFCE7; -fx-text-fill: #166534;
+                                       -fx-border-color: #86EFAC; -fx-border-radius: 8px;
+                                       -fx-background-radius: 8px; -fx-font-size: 11px; 
+                                       -fx-padding: 5px 12px; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                        <Button text="Glycemie" onAction="#ajouterGlycemie"
+                                style="-fx-background-color: #DCFCE7; -fx-text-fill: #166534;
+                                       -fx-border-color: #86EFAC; -fx-border-radius: 8px;
+                                       -fx-background-radius: 8px; -fx-font-size: 11px; 
+                                       -fx-padding: 5px 12px; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                    </HBox>
+
+                    <TextArea fx:id="textAnalyses"
+                              promptText="Ex: NFS, CRP, Troponines, Bilan hepatique, Ionogramme..."
+                              prefRowCount="4" wrapText="true"
+                              styleClass="text-area"
+                              style="-fx-border-color: #86EFAC;"/>
+                </VBox>
+
+                <!-- Imageries medicales -->
+                <VBox styleClass="card" spacing="12">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🏥  Imageries medicales"
+                               style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1E40AF;"/>
+                        <Label text="Radio, Scanner, IRM..."
+                               style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;"/>
+                    </HBox>
+
+                    <!-- Boutons raccourcis imageries -->
+                    <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 4px 0;">
+                        <Label text="Raccourcis :" 
+                               style="-fx-text-fill: #64748B; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                        <Button text="Radio thorax" onAction="#ajouterRadioThorax"
+                                style="-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF;
+                                       -fx-border-color: #93C5FD; -fx-border-radius: 8px;
+                                       -fx-background-radius: 8px; -fx-font-size: 11px; 
+                                       -fx-padding: 5px 12px; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                        <Button text="Scanner cerebral" onAction="#ajouterScannerCerebral"
+                                style="-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF;
+                                       -fx-border-color: #93C5FD; -fx-border-radius: 8px;
+                                       -fx-background-radius: 8px; -fx-font-size: 11px; 
+                                       -fx-padding: 5px 12px; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                        <Button text="Echo abdo" onAction="#ajouterEchoAbdo"
+                                style="-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF;
+                                       -fx-border-color: #93C5FD; -fx-border-radius: 8px;
+                                       -fx-background-radius: 8px; -fx-font-size: 11px; 
+                                       -fx-padding: 5px 12px; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                        <Button text="IRM lombaire" onAction="#ajouterIRMLombaire"
+                                style="-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF;
+                                       -fx-border-color: #93C5FD; -fx-border-radius: 8px;
+                                       -fx-background-radius: 8px; -fx-font-size: 11px; 
+                                       -fx-padding: 5px 12px; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                    </HBox>
+
+                    <TextArea fx:id="textImageries"
+                              promptText="Ex: Radio thorax, Scanner cerebral, IRM lombaire..."
+                              prefRowCount="4" wrapText="true"
+                              styleClass="text-area"
+                              style="-fx-border-color: #93C5FD;"/>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         BOUTONS
+         ══════════════════════════════════════════════════════════════════ -->
+    <bottom>
+        <VBox>
+            <HBox styleClass="action-bar" spacing="12" alignment="CENTER_RIGHT">
+                <Button fx:id="btnAnnuler" text="Annuler"
+                        styleClass="btn-outline"
+                        onAction="#onAnnuler"
+                        prefHeight="38" prefWidth="120"/>
+                <Button fx:id="btnEnvoyer" text="📤  Envoyer la demande"
+                        styleClass="btn, btn-primary"
+                        onAction="#onEnvoyer"
+                        prefHeight="38" prefWidth="190"/>
+            </HBox>
+            <HBox styleClass="footer" alignment="CENTER">
+                <Label styleClass="footer-label" 
+                       text="REVIVE — Systeme de Gestion des Urgences  |  Module 3 : Consultation Medicale" />
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

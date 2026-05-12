@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMed.ConsultationFormController"
+            prefWidth="1200" prefHeight="800"
+            stylesheets="@../css/revive-dark.css">
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SIDEBAR — Harmonisée avec module Triage
+         ══════════════════════════════════════════════════════════════════ -->
+    <left>
+        <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+            
+            <!-- Logo -->
+            <VBox styleClass="logo-wrap">
+                <ImageView fitWidth="170.0" preserveRatio="true" pickOnBounds="true">
+                    <image><Image url="@../images/logo.png" /></image>
+                </ImageView>
+                <Label styleClass="logo-sub" text="Systeme de Gestion des Urgences" />
+            </VBox>
+            
+            <!-- Navigation -->
+            <Label styleClass="nav-section" text="MENU" />
+            <Button mnemonicParsing="false" styleClass="nav-item" 
+                    text="🏠  Tableau de Bord" />
+            <Button mnemonicParsing="false" styleClass="nav-item" 
+                    text="📋  Consultations" />
+            <Button mnemonicParsing="false" styleClass="nav-item, active" 
+                    text="➕  Nouvelle Consultation" />
+            <Button mnemonicParsing="false" styleClass="nav-item" 
+                    text="💊  Ordonnances" />
+            
+            <Region VBox.vgrow="ALWAYS" />
+            
+            <!-- Sidebar Card — Aide -->
+            <VBox styleClass="sidebar-card">
+                <Label styleClass="sc-title" text="AIDE RAPIDE" />
+                <Label styleClass="sc-alert" text="* = Champs obligatoires" 
+                       style="-fx-font-size: 11px;" />
+                <Label styleClass="sc-title" text="Utilisez l'IA pour suggerer un diagnostic" 
+                       style="-fx-font-size: 10px; -fx-wrap-text: true;" />
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         MAIN CONTENT
+         ══════════════════════════════════════════════════════════════════ -->
+    <center>
+        <VBox styleClass="main" BorderPane.alignment="CENTER">
+
+            <!-- ── TOPBAR ────────────────────────────────────────────── -->
+            <HBox styleClass="topbar">
+                <VBox spacing="2">
+                    <Label styleClass="page-sub" text="Module 3 — Urgences" />
+                    <Label fx:id="labelTitre" styleClass="page-title" text="Nouvelle Consultation" />
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox styleClass="user-chip">
+                    <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label styleClass="user-name" text="Dr. Utilisateur" />
+                        <Label styleClass="user-role" text="Medecin Urgentiste" />
+                    </VBox>
+                    <Label styleClass="user-av" text="U" />
+                </HBox>
+            </HBox>
+            <Region styleClass="topbar-stripe" />
+
+            <!-- ── FORMULAIRE ─────────────────────────────────────────── -->
+            <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+                <VBox style="-fx-padding: 16px 28px 24px 28px; -fx-spacing: 16px;">
+
+                    <!-- ── Card : Admission ───────────────────────────────── -->
+                    <VBox styleClass="card" spacing="14">
+                        <Label text="📋  Admission du patient" styleClass="section-title"/>
+
+                        <VBox spacing="6">
+                            <HBox alignment="CENTER_LEFT" spacing="4">
+                                <Label text="Admission (ID - Patient)" styleClass="form-label"/>
+                                <Label text="*" style="-fx-text-fill: #EF4444; -fx-font-weight: bold;"/>
+                            </HBox>
+                            <ComboBox fx:id="comboAdmission"
+                                      promptText="Sélectionner une admission active…"
+                                      maxWidth="Infinity"
+                                      styleClass="combo-box"/>
+                            <Label fx:id="errorAdmission" styleClass="error-label" 
+                                   text="" visible="false" managed="false"/>
+                        </VBox>
+
+                        <!-- Infos patient lecture seule -->
+                        <VBox styleClass="patient-info-box" spacing="10">
+                            <Label text="Informations patient" 
+                                   style="-fx-font-weight: bold; -fx-text-fill: #0B4EA2; -fx-font-size: 12px;"/>
+                            <GridPane hgap="24" vgap="8">
+                                <Label text="Nom :" styleClass="info-label" 
+                                       GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                <Label fx:id="labelNomPatient" text="—" styleClass="patient-info-value" 
+                                       GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <Label text="Prénom :" styleClass="info-label" 
+                                       GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                                <Label fx:id="labelPrenomPatient" text="—" styleClass="patient-info-value" 
+                                       GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+                                <Label text="Date naissance :" styleClass="info-label" 
+                                       GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                <Label fx:id="labelDateNaissance" text="—" styleClass="patient-info-value" 
+                                       GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                <Label text="Motif :" styleClass="info-label" 
+                                       GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                                <Label fx:id="labelMotif" text="—" styleClass="patient-info-value" 
+                                       GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                            </GridPane>
+                        </VBox>
+                    </VBox>
+
+                    <!-- ── Card : Médecin ─────────────────────────────────── -->
+                    <VBox styleClass="card" spacing="12">
+                        <Label text="👨‍⚕️  Médecin responsable" styleClass="section-title"/>
+                        <VBox spacing="6">
+                            <HBox alignment="CENTER_LEFT" spacing="4">
+                                <Label text="Médecin urgentiste" styleClass="form-label"/>
+                                <Label text="*" style="-fx-text-fill: #EF4444; -fx-font-weight: bold;"/>
+                            </HBox>
+                            <ComboBox fx:id="comboMedecin"
+                                      promptText="Sélectionner un médecin…"
+                                      maxWidth="Infinity"
+                                      styleClass="combo-box"/>
+                            <Label fx:id="errorMedecin" styleClass="error-label" 
+                                   text="" visible="false" managed="false"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- ── Card : Dates ───────────────────────────────────── -->
+                    <VBox styleClass="card" spacing="12">
+                        <Label text="📅  Dates et heures" styleClass="section-title"/>
+                        
+                        <HBox spacing="16">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="4">
+                                    <Label text="Date de début" styleClass="form-label"/>
+                                    <Label text="*" style="-fx-text-fill: #EF4444; -fx-font-weight: bold;"/>
+                                </HBox>
+                                <DatePicker fx:id="dateDebut" maxWidth="Infinity"/>
+                                <Label fx:id="errorDateDebut" styleClass="error-label" 
+                                       text="" visible="false" managed="false"/>
+                            </VBox>
+                            <VBox spacing="6" prefWidth="140">
+                                <HBox alignment="CENTER_LEFT" spacing="4">
+                                    <Label text="Heure (HH:mm)" styleClass="form-label"/>
+                                    <Label text="*" style="-fx-text-fill: #EF4444; -fx-font-weight: bold;"/>
+                                </HBox>
+                                <TextField fx:id="heureDebut" promptText="08:30"
+                                           styleClass="text-field"/>
+                                <Label fx:id="errorHeureDebut" styleClass="error-label" 
+                                       text="" visible="false" managed="false"/>
+                            </VBox>
+                        </HBox>
+                        
+                        <HBox spacing="16">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="Date de fin (optionnelle)" styleClass="form-label"/>
+                                <DatePicker fx:id="dateFin" maxWidth="Infinity"/>
+                            </VBox>
+                            <VBox spacing="6" prefWidth="140">
+                                <Label text="Heure (HH:mm)" styleClass="form-label"/>
+                                <TextField fx:id="heureFin" promptText="—"
+                                           styleClass="text-field"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- ── Card : Diagnostic & Orientation ───────────────── -->
+                    <VBox styleClass="card" spacing="14">
+                        <Label text="🩺  Diagnostic et orientation" styleClass="section-title"/>
+
+                        <!-- Symptomes + bouton IA -->
+                        <VBox spacing="6">
+                            <Label text="Symptomes du patient" styleClass="form-label"/>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <TextField fx:id="fieldSymptomes"
+                                           promptText="Ex: fievre 39, toux seche, dyspnee, douleur thoracique..."
+                                           styleClass="text-field"
+                                           HBox.hgrow="ALWAYS"/>
+                                <Button fx:id="btnSuggererIA"
+                                        text="🤖  Suggerer diagnostic"
+                                        styleClass="btn, btn-info"
+                                        onAction="#handleSuggestionDiagnostic"
+                                        prefHeight="38"/>
+                            </HBox>
+                            <Label fx:id="lblIaStatut" text=""
+                                   style="-fx-font-size: 11px; -fx-text-fill: #64748B;" 
+                                   wrapText="true"/>
+                        </VBox>
+
+                        <VBox spacing="6">
+                            <HBox alignment="CENTER_LEFT" spacing="4">
+                                <Label text="Diagnostic" styleClass="form-label"/>
+                                <Label text="*" style="-fx-text-fill: #EF4444; -fx-font-weight: bold;"/>
+                            </HBox>
+                            <TextArea fx:id="textDiagnostic"
+                                      promptText="Saisir le diagnostic medical ou utiliser la suggestion IA..."
+                                      prefRowCount="4" wrapText="true"
+                                      styleClass="text-area"/>
+                            <Label fx:id="errorDiagnostic" styleClass="error-label" 
+                                   text="" visible="false" managed="false"/>
+                        </VBox>
+
+                        <VBox spacing="8">
+                            <HBox alignment="CENTER_LEFT" spacing="4">
+                                <Label text="Orientation du patient" styleClass="form-label"/>
+                                <Label text="*" style="-fx-text-fill: #EF4444; -fx-font-weight: bold;"/>
+                            </HBox>
+                            <fx:define>
+                                <ToggleGroup fx:id="toggleOrientation"/>
+                            </fx:define>
+                            <HBox spacing="28" alignment="CENTER_LEFT">
+                                <RadioButton fx:id="radioSortie" text="🚪  Sortie"
+                                             styleClass="radio-button"
+                                             toggleGroup="$toggleOrientation"/>
+                                <RadioButton fx:id="radioHospitalisation" text="🏥  Hospitalisation"
+                                             styleClass="radio-button"
+                                             toggleGroup="$toggleOrientation"/>
+                                <RadioButton fx:id="radioTransfert" text="🚑  Transfert"
+                                             styleClass="radio-button"
+                                             toggleGroup="$toggleOrientation"/>
+                            </HBox>
+                            <Label fx:id="errorOrientation" styleClass="error-label" 
+                                   text="" visible="false" managed="false"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Indicateur de validation -->
+                    <HBox fx:id="validationSummary" spacing="10" alignment="CENTER_LEFT"
+                          style="-fx-background-color: #FEF3C7; -fx-background-radius: 10px; 
+                                 -fx-border-color: #FDE68A; -fx-border-radius: 10px; 
+                                 -fx-border-width: 1.5px; -fx-padding: 12px 16px;"
+                          visible="false" managed="false">
+                        <Label text="⚠️" style="-fx-font-size: 16px;"/>
+                        <Label fx:id="validationMessage" 
+                               text="Veuillez remplir tous les champs obligatoires"
+                               style="-fx-text-fill: #92400E; -fx-font-size: 12px; -fx-font-weight: bold;"
+                               wrapText="true" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                </VBox>
+            </ScrollPane>
+
+            <!-- ── BOUTONS ────────────────────────────────────────────── -->
+            <HBox styleClass="action-bar" spacing="12" alignment="CENTER_RIGHT">
+                <Button fx:id="btnAnnuler" text="Annuler"
+                        styleClass="btn-outline"
+                        onAction="#onAnnuler"
+                        prefHeight="38" prefWidth="120"/>
+                <Button fx:id="btnEnregistrer" text="✓  Enregistrer"
+                        styleClass="btn, btn-primary"
+                        onAction="#onEnregistrer"
+                        prefHeight="38" prefWidth="160"/>
+            </HBox>
+
+            <!-- ── FOOTER ──────────────────────────────────────────────── -->
+            <HBox styleClass="footer" alignment="CENTER">
+                <Label styleClass="footer-label" 
+                       text="REVIVE — Systeme de Gestion des Urgences  |  Module 3 : Consultation Medicale" />
+            </HBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>

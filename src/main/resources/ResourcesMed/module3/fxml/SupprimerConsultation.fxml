@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMed.SupprimerConsultationController"
+            prefWidth="950" prefHeight="640"
+            style="-fx-background-color: #F3F8FF;">
+
+    <!-- ══ SIDEBAR ══ -->
+    <left>
+        <VBox prefWidth="210"
+              style="-fx-background-color: white;
+                     -fx-effect: dropshadow(gaussian, rgba(11,78,162,0.10), 12, 0, 2, 0);"
+              spacing="0">
+            <VBox alignment="CENTER"
+                  style="-fx-padding: 22 12 18 12; -fx-border-color: #E8F0FB; -fx-border-width: 0 0 1 0;">
+                <ImageView fitWidth="120" fitHeight="46" preserveRatio="true">
+                    <image><Image url="@../images/logo.png"/></image>
+                </ImageView>
+                <Label text="Gestion des Urgences"
+                       style="-fx-text-fill: #8AAAD4; -fx-font-size: 10px; -fx-padding: 5 0 0 0;"/>
+            </VBox>
+            <VBox style="-fx-padding: 14 10 0 10;" spacing="4">
+                <Label text="NAVIGATION"
+                       style="-fx-text-fill: #A0B4C8; -fx-font-size: 9px; -fx-font-weight: bold; -fx-padding: 0 0 4 6;"/>
+                <Button text="🏥  Consultations" maxWidth="Infinity" onAction="#handleNavListe"
+                        style="-fx-background-color: #EBF2FF; -fx-text-fill: #0B4EA2;
+                               -fx-font-size: 12px; -fx-font-weight: bold;
+                               -fx-alignment: CENTER_LEFT; -fx-padding: 9 12;
+                               -fx-background-radius: 8; -fx-cursor: hand;"/>
+            </VBox>
+            <Region VBox.vgrow="ALWAYS"/>
+            <VBox style="-fx-background-color: #FFF0F0; -fx-background-radius: 12;
+                         -fx-border-color: #FECACA; -fx-border-radius: 12; -fx-border-width: 1;
+                         -fx-padding: 14;">
+                <padding><Insets top="0" right="10" bottom="16" left="10"/></padding>
+                <Label text="🗑 Suppression"
+                       style="-fx-text-fill: #DC2626; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                <Label text="Action irréversible !"
+                       style="-fx-text-fill: #EF4444; -fx-font-size: 10px; -fx-padding: 4 0 10 0;"/>
+                <Button text="Déconnexion" maxWidth="Infinity"
+                        style="-fx-background-color: #0B4EA2; -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-font-size: 11px;
+                               -fx-background-radius: 8; -fx-padding: 8 0; -fx-cursor: hand;"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ══ MAIN — Dialog centré ══ -->
+    <center>
+        <StackPane style="-fx-background-color: #F3F8FF;">
+            <VBox maxWidth="500"
+                  style="-fx-background-color: white; -fx-background-radius: 22;
+                         -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.14), 40, 0, 0, 8);
+                         -fx-padding: 38 42 38 42;"
+                  spacing="0" alignment="TOP_CENTER">
+
+                <!-- Icône -->
+                <Label text="🗑️"
+                       style="-fx-font-size: 52px; -fx-padding: 0 0 14 0;"
+                       maxWidth="Infinity" alignment="CENTER"/>
+
+                <!-- Titre -->
+                <Label text="Confirmer la Suppression"
+                       style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #0F172A;
+                              -fx-padding: 0 0 8 0;"
+                       maxWidth="Infinity" alignment="CENTER"/>
+
+                <!-- Sous-titre -->
+                <Label text="Vous êtes sur le point de supprimer définitivement cette consultation.&#10;Cette action ne peut pas être annulée."
+                       style="-fx-font-size: 12px; -fx-text-fill: #6B7280; -fx-wrap-text: true;
+                              -fx-text-alignment: CENTER; -fx-padding: 0 0 24 0;"
+                       wrapText="true" textAlignment="CENTER" maxWidth="Infinity"/>
+
+                <!-- Infos consultation -->
+                <VBox style="-fx-background-color: #F8FAFF; -fx-border-color: #C8D8EE;
+                             -fx-border-radius: 12; -fx-background-radius: 12;
+                             -fx-border-width: 1.5; -fx-padding: 16;"
+                      spacing="10">
+                    <padding><Insets bottom="22"/></padding>
+                    <HBox>
+                        <Label text="Patient" style="-fx-text-fill: #6B7280; -fx-font-size: 12px;" HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblPatient" text="—"
+                               style="-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #0F172A;"/>
+                    </HBox>
+                    <Separator style="-fx-background-color: #E8F0FB;"/>
+                    <HBox>
+                        <Label text="ID Consultation" style="-fx-text-fill: #6B7280; -fx-font-size: 12px;" HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblId" text="—"
+                               style="-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #0B4EA2;"/>
+                    </HBox>
+                    <Separator style="-fx-background-color: #E8F0FB;"/>
+                    <HBox>
+                        <Label text="Médecin" style="-fx-text-fill: #6B7280; -fx-font-size: 12px;" HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblMedecin" text="—"
+                               style="-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #0F172A;"/>
+                    </HBox>
+                    <Separator style="-fx-background-color: #E8F0FB;"/>
+                    <HBox>
+                        <Label text="Orientation" style="-fx-text-fill: #6B7280; -fx-font-size: 12px;" HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblOrientation" text="—"
+                               style="-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #0F172A;"/>
+                    </HBox>
+                    <Separator style="-fx-background-color: #E8F0FB;"/>
+                    <HBox>
+                        <Label text="Ordonnances liées" style="-fx-text-fill: #6B7280; -fx-font-size: 12px;" HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblOrdos" text="0"
+                               style="-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #EF4444;"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Warn box -->
+                <VBox style="-fx-background-color: #FEF2F2; -fx-border-color: #EF4444;
+                             -fx-border-radius: 10; -fx-background-radius: 10;
+                             -fx-border-width: 1.5; -fx-padding: 12 16 12 16;"
+                      spacing="4">
+                    <padding><Insets top="16" bottom="24"/></padding>
+                    <Label text="⚠️  La suppression va :"
+                           style="-fx-text-fill: #DC2626; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                    <Label text="• Supprimer toutes les ordonnances associées"
+                           style="-fx-text-fill: #DC2626; -fx-font-size: 11px; -fx-padding: 2 0 0 10;"/>
+                    <Label text="• Retirer le diagnostic et l'orientation"
+                           style="-fx-text-fill: #DC2626; -fx-font-size: 11px; -fx-padding: 2 0 0 10;"/>
+                    <Label text="• Cette action est définitive et irréversible"
+                           style="-fx-text-fill: #DC2626; -fx-font-size: 11px; -fx-padding: 2 0 0 10;"/>
+                </VBox>
+
+                <!-- Boutons -->
+                <HBox spacing="14">
+                    <Button text="❌  Annuler" onAction="#handleAnnuler"
+                            maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                            style="-fx-background-color: white; -fx-text-fill: #4A6080;
+                                   -fx-border-color: #C8D8EE; -fx-border-radius: 10;
+                                   -fx-background-radius: 10; -fx-border-width: 1.5;
+                                   -fx-font-size: 13px; -fx-font-weight: 600;
+                                   -fx-padding: 12 20; -fx-cursor: hand;"/>
+                    <Button text="🗑  Oui, Supprimer" onAction="#handleSupprimer"
+                            maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                            style="-fx-background-color: #EF4444; -fx-text-fill: white;
+                                   -fx-font-weight: bold; -fx-font-size: 13px;
+                                   -fx-background-radius: 10; -fx-padding: 12 20;
+                                   -fx-cursor: hand;"/>
+                </HBox>
+
+            </VBox>
+        </StackPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pro.revive.controllers.ControllersMateriel.SalleListController" stylesheets="@../css/styleMateriel.css">
+   <children>
+      <BorderPane>
+         <left>
+            <VBox prefWidth="250" styleClass="sidebar">
+               <children>
+                  <VBox alignment="CENTER" spacing="5" styleClass="logo-wrap">
+                     <children>
+                        <Label styleClass="logo-fallback" text="🏥 REVIVE" />
+                        <Label styleClass="logo-sub" text="Gestion des Urgences" />
+                     </children>
+                  </VBox>
+                  <Label styleClass="nav-section" text="NAVIGATION" />
+                  <Button fx:id="btnDashboard" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirDashboard" styleClass="nav-item" text="📊  Tableau de Bord" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" styleClass="nav-item, active" text="🏠  Salles Physiques" />
+                  <Button fx:id="btnMateriel" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirMateriel" styleClass="nav-item" text="🔧  Matériel d'Urgence" />
+                  <Button fx:id="btnAmbulances" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirAmbulances" styleClass="nav-item" text="🚑  Gestion Ambulances" />
+                  <Button fx:id="btnSimulation" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirSimulation" styleClass="nav-item" text="🗺  Simulation Trajet" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirHistorique" styleClass="nav-item" text="📋  Historique Missions" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirRecherche" styleClass="nav-item" text="🔍  Recherche Globale" />
+                  <Region VBox.vgrow="ALWAYS" />
+                  <Button text="🔓  Déconnexion"
+                          onAction="#onDeconnexion"
+                          maxWidth="Infinity" alignment="CENTER_LEFT"
+                          style="-fx-background-color: transparent; -fx-text-fill: #ef4444;
+                                 -fx-font-size: 13px; -fx-font-weight: bold;
+                                 -fx-padding: 12px 20px; -fx-cursor: hand;
+                                 -fx-border-color: transparent;" />
+                  <VBox alignment="CENTER" spacing="5" styleClass="sidebar-card">
+                     <children>
+                        <Label styleClass="sc-title" text="Module actif" />
+                        <Label styleClass="sc-alert" text="Logistique" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </left>
+         <center>
+            <VBox>
+               <children>
+                  <VBox styleClass="topbar">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                           <children>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label styleClass="page-sub" text="Gestion des Salles et Matériel" />
+                                    <Label styleClass="page-title" text="Salles Physiques" />
+                                 </children>
+                              </VBox>
+                              <Button onAction="#onVoirMateriel" styleClass="btn, btn-secondary" text="Matériel →" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 10px 18px; -fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-spacing: 10px;">
+                     <children>
+                        <Label style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#334155;" text="Actions :" />
+                        <Button fx:id="btnNouvelle" onAction="#onNouvelleSalle" styleClass="btn, btn-primary, btn-sm">
+                           <tooltip><Tooltip text="Nouvelle salle"/></tooltip>
+                           <graphic>
+                              <SVGPath content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" styleClass="svg-icon" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="btnModifier" onAction="#onModifier" styleClass="btn, btn-secondary, btn-sm">
+                           <tooltip><Tooltip text="Modifier"/></tooltip>
+                           <graphic>
+                              <SVGPath content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" styleClass="svg-icon" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="btnSupprimer" onAction="#onSupprimer" styleClass="btn, btn-danger, btn-sm">
+                           <tooltip><Tooltip text="Supprimer"/></tooltip>
+                           <graphic>
+                              <SVGPath content="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" styleClass="svg-icon" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="btnStatut" onAction="#onChangerStatut" styleClass="btn, btn-secondary, btn-sm">
+                           <tooltip><Tooltip text="Changer le statut"/></tooltip>
+                           <graphic>
+                              <SVGPath content="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" styleClass="svg-icon" />
+                           </graphic>
+                        </Button>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="btnActualiser" onAction="#onActualiser" styleClass="btn, btn-secondary, btn-sm">
+                           <tooltip><Tooltip text="Actualiser"/></tooltip>
+                           <graphic>
+                              <SVGPath content="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" styleClass="svg-icon" />
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" style="-fx-padding: 10px 18px; -fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-spacing: 10px; -fx-alignment: CENTER_LEFT;">
+                     <children>
+                        <Label style="-fx-font-size:16px; -fx-text-fill:#94A3B8;" text="🔍" />
+                        <TextField fx:id="txtRecherche" promptText="Rechercher par nom, type, statut..." styleClass="text-field" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+                  <VBox VBox.vgrow="ALWAYS" style="-fx-background-color: #EEF4FB;">
+                     <children>
+                        <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+                           <content>
+                              <FlowPane fx:id="cardContainer" hgap="20" style="-fx-padding: 18px;" vgap="20" />
+                           </content>
+                        </ScrollPane>
+                        <HBox alignment="CENTER_LEFT" style="-fx-padding: 8px 18px; -fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0;">
+                           <children>
+                              <Label fx:id="lblTotal" styleClass="stat-hint" text="Total : 0 salle(s)" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </center>
+         <right>
+            <VBox prefWidth="240" styleClass="sidebar">
+               <children>
+                  <!-- Header -->
+                  <VBox styleClass="logo-wrap">
+                     <children>
+                        <Label text="📦  Réserve Matériel" styleClass="logo-fallback"
+                               style="-fx-font-size: 14px;" />
+                     </children>
+                  </VBox>
+                  <!-- Content -->
+                  <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS"
+                              style="-fx-background-color: transparent; -fx-background: transparent;">
+                     <content>
+                        <VBox fx:id="reserveContainer" spacing="10"
+                              style="-fx-padding: 12px; -fx-background-color: transparent;" />
+                     </content>
+                  </ScrollPane>
+               </children>
+            </VBox>
+         </right>
+      </BorderPane>
+      <StackPane fx:id="modalOverlay" managed="false" style="-fx-background-color: rgba(0,0,0,0.6);" visible="false">
+         <children>
+            <VBox fx:id="modalContent" alignment="CENTER" maxWidth="550.0" />
+         </children>
+         <padding>
+            <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+         </padding>
+      </StackPane>
+   </children>
+</StackPane>

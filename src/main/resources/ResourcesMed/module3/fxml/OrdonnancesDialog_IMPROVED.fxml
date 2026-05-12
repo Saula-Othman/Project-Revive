@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMed.OrdonnancesDialogController"
+            prefWidth="820" prefHeight="600"
+            stylesheets="@../css/revive-dark.css"
+            styleClass="main-pane">
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         HEADER
+         ══════════════════════════════════════════════════════════════════ -->
+    <top>
+        <VBox>
+            <HBox styleClass="topbar">
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Module 3 — Urgences" styleClass="page-sub"/>
+                    <Label text="💊  Ordonnances" styleClass="page-title"/>
+                </VBox>
+                <HBox styleClass="user-chip">
+                    <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label styleClass="user-name" text="Dr. Utilisateur" />
+                        <Label styleClass="user-role" text="Medecin Urgentiste" />
+                    </VBox>
+                    <Label styleClass="user-av" text="U" />
+                </HBox>
+            </HBox>
+            <Region styleClass="topbar-stripe" />
+
+            <!-- Infos consultation -->
+            <HBox style="-fx-background-color: white; -fx-padding: 14px 28px; 
+                         -fx-border-color: transparent transparent #E2E8F0 transparent; 
+                         -fx-border-width: 0 0 1 0;"
+                  alignment="CENTER_LEFT" spacing="24">
+                <VBox spacing="4">
+                    <Label fx:id="labelTitreConsultation" text="Consultation #—"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2;"/>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Patient :" styleClass="info-label"/>
+                        <Label fx:id="labelPatient" text="—" 
+                               style="-fx-font-weight: bold; -fx-text-fill: #334155; -fx-font-size: 13px;"/>
+                    </HBox>
+                </VBox>
+                <Separator orientation="VERTICAL" prefHeight="40"/>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Diagnostic :" styleClass="info-label"/>
+                    <Label fx:id="labelDiagnostic" text="—" 
+                           style="-fx-text-fill: #334155; -fx-font-size: 12px;"
+                           wrapText="true" maxWidth="450"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         TABLEAU
+         ══════════════════════════════════════════════════════════════════ -->
+    <center>
+        <VBox style="-fx-background-color: #EEF4FB; -fx-padding: 16px 28px 0px 28px;" 
+              spacing="12">
+            
+            <!-- Barre d'actions au-dessus du tableau -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Actions :" styleClass="form-label"/>
+                <Button fx:id="btnAjouter" text="➕  Ajouter"
+                        styleClass="btn, btn-primary"
+                        onAction="#onAjouter" 
+                        prefHeight="36" prefWidth="120"/>
+                <Button fx:id="btnModifier" text="✎  Modifier"
+                        styleClass="btn, btn-info"
+                        onAction="#onModifier" 
+                        prefHeight="36" prefWidth="120"/>
+                <Button fx:id="btnSupprimer" text="🗑  Supprimer"
+                        styleClass="btn, btn-danger"
+                        onAction="#onSupprimer" 
+                        prefHeight="36" prefWidth="120"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnExportPdf" text="📄  Export PDF"
+                        styleClass="btn, btn-success"
+                        onAction="#onExportPdf" 
+                        prefHeight="36" prefWidth="140">
+                    <tooltip><Tooltip text="Générer un PDF de l'ordonnance complète"/></tooltip>
+                </Button>
+            </HBox>
+            
+            <!-- Tableau dans une card -->
+            <VBox styleClass="card" VBox.vgrow="ALWAYS" spacing="0">
+                <TableView fx:id="tableOrdonnances" VBox.vgrow="ALWAYS"
+                           styleClass="table-view">
+                    <placeholder>
+                        <VBox alignment="CENTER" spacing="10" 
+                              style="-fx-padding: 40px;">
+                            <Label text="💊" style="-fx-font-size: 48px; -fx-opacity: 0.3;"/>
+                            <Label text="Aucune ordonnance pour cette consultation" 
+                                   style="-fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
+                            <Label text="Cliquez sur 'Ajouter' pour créer une prescription" 
+                                   style="-fx-text-fill: #CBD5E1; -fx-font-size: 11px;"/>
+                        </VBox>
+                    </placeholder>
+                    <columns>
+                        <TableColumn fx:id="colIdOrdo" text="ID" 
+                                     prefWidth="60" minWidth="50"/>
+                        <TableColumn fx:id="colMedicament" text="Médicament" 
+                                     prefWidth="220" minWidth="160"/>
+                        <TableColumn fx:id="colPosologie" text="Posologie" 
+                                     prefWidth="340" minWidth="200"/>
+                        <TableColumn fx:id="colDuree" text="Durée" 
+                                     prefWidth="100" minWidth="80"/>
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+            </VBox>
+        </VBox>
+    </center>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         FOOTER
+         ══════════════════════════════════════════════════════════════════ -->
+    <bottom>
+        <VBox>
+            <HBox styleClass="action-bar" spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="btnFermer" text="Fermer"
+                        styleClass="btn-outline"
+                        onAction="#onFermer" 
+                        prefHeight="38" prefWidth="120"/>
+            </HBox>
+            <HBox styleClass="footer" alignment="CENTER">
+                <Label styleClass="footer-label" 
+                       text="REVIVE — Systeme de Gestion des Urgences  |  Module 3 : Consultation Medicale" />
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

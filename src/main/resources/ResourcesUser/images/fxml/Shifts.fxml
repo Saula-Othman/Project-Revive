@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/user.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersUser.ShiftsController">
+
+   <!-- ── SIDEBAR ── -->
+   <left>
+      <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+         <VBox styleClass="logo-wrap">
+            <ImageView fitWidth="170.0" preserveRatio="true" pickOnBounds="true">
+               <image><Image url="@../logo_revive.png" /></image>
+            </ImageView>
+            <Label styleClass="logo-sub" text="Gestion du Personnel" />
+         </VBox>
+         <Label styleClass="nav-section" text="MENU" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="🏠  Tableau de Bord" onAction="#goDashboard" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="👥  Personnel" onAction="#goPersonnel" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="📩  Inscriptions" onAction="#goInscriptions" />
+         <Button mnemonicParsing="false" styleClass="nav-item" text="📋  Historique" onAction="#goHistorique" />
+         <Button mnemonicParsing="false" styleClass="nav-item, active" text="🕐  Emploi du Temps" />
+         <Region VBox.vgrow="ALWAYS" />
+         <VBox styleClass="sidebar-card">
+            <Label styleClass="sc-title" text="PLANNING" />
+            <Label styleClass="sc-alert" text="Planning hebdomadaire" />
+            <Button mnemonicParsing="false" styleClass="sc-btn" text="Deconnexion" onAction="#deconnexion" />
+         </VBox>
+      </VBox>
+   </left>
+
+   <!-- ── MAIN ── -->
+   <center>
+      <VBox styleClass="main" BorderPane.alignment="CENTER">
+
+         <!-- Topbar -->
+         <HBox styleClass="topbar">
+            <VBox spacing="2">
+               <Label styleClass="page-title" text="Emploi du Temps" />
+               <Label styleClass="page-sub" text="Planning hebdomadaire du personnel" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <HBox styleClass="user-chip">
+               <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                  <Label fx:id="lblUserName" styleClass="user-name" text="..." />
+                  <Label fx:id="lblUserRole" styleClass="user-role" text="Administrateur" />
+               </VBox>
+               <Label styleClass="user-av" text="A" />
+            </HBox>
+         </HBox>
+         <Region styleClass="topbar-stripe" />
+
+         <!-- Scrollable content -->
+         <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+            <content>
+               <VBox spacing="16.0" style="-fx-padding: 16px 28px 24px 28px;">
+
+                  <!-- Add shift form -->
+                  <VBox styleClass="card" spacing="10">
+                     <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2; -fx-padding: 0 0 4px 0;"
+                            text="📅  Assigner un Shift Hebdomadaire" />
+                     <Label text="Choisissez un lundi — le shift sera applique du lundi au dimanche pour cet agent."
+                            style="-fx-font-size: 11px; -fx-text-fill: #6B7280;" wrapText="true" />
+                     <HBox spacing="12" alignment="CENTER_LEFT">
+                        <VBox styleClass="field-group" prefWidth="200">
+                           <Label styleClass="field-label" text="Semaine (Lundi) *" />
+                           <DatePicker fx:id="dpWeekStart" maxWidth="Infinity" />
+                        </VBox>
+                        <VBox styleClass="field-group" HBox.hgrow="ALWAYS">
+                           <Label styleClass="field-label" text="Agent *" />
+                           <ComboBox fx:id="cbAgent" maxWidth="Infinity" />
+                        </VBox>
+                        <VBox styleClass="field-group" prefWidth="200">
+                           <Label styleClass="field-label" text="Type de Shift *" />
+                           <ComboBox fx:id="cbTypeShift" maxWidth="Infinity" />
+                        </VBox>
+                        <VBox alignment="BOTTOM_LEFT">
+                           <Button mnemonicParsing="false" styleClass="btn, btn-primary"
+                                   text="✔  Assigner" onAction="#addWeeklyShift"
+                                   style="-fx-padding: 10px 20px;" />
+                        </VBox>
+                     </HBox>
+                  </VBox>
+
+                  <!-- Timetable panel -->
+                  <VBox styleClass="patients-panel" VBox.vgrow="ALWAYS" style="-fx-min-height: 400px;">
+                     <HBox styleClass="panel-hdr">
+                        <Label fx:id="lblWeekTitle" styleClass="section-title" text="Emploi du temps de la semaine" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <!-- Legend -->
+                        <HBox spacing="16" alignment="CENTER_LEFT">
+                           <HBox spacing="6" alignment="CENTER_LEFT">
+                              <Label style="-fx-background-color: #059669; -fx-min-width: 14px; -fx-min-height: 14px; -fx-background-radius: 4px;" text="" />
+                              <Label text="Matin (06h-14h)" style="-fx-font-size: 11px; -fx-text-fill: #374151;" />
+                           </HBox>
+                           <HBox spacing="6" alignment="CENTER_LEFT">
+                              <Label style="-fx-background-color: #0891B2; -fx-min-width: 14px; -fx-min-height: 14px; -fx-background-radius: 4px;" text="" />
+                              <Label text="Soir (14h-22h)" style="-fx-font-size: 11px; -fx-text-fill: #374151;" />
+                           </HBox>
+                           <HBox spacing="6" alignment="CENTER_LEFT">
+                              <Label style="-fx-background-color: #7C3AED; -fx-min-width: 14px; -fx-min-height: 14px; -fx-background-radius: 4px;" text="" />
+                              <Label text="Nuit (22h-06h)" style="-fx-font-size: 11px; -fx-text-fill: #374151;" />
+                           </HBox>
+                        </HBox>
+                     </HBox>
+                     <ScrollPane fx:id="spTimetable" fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS" />
+                  </VBox>
+
+               </VBox>
+            </content>
+         </ScrollPane>
+
+      </VBox>
+   </center>
+
+</BorderPane>

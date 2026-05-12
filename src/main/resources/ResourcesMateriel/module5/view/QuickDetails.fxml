@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../css/styleMateriel.css"
+      fx:controller="pro.revive.controllers.ControllersMateriel.QuickDetailsController"
+      prefWidth="500" spacing="0" styleClass="quick-view-root">
+
+    <!-- HEADER -->
+    <VBox styleClass="quick-view-header">
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <StackPane style="-fx-background-color: rgba(255,255,255,0.15); -fx-background-radius: 12; -fx-padding: 12;">
+                <Label fx:id="lblHeaderIcon" text="🏠" style="-fx-font-size: 32px;"/>
+            </StackPane>
+            <VBox spacing="4">
+                <Label fx:id="lblTitle" text="Nom de l'élément" styleClass="quick-view-title"/>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label fx:id="lblStatutBadge" text="DISPONIBLE" styleClass="card-badge, badge-success" style="-fx-font-size: 10px; -fx-padding: 3 10;"/>
+                    <Label fx:id="lblSubtitle" text="Type ou catégorie" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13px;"/>
+                </HBox>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- BODY -->
+    <VBox styleClass="quick-view-body" spacing="25">
+        
+        <!-- Grid of Information Cards -->
+        <GridPane hgap="15" vgap="15">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50"/>
+                <ColumnConstraints percentWidth="50"/>
+            </columnConstraints>
+
+            <!-- Card 1: Occupation -->
+            <VBox styleClass="info-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Label fx:id="lblDetail1Label" text="OCCUPATION" styleClass="info-label"/>
+                <Label fx:id="lblDetail1Value" text="0 / 0" styleClass="info-value"/>
+                <ProgressBar fx:id="progressCapacity" progress="0.0" maxWidth="Infinity" styleClass="capacity-bar" prefHeight="6">
+                    <VBox.margin><Insets top="10"/></VBox.margin>
+                </ProgressBar>
+            </VBox>
+
+            <!-- Card 2: Localisation -->
+            <VBox styleClass="info-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label fx:id="lblDetail2Label" text="LOCALISATION" styleClass="info-label"/>
+                <Label fx:id="lblDetail2Value" text="---" styleClass="info-value"/>
+            </VBox>
+
+            <!-- Section Matériels -->
+            <VBox fx:id="cardExtra" styleClass="info-card" GridPane.columnSpan="2" GridPane.rowIndex="1" spacing="10">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="ÉQUIPEMENTS DANS CETTE SALLE" styleClass="info-label" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                    <Label fx:id="lblExtraValue" text="0" style="-fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
+                </HBox>
+                
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" prefHeight="150">
+                    <VBox fx:id="vboxEquipment" spacing="8" style="-fx-padding: 5;"/>
+                </ScrollPane>
+            </VBox>
+        </GridPane>
+
+        <!-- Warning area (Premium) -->
+        <VBox fx:id="boxWarning" styleClass="warning-box-premium" visible="false" managed="false">
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <Label text="⚠️" style="-fx-font-size: 24px;"/>
+                <Label fx:id="lblWarning" text="Action bloquée : cette salle n'est pas vide." 
+                       wrapText="true" styleClass="warning-text-premium" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+
+    </VBox>
+
+    <!-- FOOTER -->
+    <HBox styleClass="form-footer" spacing="15" alignment="CENTER_RIGHT" style="-fx-background-color: #f8fafc; -fx-padding: 20 25; -fx-background-radius: 0 0 20 20;">
+        <Button text="Fermer" styleClass="btn-cancel" onAction="#onClose" prefWidth="100"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnEdit" text="Modifier" styleClass="btn, btn-secondary" onAction="#onEdit" prefWidth="120" prefHeight="45"/>
+        <Button fx:id="btnDelete" text="Supprimer" styleClass="btn-save" onAction="#onDelete" prefWidth="120" prefHeight="45" 
+                style="-fx-background-color: #ef4444; -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.3), 10, 0, 0, 4);"/>
+    </HBox>
+
+</VBox>

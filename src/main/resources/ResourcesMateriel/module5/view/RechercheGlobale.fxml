@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMateriel.RechercheGlobaleController"
+            stylesheets="@../css/styleMateriel.css">
+
+    <!-- SIDEBAR -->
+    <left>
+        <VBox styleClass="sidebar" prefWidth="250" spacing="0">
+            <VBox styleClass="logo-wrap" alignment="CENTER" spacing="4">
+                <Label text="🏥 REVIVE" styleClass="logo-fallback"/>
+                <Label text="Gestion des Urgences" styleClass="logo-sub"/>
+            </VBox>
+            <Label text="NAVIGATION" styleClass="nav-section"/>
+            <Button text="📊  Tableau de Bord"    styleClass="nav-item" maxWidth="Infinity" alignment="CENTER_LEFT" onAction="#onNavDashboard"/>
+            <Button text="🏠  Salles Physiques"    styleClass="nav-item" maxWidth="Infinity" alignment="CENTER_LEFT" onAction="#onNavSalles"/>
+            <Button text="🔧  Matériel d'Urgence"  styleClass="nav-item" maxWidth="Infinity" alignment="CENTER_LEFT" onAction="#onNavMateriel"/>
+            <Button text="🚑  Gestion Ambulances"  styleClass="nav-item" maxWidth="Infinity" alignment="CENTER_LEFT" onAction="#onNavAmbulances"/>
+            <Button text="🗺  Simulation Trajet"   styleClass="nav-item" maxWidth="Infinity" alignment="CENTER_LEFT" onAction="#onNavSimulation"/>
+            <Button text="📋  Historique Missions" styleClass="nav-item" maxWidth="Infinity" alignment="CENTER_LEFT" onAction="#onNavHistorique"/>
+            <Button text="🔍  Recherche Globale"   styleClass="nav-item, active" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="🔓  Déconnexion"
+                    onAction="#onDeconnexion"
+                    maxWidth="Infinity" alignment="CENTER_LEFT"
+                    style="-fx-background-color: transparent; -fx-text-fill: #ef4444;
+                           -fx-font-size: 13px; -fx-font-weight: bold;
+                           -fx-padding: 12px 20px; -fx-cursor: hand;
+                           -fx-border-color: transparent;"/>
+            <VBox styleClass="sidebar-card" alignment="CENTER" spacing="2">
+                <Label text="Module actif" styleClass="sc-title"/>
+                <Label text="Logistique" styleClass="sc-alert"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- CONTENU -->
+    <center>
+        <VBox spacing="0">
+            <!-- HEADER -->
+            <VBox styleClass="topbar" spacing="4">
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Recherche dans toute l'application" styleClass="page-sub"/>
+                        <Label text="Recherche Globale" styleClass="page-title"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- BARRE DE RECHERCHE PRINCIPALE -->
+            <VBox style="-fx-background-color: white; -fx-padding: 20 35; -fx-border-color: transparent transparent #e2e8f0 transparent; -fx-border-width: 0 0 1 0;">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="🔍" style="-fx-font-size: 22px;"/>
+                    <TextField fx:id="txtRecherche"
+                               promptText="Rechercher une ambulance, salle, matériel..."
+                               HBox.hgrow="ALWAYS"
+                               style="-fx-font-size: 16px; -fx-padding: 12 16; -fx-background-color: #f1f5f9; -fx-border-color: #e2e8f0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-width: 1.5;"/>
+                    <Button text="Rechercher" onAction="#onRechercher"
+                            style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 14px;"/>
+                    <Button text="✖" onAction="#onEffacer"
+                            style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 18px; -fx-cursor: hand;"/>
+                </HBox>
+                <Label fx:id="lblResultats" text="Tapez pour rechercher dans toute l'application"
+                       style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-padding: 8 0 0 0;"/>
+            </VBox>
+
+            <!-- RÉSULTATS -->
+            <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+                <VBox spacing="20" style="-fx-padding: 20 35;">
+
+                    <!-- Ambulances -->
+                    <VBox fx:id="sectionAmbulances" spacing="10" visible="false" managed="false">
+                        <Label text="🚑 Ambulances" styleClass="section-title"/>
+                        <FlowPane fx:id="resultatsAmbulances" hgap="15" vgap="15"/>
+                    </VBox>
+
+                    <!-- Salles -->
+                    <VBox fx:id="sectionSalles" spacing="10" visible="false" managed="false">
+                        <Label text="🏠 Salles Physiques" styleClass="section-title"/>
+                        <FlowPane fx:id="resultatsSalles" hgap="15" vgap="15"/>
+                    </VBox>
+
+                    <!-- Matériel -->
+                    <VBox fx:id="sectionMateriel" spacing="10" visible="false" managed="false">
+                        <Label text="🔧 Matériel d'Urgence" styleClass="section-title"/>
+                        <FlowPane fx:id="resultatsMateriel" hgap="15" vgap="15"/>
+                    </VBox>
+
+                    <!-- Aucun résultat -->
+                    <VBox fx:id="sectionVide" alignment="CENTER" spacing="16"
+                          style="-fx-padding: 60 0;" visible="false" managed="false">
+                        <Label text="🔍" style="-fx-font-size: 48px;"/>
+                        <Label text="Aucun résultat trouvé" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+                        <Label text="Essayez avec d'autres mots-clés" style="-fx-text-fill: #94a3b8;"/>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" style="-fx-padding: 8px; -fx-background-color: linear-gradient(to bottom, #0B4EA2, #0E9B8A);">
+            <Label text="REVIVE — Recherche Globale" style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 11px;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

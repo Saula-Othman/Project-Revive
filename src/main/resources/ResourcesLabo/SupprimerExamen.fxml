@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="pro.revive.controllers.ControllersLabo.SupprimerExamenController"
+            prefWidth="560" prefHeight="400"
+            stylesheets="@css/labo.css">
+
+    <!-- ── TOPBAR (header simplifié sans sidebar pour dialog de confirmation) ── -->
+    <top>
+        <HBox styleClass="topbar" spacing="14" alignment="CENTER_LEFT">
+            <StackPane>
+                <Region prefWidth="42" prefHeight="42"
+                        style="-fx-background-color: rgba(255,255,255,0.18); -fx-background-radius: 12;"/>
+                <Label text="🗑" style="-fx-font-size: 22px;"/>
+            </StackPane>
+            <VBox spacing="2">
+                <Label styleClass="page-title" text="Supprimer un Examen"/>
+                <Label styleClass="page-sub" text="Confirmation de suppression définitive"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox styleClass="user-chip">
+                <Label text="🏥" style="-fx-font-size: 13px;"/>
+                <Label text="Service des Urgences"
+                       style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- ── CONTENU ── -->
+    <center>
+        <StackPane style="-fx-padding: 28 32; -fx-background-color: #EEF4FB;">
+            <VBox spacing="20" maxWidth="480" styleClass="card"
+                  style="-fx-effect: dropshadow(gaussian,rgba(239,68,68,0.15),20,0,0,6);
+                         -fx-border-color: rgba(239,68,68,0.14);
+                         -fx-border-width: 1; -fx-border-radius: 16;">
+
+                <!-- Titre confirmation -->
+                <HBox spacing="14" alignment="CENTER_LEFT">
+                    <StackPane>
+                        <Region prefWidth="50" prefHeight="50"
+                                style="-fx-background-color: rgba(239,68,68,0.10); -fx-background-radius: 16;"/>
+                        <Label text="🗑" style="-fx-font-size: 26px;"/>
+                    </StackPane>
+                    <VBox spacing="3">
+                        <Label text="Confirmer la suppression"
+                               style="-fx-text-fill: #DC2626; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                        <Label text="Cette action est irréversible et définitive."
+                               styleClass="field-hint"/>
+                    </VBox>
+                </HBox>
+
+                <Region prefHeight="1"
+                        style="-fx-background-color: linear-gradient(to right, #FEE2E2, #FECACA);"/>
+
+                <!-- Info examen -->
+                <Label fx:id="lblInfo" wrapText="true"
+                       style="-fx-text-fill: #334155; -fx-font-size: 13px;
+                              -fx-background-color: #FEF2F2;
+                              -fx-background-radius: 12;
+                              -fx-border-color: #FECACA; -fx-border-radius: 12; -fx-border-width: 1;
+                              -fx-padding: 14 18;"/>
+
+                <!-- Boutons -->
+                <HBox spacing="14">
+                    <VBox alignment="CENTER" spacing="4">
+                        <Button onAction="#handleSupprimer" text="🗑️"
+                                styleClass="btn, btn-danger"
+                                style="-fx-font-size: 22px; -fx-background-radius: 16;
+                                       -fx-min-width: 58; -fx-min-height: 58;"
+                                onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                        <Label text="Confirmer" styleClass="stat-hint"
+                               style="-fx-text-fill: #EF4444; -fx-font-weight: bold;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="4">
+                        <Button onAction="#handleAnnuler" text="↩️"
+                                styleClass="btn, btn-secondary"
+                                style="-fx-font-size: 22px; -fx-background-radius: 16;
+                                       -fx-min-width: 58; -fx-min-height: 58;"
+                                onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                        <Label text="Annuler" styleClass="stat-hint" style="-fx-font-weight: bold;"/>
+                    </VBox>
+                </HBox>
+
+                <Label fx:id="lblMessage" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+
+            </VBox>
+        </StackPane>
+    </center>
+
+    <!-- ── FOOTER ── -->
+    <bottom>
+        <HBox alignment="CENTER" spacing="16" styleClass="footer">
+            <Label text="REVIVE" styleClass="footer-label"
+                   style="-fx-text-fill: rgba(255,255,255,0.80); -fx-font-weight: bold;"/>
+            <Label text="•" styleClass="footer-label"/>
+            <Label text="Système de Gestion des Urgences Médicales" styleClass="footer-label"/>
+            <Label text="•" styleClass="footer-label"/>
+            <Label text="© 2025" styleClass="footer-label"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

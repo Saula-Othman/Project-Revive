@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="pro.revive.controllers.ControllersMateriel.AmbulanceListController" stylesheets="@../css/styleMateriel.css">
+   <children>
+      <BorderPane>
+         <left>
+            <VBox prefWidth="250" spacing="0" styleClass="sidebar">
+               <children>
+                  <VBox alignment="CENTER" spacing="4" styleClass="logo-wrap">
+                     <children>
+                        <Label styleClass="logo-fallback" text="🏥 REVIVE" />
+                        <Label styleClass="logo-sub" text="Gestion des Urgences" />
+                     </children>
+                  </VBox>
+                  <Label styleClass="nav-section" text="NAVIGATION" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirDashboard" styleClass="nav-item" text="📊  Tableau de Bord" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirSalles" styleClass="nav-item" text="🏠  Salles Physiques" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirMateriel" styleClass="nav-item" text="🔧  Matériel d'Urgence" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" styleClass="nav-item, active" text="🚑  Ambulances" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirSimulation" styleClass="nav-item" text="🗺  Simulation Trajet" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirHistorique" styleClass="nav-item" text="📋  Historique Missions" />
+                  <Button alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onVoirRecherche" styleClass="nav-item" text="🔍  Recherche Globale" />
+                  <Region VBox.vgrow="ALWAYS" />
+                  <Button text="🔓  Déconnexion"
+                          onAction="#onDeconnexion"
+                          maxWidth="Infinity" alignment="CENTER_LEFT"
+                          style="-fx-background-color: transparent; -fx-text-fill: #ef4444;
+                                 -fx-font-size: 13px; -fx-font-weight: bold;
+                                 -fx-padding: 12px 20px; -fx-cursor: hand;
+                                 -fx-border-color: transparent;" />
+                  <VBox alignment="CENTER" spacing="2" styleClass="sidebar-card">
+                     <children>
+                        <Label styleClass="sc-title" text="Module actif" />
+                        <Label styleClass="sc-alert" text="Logistique" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </left>
+         <center>
+            <VBox spacing="0">
+               <children>
+                  <!-- HEADER -->
+                  <VBox styleClass="topbar" spacing="4">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="16">
+                           <children>
+                              <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label styleClass="page-sub" text="Gestion de la Flotte" />
+                                    <Label styleClass="page-title" text="Ambulances &amp; Maintenance IA" />
+                                 </children>
+                              </VBox>
+                              <Button onAction="#onAjouter" styleClass="btn, btn-secondary" text="➕  Nouvelle Ambulance" />
+                              <Button onAction="#onRefresh" styleClass="btn, btn-secondary" text="🔄  Actualiser" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+
+                  <!-- STATS CARDS -->
+                  <HBox spacing="16" style="-fx-padding: 20 24 16 24; -fx-background-color: #EEF4FB;">
+                     <children>
+                        <VBox spacing="6" styleClass="stat-card, blue" HBox.hgrow="ALWAYS">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" spacing="10">
+                                 <Label text="🚑" style="-fx-font-size: 22px;"/>
+                                 <Label text="TOTAL" styleClass="stat-lbl"/>
+                              </HBox>
+                              <Label fx:id="lblTotalAmbulances" text="0" styleClass="stat-val, blue"/>
+                              <Label text="Dans la flotte" styleClass="stat-hint"/>
+                           </children>
+                        </VBox>
+                        <VBox spacing="6" styleClass="stat-card, green" HBox.hgrow="ALWAYS">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" spacing="10">
+                                 <Label text="✅" style="-fx-font-size: 22px;"/>
+                                 <Label text="DISPONIBLES" styleClass="stat-lbl"/>
+                              </HBox>
+                              <Label fx:id="lblDisponibles" text="0" styleClass="stat-val, green"/>
+                              <Label text="Prêtes à partir" styleClass="stat-hint"/>
+                           </children>
+                        </VBox>
+                        <VBox spacing="6" styleClass="stat-card, blue" HBox.hgrow="ALWAYS">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" spacing="10">
+                                 <Label text="🗺" style="-fx-font-size: 22px;"/>
+                                 <Label text="EN ROUTE" styleClass="stat-lbl"/>
+                              </HBox>
+                              <Label fx:id="lblEnRoute" text="0" styleClass="stat-val, blue"/>
+                              <Label text="En mission active" styleClass="stat-hint"/>
+                           </children>
+                        </VBox>
+                        <VBox spacing="6" styleClass="stat-card, red" HBox.hgrow="ALWAYS">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" spacing="10">
+                                 <Label text="⚠️" style="-fx-font-size: 22px;"/>
+                                 <Label text="ALERTES IA" styleClass="stat-lbl"/>
+                              </HBox>
+                              <Label fx:id="lblAlertes" text="0" styleClass="stat-val, red"/>
+                              <Label text="Maintenance requise" styleClass="stat-hint"/>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+
+                  <!-- SEARCH BAR AMÉLIORÉE -->
+                  <HBox spacing="12" alignment="CENTER_LEFT"
+                        style="-fx-padding: 14 24; -fx-background-color: white;
+                               -fx-border-color: transparent transparent #e8edf2 transparent;
+                               -fx-border-width: 0 0 1 0;">
+                     <children>
+                        <Label text="🔍" style="-fx-font-size: 16px; -fx-text-fill: #94a3b8;"/>
+                        <TextField fx:id="txtSearch"
+                                   promptText="Rechercher par numéro de série, marque, modèle..."
+                                   styleClass="text-field" HBox.hgrow="ALWAYS" />
+                        <Label text="|" style="-fx-text-fill: #e2e8f0; -fx-font-size: 20px;"/>
+                        <Label text="État :" style="-fx-text-fill: #64748b; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="cmbFiltreEtat" promptText="Tous les états"
+                                  styleClass="combo-box" prefWidth="170" />
+                     </children>
+                  </HBox>
+
+                  <!-- CARDS CONTAINER -->
+                  <VBox VBox.vgrow="ALWAYS" style="-fx-background-color: #EEF4FB;">
+                     <children>
+                        <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+                           <content>
+                              <FlowPane fx:id="cardContainer" hgap="20" vgap="20" style="-fx-padding: 18px;" />
+                           </content>
+                        </ScrollPane>
+                        <HBox alignment="CENTER_LEFT" style="-fx-padding: 8px 18px; -fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0;">
+                           <children>
+                              <Label fx:id="lblTotal" styleClass="stat-hint" text="Total : 0 ambulance(s)" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
+   </children>
+</StackPane>

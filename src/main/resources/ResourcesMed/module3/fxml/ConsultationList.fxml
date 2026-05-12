@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="pro.revive.controllers.ControllersMed.ConsultationListController"
+           prefWidth="1160" prefHeight="740"
+           maxWidth="Infinity" maxHeight="Infinity"
+           stylesheets="@../css/revive-dark.css">
+
+    <!-- ══ CONTENU PRINCIPAL ════════════════════════════════════════════ -->
+    <BorderPane styleClass="main-pane"
+                maxWidth="Infinity" maxHeight="Infinity">
+
+        <!-- ══ SIDEBAR ══════════════════════════════════════════════════ -->
+        <left>
+            <VBox styleClass="sidebar" prefWidth="210" minWidth="210" spacing="0">
+                <VBox styleClass="sidebar-logo-area" alignment="CENTER" spacing="0">
+                    <ImageView fitWidth="160" fitHeight="64" preserveRatio="true"
+                               style="-fx-effect: dropshadow(gaussian, rgba(46,196,160,0.30), 12, 0, 0, 0);">
+                        <image><Image url="@../images/logo.png"/></image>
+                    </ImageView>
+                    <Label text="GESTION DES URGENCES"
+                           style="-fx-text-fill: rgba(255,255,255,0.40); -fx-font-size: 8px;
+                                  -fx-letter-spacing: 2px; -fx-padding: 4 0 0 0;"/>
+                </VBox>
+                <VBox style="-fx-padding: 12 10 0 10;" spacing="3">
+                    <Label text="NAVIGATION" styleClass="sidebar-nav-title"/>
+                    <Button text="Tableau de Bord" styleClass="sidebar-item"
+                            onAction="#onDashboard" maxWidth="Infinity" prefHeight="42"/>
+                    <Button text="Consultations" styleClass="sidebar-item, sidebar-item-active"
+                            maxWidth="Infinity" prefHeight="42"/>
+                    <Button text="Statistiques" styleClass="sidebar-item"
+                            onAction="#onStatistiques" maxWidth="Infinity" prefHeight="42"/>
+                </VBox>
+                <Region VBox.vgrow="ALWAYS"/>
+                <VBox spacing="0" style="-fx-padding: 0 0 16 0;">
+                    <Label text="Module actif" styleClass="sidebar-module-label"/>
+                    <Label text="Consultation Medicale" styleClass="sidebar-module-value"/>
+                </VBox>
+            </VBox>
+        </left>
+
+        <!-- ══ CENTRE ═══════════════════════════════════════════════════ -->
+        <center>
+            <BorderPane styleClass="main-pane">
+                <top>
+                    <VBox>
+                        <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="16">
+                            <VBox spacing="3" HBox.hgrow="ALWAYS">
+                                <Label text="Module 3 — Urgences" styleClass="header-subtitle"/>
+                                <Label text="Consultations Medicales" styleClass="header-title"/>
+                            </VBox>
+                            <Button text="+ Nouvelle Consultation"
+                                    styleClass="btn-new-consult"
+                                    onAction="#onNouvelleConsultation"/>
+                            <Button text="Service des Urgences" styleClass="header-badge"/>
+                        </HBox>
+
+                        <!-- Stat cards -->
+                        <HBox style="-fx-background-color: white; -fx-padding: 14 20 14 20;
+                                     -fx-border-color: transparent transparent #e2e8f0 transparent;
+                                     -fx-border-width: 0 0 1 0;" spacing="12">
+                            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="4"
+                                  style="-fx-border-color: transparent transparent transparent #2563eb;
+                                         -fx-border-width: 0 0 0 4; -fx-background-radius: 0 12 12 0;
+                                         -fx-border-radius: 0 12 12 0;">
+                                <Label text="Total" styleClass="stat-card-label"/>
+                                <Label fx:id="lblStatTotal" text="0" styleClass="stat-card-number"
+                                       style="-fx-text-fill: #2563eb;"/>
+                                <Label text="consultations" styleClass="stat-card-label"/>
+                            </VBox>
+                            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="4"
+                                  style="-fx-border-color: transparent transparent transparent #f59e0b;
+                                         -fx-border-width: 0 0 0 4; -fx-background-radius: 0 12 12 0;
+                                         -fx-border-radius: 0 12 12 0;">
+                                <Label text="En cours" styleClass="stat-card-label"/>
+                                <Label fx:id="lblStatEnCours" text="0" styleClass="stat-card-number"
+                                       style="-fx-text-fill: #f59e0b;"/>
+                                <Label text="actives" styleClass="stat-card-label"/>
+                            </VBox>
+                            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="4"
+                                  style="-fx-border-color: transparent transparent transparent #22c55e;
+                                         -fx-border-width: 0 0 0 4; -fx-background-radius: 0 12 12 0;
+                                         -fx-border-radius: 0 12 12 0;">
+                                <Label text="Cloturees" styleClass="stat-card-label"/>
+                                <Label fx:id="lblStatCloturees" text="0" styleClass="stat-card-number"
+                                       style="-fx-text-fill: #22c55e;"/>
+                                <Label text="terminees" styleClass="stat-card-label"/>
+                            </VBox>
+                            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="4"
+                                  style="-fx-border-color: transparent transparent transparent #ef4444;
+                                         -fx-border-width: 0 0 0 4; -fx-background-radius: 0 12 12 0;
+                                         -fx-border-radius: 0 12 12 0;">
+                                <Label text="Ordonnances" styleClass="stat-card-label"/>
+                                <Label fx:id="lblStatOrdos" text="0" styleClass="stat-card-number"
+                                       style="-fx-text-fill: #ef4444;"/>
+                                <Label text="prescriptions" styleClass="stat-card-label"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <VBox spacing="6" alignment="CENTER_RIGHT">
+                                <HBox spacing="8" alignment="CENTER_RIGHT">
+                                    <TextField fx:id="searchField" styleClass="search-field"
+                                               promptText="Rechercher..." prefHeight="36" prefWidth="220"/>
+                                    <ComboBox fx:id="filterCombo" promptText="Tous statuts"
+                                              style="-fx-font-size: 12px; -fx-pref-width: 150; -fx-pref-height: 36;"/>
+                                </HBox>
+                                <HBox alignment="CENTER_RIGHT">
+                                    <Label fx:id="labelCount" text="0 consultation(s)" styleClass="info-label"/>
+                                </HBox>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </top>
+
+                <center>
+                    <ScrollPane fx:id="cardsScrollPane" fitToWidth="true" styleClass="cards-scroll">
+                        <VBox fx:id="cardsContainer" styleClass="cards-container"
+                              style="-fx-padding: 16px 20px 20px 20px; -fx-spacing: 10px;
+                                     -fx-background-color: #f0f4f8;"/>
+                    </ScrollPane>
+                </center>
+
+                <bottom>
+                    <HBox styleClass="footer-bar" alignment="CENTER">
+                        <Label text="REVIVE — Systeme de Gestion des Urgences  |  Module 3 : Consultation Medicale"
+                               styleClass="footer-label"/>
+                    </HBox>
+                </bottom>
+            </BorderPane>
+        </center>
+    </BorderPane>
+
+    <!-- ══ OVERLAY — Dialog in-place (par-dessus tout) ══════════════════ -->
+    <!-- Fond semi-transparent -->
+    <StackPane fx:id="overlayBackground"
+               visible="false"
+               style="-fx-background-color: rgba(0,0,0,0.45);"
+               onMouseClicked="#onOverlayClicked"/>
+
+    <!-- Contenu du dialog -->
+    <StackPane fx:id="overlayContainer"
+               visible="false"
+               mouseTransparent="false"
+               StackPane.alignment="CENTER"/>
+
+</StackPane>

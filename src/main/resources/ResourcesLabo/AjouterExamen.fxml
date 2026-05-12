@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="pro.revive.controllers.ControllersLabo.AjouterExamenController"
+            prefWidth="680" prefHeight="700"
+            stylesheets="@css/labo.css">
+
+    <!-- ── TOPBAR ── -->
+    <top>
+        <HBox styleClass="topbar" spacing="14" alignment="CENTER_LEFT">
+            <StackPane>
+                <Region prefWidth="42" prefHeight="42"
+                        style="-fx-background-color: rgba(255,255,255,0.18); -fx-background-radius: 12;"/>
+                <Label text="🔬" style="-fx-font-size: 22px;"/>
+            </StackPane>
+            <VBox spacing="2">
+                <Label styleClass="page-title" text="Ajouter un Examen"/>
+                <Label styleClass="page-sub" text="Enregistrement d'un nouvel examen médical"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox styleClass="user-chip">
+                <Label text="🏥" style="-fx-font-size: 13px;"/>
+                <Label text="Labo &amp; Imagerie"
+                       style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- ── FORMULAIRE ── -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="scroll"
+                    style="-fx-background-color: #EEF4FB; -fx-background: #EEF4FB;">
+            <StackPane style="-fx-padding: 28 32; -fx-background-color: #EEF4FB;">
+                <VBox spacing="16" maxWidth="580" styleClass="card">
+
+                    <!-- En-tête carte -->
+                    <HBox spacing="14" alignment="CENTER_LEFT">
+                        <StackPane>
+                            <Region prefWidth="46" prefHeight="46"
+                                    style="-fx-background-color: rgba(11,78,162,0.10); -fx-background-radius: 14;"/>
+                            <Label text="🔬" style="-fx-font-size: 22px;"/>
+                        </StackPane>
+                        <VBox spacing="3">
+                            <Label text="Nouvel Examen" styleClass="card-title"
+                                   style="-fx-font-size: 19px;"/>
+                            <Label text="Basé sur les demandes des médecins urgentistes"
+                                   styleClass="field-hint"/>
+                        </VBox>
+                    </HBox>
+
+                    <Region prefHeight="1"
+                            style="-fx-background-color: linear-gradient(to right, #DBEAFE, #CCFBF1);"/>
+
+                    <!-- Patient -->
+                    <VBox spacing="6">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Patient *" styleClass="field-label"/>
+                            <Label text="(demandes envoyées par les médecins)"
+                                   style="-fx-text-fill: #0E9B8A; -fx-font-size: 11px; -fx-font-weight: bold;
+                                          -fx-background-color: rgba(14,155,138,0.08);
+                                          -fx-padding: 2 8; -fx-background-radius: 6;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="🔄" onAction="#handleActualiser" styleClass="btn-refresh"
+                                    style="-fx-font-size: 16px; -fx-min-width: 38; -fx-min-height: 38;"
+                                    onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                        </HBox>
+                        <ComboBox fx:id="cbIdConsultation" maxWidth="Infinity"
+                                  promptText="— Sélectionner un patient —"
+                                  visibleRowCount="12" styleClass="combo-box"/>
+                    </VBox>
+
+                    <!-- Panneau demande médecin -->
+                    <VBox fx:id="panneauDemande" spacing="14"
+                          visible="false" managed="false"
+                          style="-fx-background-color: #F5F8FF; -fx-background-radius: 16;
+                                 -fx-padding: 18 20;
+                                 -fx-border-color: #BFDBFE; -fx-border-radius: 16; -fx-border-width: 1;">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="📋  Demande du médecin :" styleClass="field-hint"
+                                   style="-fx-font-weight: bold;"/>
+                            <Label fx:id="lblTypeDetecte" text="" style="-fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        </HBox>
+                        <Region prefHeight="1" style="-fx-background-color: #DBEAFE;"/>
+
+                        <!-- Section Analyse -->
+                        <VBox fx:id="sectionAnalyse" spacing="8"
+                              visible="false" managed="false"
+                              style="-fx-background-color: #EFF6FF; -fx-background-radius: 12;
+                                     -fx-padding: 14 16;
+                                     -fx-border-color: #BFDBFE; -fx-border-radius: 12; -fx-border-width: 1;">
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="🔬" style="-fx-font-size: 18px;"/>
+                                <Label text="Analyse de Laboratoire"
+                                       style="-fx-text-fill: #1E40AF; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <CheckBox fx:id="cbInclureAnalyse" text="Inclure"
+                                          style="-fx-text-fill: #1E40AF; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                            </HBox>
+                            <Label fx:id="lblAnalysesInfo" text=""
+                                   style="-fx-text-fill: #3B82F6; -fx-font-size: 11px; -fx-font-style: italic;"
+                                   wrapText="true"/>
+                            <VBox spacing="4">
+                                <Label text="Type d'analyse *" styleClass="field-label" style="-fx-font-size: 12px;"/>
+                                <TextField fx:id="tfTypeAnalyse"
+                                           promptText="Ex : NFS, Bilan hépatique, Ionogramme…"
+                                           styleClass="text-field" style="-fx-font-size: 12px;"/>
+                            </VBox>
+                        </VBox>
+
+                        <!-- Section Imagerie -->
+                        <VBox fx:id="sectionImagerie" spacing="8"
+                              visible="false" managed="false"
+                              style="-fx-background-color: #F0FDF9; -fx-background-radius: 12;
+                                     -fx-padding: 14 16;
+                                     -fx-border-color: rgba(14,155,138,0.35); -fx-border-radius: 12; -fx-border-width: 1;">
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="🩻" style="-fx-font-size: 18px;"/>
+                                <Label text="Imagerie Médicale"
+                                       style="-fx-text-fill: #065F46; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <CheckBox fx:id="cbInclureImagerie" text="Inclure"
+                                          style="-fx-text-fill: #065F46; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                            </HBox>
+                            <Label fx:id="lblImageriesInfo" text=""
+                                   style="-fx-text-fill: #059669; -fx-font-size: 11px; -fx-font-style: italic;"
+                                   wrapText="true"/>
+                            <VBox spacing="4">
+                                <Label text="Type d'imagerie *" styleClass="field-label" style="-fx-font-size: 12px;"/>
+                                <TextField fx:id="tfTypeImagerie"
+                                           promptText="Ex : Radiographie thorax, IRM cérébrale…"
+                                           styleClass="text-field" style="-fx-font-size: 12px;"/>
+                            </VBox>
+                        </VBox>
+                    </VBox>
+
+                    <Label fx:id="lblErrTypeExamen" styleClass="error-label"/>
+
+                    <!-- Statut + Urgent -->
+                    <HBox spacing="24" alignment="CENTER_LEFT">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Statut" styleClass="field-label"/>
+                            <ComboBox fx:id="cbStatut" maxWidth="Infinity" styleClass="combo-box"/>
+                        </VBox>
+                        <VBox spacing="6" alignment="CENTER_LEFT">
+                            <Label text=" " style="-fx-font-size: 13px;"/>
+                            <CheckBox fx:id="cbUrgent" text="⚠  Examen urgent"
+                                      style="-fx-text-fill: #EA580C; -fx-font-weight: bold; -fx-font-size: 13px;"/>
+                        </VBox>
+                    </HBox>
+
+                    <Region prefHeight="1"
+                            style="-fx-background-color: linear-gradient(to right, #DBEAFE, #CCFBF1);"/>
+
+                    <!-- Boutons -->
+                    <HBox spacing="14">
+                        <VBox alignment="CENTER" spacing="4">
+                            <Button onAction="#handleAjouter" text="💾"
+                                    styleClass="btn, btn-primary"
+                                    style="-fx-font-size: 22px; -fx-background-radius: 16;
+                                           -fx-min-width: 58; -fx-min-height: 58;"
+                                    onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                            <Label text="Enregistrer" styleClass="stat-hint"
+                                   style="-fx-text-fill: #22C55E; -fx-font-weight: bold;"/>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="4">
+                            <Button onAction="#handleVider" text="🗑️"
+                                    styleClass="btn, btn-secondary"
+                                    style="-fx-font-size: 22px; -fx-background-radius: 16;
+                                           -fx-min-width: 58; -fx-min-height: 58;"
+                                    onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                            <Label text="Vider" styleClass="stat-hint" style="-fx-font-weight: bold;"/>
+                        </VBox>
+                    </HBox>
+
+                    <Label fx:id="lblMessage" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+
+                </VBox>
+            </StackPane>
+        </ScrollPane>
+    </center>
+
+    <!-- ── FOOTER ── -->
+    <bottom>
+        <HBox alignment="CENTER" spacing="16" styleClass="footer">
+            <Label text="REVIVE" styleClass="footer-label"
+                   style="-fx-text-fill: rgba(255,255,255,0.80); -fx-font-weight: bold;"/>
+            <Label text="•" styleClass="footer-label"/>
+            <Label text="Laboratoire &amp; Imagerie — Urgences" styleClass="footer-label"/>
+            <Label text="•" styleClass="footer-label"/>
+            <Label text="© 2025" styleClass="footer-label"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

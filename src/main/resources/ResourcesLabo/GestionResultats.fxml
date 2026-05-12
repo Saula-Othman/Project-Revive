@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="pro.revive.controllers.ControllersLabo.GestionResultatController"
+            prefWidth="1200" prefHeight="780"
+            stylesheets="@css/labo.css">
+
+    <!-- ── SIDEBAR ── -->
+    <left>
+        <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+            <VBox styleClass="logo-wrap">
+                <ImageView fitWidth="170" preserveRatio="true" pickOnBounds="true">
+                    <image><Image url="@Images/logo_revive.png"/></image>
+                </ImageView>
+                <Label styleClass="logo-sub" text="Laboratoire &amp; Imagerie Médicale"/>
+            </VBox>
+            <Label styleClass="nav-section" text="NAVIGATION"/>
+            <Button mnemonicParsing="false" styleClass="nav-item"
+                    text="🏠  Tableau de Bord" onAction="#showDashboard"
+                    onMouseEntered="#onSidebarHoverEnter" onMouseExited="#onSidebarHoverExit"/>
+            <Button mnemonicParsing="false" styleClass="nav-item"
+                    text="🔬  Examens Demandés" onAction="#showExamens"
+                    onMouseEntered="#onSidebarHoverEnter" onMouseExited="#onSidebarHoverExit"/>
+            <Button mnemonicParsing="false" styleClass="nav-item, active"
+                    text="📋  Résultats d'Examens" onAction="#showResultats"/>
+            <Button mnemonicParsing="false" styleClass="nav-item"
+                    text="📄  Rapport du Biologiste" onAction="#showRapport"
+                    onMouseEntered="#onSidebarHoverEnter" onMouseExited="#onSidebarHoverExit"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <VBox styleClass="sidebar-card">
+                <Label styleClass="sc-title" text="MODULE"/>
+                <Label styleClass="sc-alert" text="Labo &amp; Imagerie"/>
+                <Label style="-fx-text-fill: rgba(255,255,255,0.50); -fx-font-size: 10px;" text="v2.0"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ── MAIN ── -->
+    <center>
+        <VBox styleClass="main" BorderPane.alignment="CENTER">
+            <HBox styleClass="topbar">
+                <VBox spacing="2">
+                    <Label styleClass="page-title" text="Résultats d'Examens"/>
+                    <Label styleClass="page-sub" text="Gestion et analyse des comptes rendus médicaux"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox styleClass="user-chip">
+                    <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label styleClass="user-name" text="Biologiste"/>
+                        <Label styleClass="user-role" text="Labo &amp; Imagerie"/>
+                    </VBox>
+                    <Label styleClass="user-av" text="B"/>
+                </HBox>
+            </HBox>
+            <Region styleClass="topbar-stripe"/>
+
+            <VBox spacing="16" style="-fx-padding: 24 28;" VBox.vgrow="ALWAYS">
+
+                <!-- Recherche -->
+                <HBox spacing="12" alignment="CENTER_LEFT"
+                      style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 14 20;
+                             -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.10),12,0,0,4);
+                             -fx-border-color: rgba(11,78,162,0.08); -fx-border-radius: 16; -fx-border-width: 1;">
+                    <Label text="🔍" style="-fx-font-size: 16px;"/>
+                    <TextField fx:id="tfRecherche"
+                               promptText="Rechercher par nom du patient ou type d'examen…"
+                               HBox.hgrow="ALWAYS" styleClass="text-field"/>
+                    <Button onAction="#handleRecherche" text="Rechercher"
+                            style="-fx-background-color: #0B4EA2; -fx-text-fill: white; -fx-font-size: 13px;
+                                   -fx-font-weight: bold; -fx-background-radius: 10;
+                                   -fx-padding: 9 20; -fx-cursor: hand;"/>
+                </HBox>
+
+                <!-- Actions CRUD -->
+                <HBox spacing="10" alignment="CENTER_LEFT"
+                      style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 14 20;
+                             -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.10),12,0,0,4);
+                             -fx-border-color: rgba(11,78,162,0.08); -fx-border-radius: 16; -fx-border-width: 1;">
+
+                    <Button onAction="#ouvrirAjouter" text="Ajouter"
+                            style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-background-radius: 10; -fx-padding: 9 22;
+                                   -fx-border-color: #0B4EA2; -fx-border-radius: 10; -fx-border-width: 1.5;
+                                   -fx-cursor: hand;"/>
+
+                    <Button onAction="#ouvrirModifier" text="Modifier"
+                            style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-background-radius: 10; -fx-padding: 9 22;
+                                   -fx-border-color: #0B4EA2; -fx-border-radius: 10; -fx-border-width: 1.5;
+                                   -fx-cursor: hand;"/>
+
+                    <Button onAction="#ouvrirSupprimer" text="Supprimer"
+                            style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-background-radius: 10; -fx-padding: 9 22;
+                                   -fx-border-color: #0B4EA2; -fx-border-radius: 10; -fx-border-width: 1.5;
+                                   -fx-cursor: hand;"/>
+
+                    <Button onAction="#handleTelechargerPdf" text="Télécharger PDF"
+                            style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-background-radius: 10; -fx-padding: 9 22;
+                                   -fx-border-color: #0B4EA2; -fx-border-radius: 10; -fx-border-width: 1.5;
+                                   -fx-cursor: hand;"/>
+
+                    <Button onAction="#handleAnalyserResultat" text="Analyser IA"
+                            style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-background-radius: 10; -fx-padding: 9 22;
+                                   -fx-border-color: #0B4EA2; -fx-border-radius: 10; -fx-border-width: 1.5;
+                                   -fx-cursor: hand;"/>
+
+                    <!-- Séparateur -->
+                    <Region prefWidth="1" prefHeight="36"
+                            style="-fx-background-color: #E2E8F0;"/>
+
+                    <!-- Tout sélectionner -->
+                    <Button onAction="#toutSelectionner" text="☑  Tout sélectionner"
+                            style="-fx-background-color: #F8FAFC; -fx-text-fill: #475569;
+                                   -fx-font-size: 12px; -fx-font-weight: bold;
+                                   -fx-background-radius: 10; -fx-padding: 9 16;
+                                   -fx-border-color: #CBD5E1; -fx-border-radius: 10; -fx-border-width: 1.5;
+                                   -fx-cursor: hand;"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+                </HBox>
+
+                <!-- Filtres Propre / Grave -->
+                <HBox spacing="10" alignment="CENTER_LEFT"
+                      style="-fx-background-color: white; -fx-background-radius: 14; -fx-padding: 12 20;
+                             -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.07),8,0,0,2);
+                             -fx-border-color: rgba(11,78,162,0.06); -fx-border-radius: 14; -fx-border-width: 1;">
+                    <Label text="Filtrer par état :"
+                           style="-fx-text-fill: #475569; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                    <Button fx:id="btnFiltreAll" text="Tous" onAction="#filtrerTous"
+                            style="-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF;
+                                   -fx-font-weight: bold; -fx-background-radius: 20;
+                                   -fx-padding: 7 20; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                    <Button fx:id="btnFiltrePropre" text="🟢  Propre" onAction="#filtrerPropre"
+                            style="-fx-background-color: #F1F5F9; -fx-text-fill: #64748B;
+                                   -fx-font-weight: bold; -fx-background-radius: 20;
+                                   -fx-padding: 7 20; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                    <Button fx:id="btnFiltreGrave" text="🔴  Grave" onAction="#filtrerGrave"
+                            style="-fx-background-color: #FEF2F2; -fx-text-fill: #DC2626;
+                                   -fx-font-weight: bold; -fx-background-radius: 20;
+                                   -fx-padding: 7 20; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblMessage" text=""
+                           style="-fx-text-fill: #0B4EA2; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                </HBox>
+
+                <!-- Liste -->
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll">
+                    <VBox fx:id="containerResultats" spacing="12" style="-fx-padding: 4 2;"/>
+                </ScrollPane>
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.ProgressIndicator?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="pro.revive.controllers.ControllersLabo.AjouterResultatController"
+            prefWidth="700" prefHeight="760"
+            stylesheets="@css/labo.css">
+
+    <!-- ── TOPBAR ── -->
+    <top>
+        <HBox styleClass="topbar" spacing="14" alignment="CENTER_LEFT">
+            <StackPane>
+                <Region prefWidth="42" prefHeight="42"
+                        style="-fx-background-color: rgba(255,255,255,0.18); -fx-background-radius: 12;"/>
+                <Label text="📋" style="-fx-font-size: 22px;"/>
+            </StackPane>
+            <VBox spacing="2">
+                <Label styleClass="page-title" text="Ajouter un Résultat"/>
+                <Label styleClass="page-sub" text="Saisie du compte rendu et état du résultat"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox styleClass="user-chip">
+                <Label text="🏥" style="-fx-font-size: 13px;"/>
+                <Label text="Labo &amp; Imagerie"
+                       style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- ── FORMULAIRE ── -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="scroll"
+                    style="-fx-background-color: #EEF4FB; -fx-background: #EEF4FB;">
+            <StackPane style="-fx-padding: 28 32; -fx-background-color: #EEF4FB;">
+                <VBox spacing="16" maxWidth="600" styleClass="card">
+
+                    <!-- En-tête -->
+                    <HBox spacing="14" alignment="CENTER_LEFT">
+                        <StackPane>
+                            <Region prefWidth="46" prefHeight="46"
+                                    style="-fx-background-color: rgba(11,78,162,0.09); -fx-background-radius: 14;"/>
+                            <Label text="📋" style="-fx-font-size: 22px;"/>
+                        </StackPane>
+                        <VBox spacing="3">
+                            <Label text="Nouveau Résultat" styleClass="card-title" style="-fx-font-size: 19px;"/>
+                            <Label text="Remplissez les informations ci-dessous" styleClass="field-hint"/>
+                        </VBox>
+                    </HBox>
+
+                    <Region prefHeight="1"
+                            style="-fx-background-color: linear-gradient(to right, #DBEAFE, #CCFBF1);"/>
+
+                    <!-- Patient / Examen -->
+                    <VBox spacing="6">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Patient / Examen *" styleClass="field-label"/>
+                            <Label text="(examens réalisés uniquement)"
+                                   style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;
+                                          -fx-background-color: #F1F5F9;
+                                          -fx-padding: 2 8; -fx-background-radius: 6;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="🔄" onAction="#handleActualiser" styleClass="btn-refresh"
+                                    style="-fx-font-size: 16px; -fx-min-width: 38; -fx-min-height: 38;"
+                                    onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                        </HBox>
+                        <ComboBox fx:id="cbIdDemande" maxWidth="Infinity" styleClass="combo-box"/>
+                        <Label fx:id="lblErrIdDemande" styleClass="error-label"/>
+                    </VBox>
+
+                    <!-- Compte rendu -->
+                    <VBox spacing="6">
+                        <Label text="Compte rendu *" styleClass="field-label"/>
+                        <Label text="Doit être une description textuelle (pas uniquement des chiffres)"
+                               styleClass="field-hint"/>
+                        <TextArea fx:id="taCompteRendu"
+                                  promptText="Saisir le compte rendu médical…"
+                                  prefRowCount="5" wrapText="true"
+                                  styleClass="text-area"/>
+                        <Label fx:id="lblErrCompteRendu" styleClass="error-label"/>
+                    </VBox>
+
+                    <!-- ═══ PANNEAU ANALYSE BIOLOGIQUE INTELLIGENTE ═══ -->
+                    <VBox fx:id="panneauAnalyseBio" visible="false" managed="false"
+                          spacing="10"
+                          style="-fx-background-color: #F0F9FF; -fx-background-radius: 16;
+                                 -fx-padding: 16 18;
+                                 -fx-border-color: #BAE6FD; -fx-border-radius: 16; -fx-border-width: 1.5;">
+
+                        <!-- Titre -->
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <StackPane>
+                                <Region prefWidth="38" prefHeight="38"
+                                        style="-fx-background-color: rgba(14,165,233,0.15); -fx-background-radius: 10;"/>
+                                <Label text="🔬" style="-fx-font-size: 18px;"/>
+                            </StackPane>
+                            <VBox spacing="2">
+                                <Label text="Analyse Biologique Intelligente"
+                                       style="-fx-text-fill: #0369A1; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                                <Label text="Détection automatique des anomalies biologiques"
+                                       style="-fx-text-fill: #0EA5E9; -fx-font-size: 10px;"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <!-- Badge niveau global -->
+                            <Label fx:id="lblNiveauBio" text=""
+                                   style="-fx-font-size: 11px; -fx-font-weight: bold;
+                                          -fx-padding: 4 12; -fx-background-radius: 20;"/>
+                        </HBox>
+
+                        <!-- Liste des anomalies détectées -->
+                        <VBox fx:id="containerAnomalies" spacing="6"/>
+
+                        <!-- Interprétation -->
+                        <VBox spacing="4"
+                              style="-fx-background-color: white; -fx-background-radius: 10;
+                                     -fx-padding: 12 14;
+                                     -fx-border-color: #BAE6FD; -fx-border-radius: 10; -fx-border-width: 1;">
+                            <Label text="📋  Interprétation médicale :"
+                                   style="-fx-text-fill: #0369A1; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                            <Label fx:id="lblInterpretationBio" text="" wrapText="true"
+                                   style="-fx-text-fill: #334155; -fx-font-size: 11px; -fx-line-spacing: 2;"/>
+                        </VBox>
+
+                        <!-- Aide à la décision -->
+                        <VBox spacing="4"
+                              style="-fx-background-color: white; -fx-background-radius: 10;
+                                     -fx-padding: 12 14;
+                                     -fx-border-color: #BAE6FD; -fx-border-radius: 10; -fx-border-width: 1;">
+                            <Label text="🩺  Aide à la décision médicale :"
+                                   style="-fx-text-fill: #0369A1; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                            <Label fx:id="lblAideDecisionBio" text="" wrapText="true"
+                                   style="-fx-text-fill: #334155; -fx-font-size: 11px; -fx-line-spacing: 2;"/>
+                        </VBox>
+
+                    </VBox>
+
+                    <!-- Section Image + IA (Radio Thoracique UNIQUEMENT) -->
+                    <VBox fx:id="panneauIA" spacing="8" visible="false" managed="false"
+                          style="-fx-background-color: #F5F3FF; -fx-background-radius: 16;
+                                 -fx-padding: 16 18;
+                                 -fx-border-color: #DDD6FE; -fx-border-radius: 16; -fx-border-width: 1;">
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <StackPane>
+                                <Region prefWidth="36" prefHeight="36"
+                                        style="-fx-background-color: rgba(124,58,237,0.12); -fx-background-radius: 10;"/>
+                                <Label text="🤖" style="-fx-font-size: 18px;"/>
+                            </StackPane>
+                            <VBox spacing="2">
+                                <Label text="Image Radiologique + Analyse IA"
+                                       style="-fx-text-fill: #5B21B6; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                                <Label text="Importez une radio — l'IA détecte automatiquement l'état"
+                                       style="-fx-text-fill: #7C3AED; -fx-font-size: 10px;"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <TextField fx:id="tfFichierJoint"
+                                       promptText="Chemin de l'image radio (jpg, png, dcm…)"
+                                       HBox.hgrow="ALWAYS" styleClass="text-field"
+                                       style="-fx-border-color: #DDD6FE;"/>
+                            <VBox alignment="CENTER" spacing="2">
+                                <Button fx:id="btnParcourir" onAction="#handleParcourirImage" text="📂"
+                                        style="-fx-background-color: linear-gradient(to bottom right, #7C3AED, #6D28D9);
+                                               -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 12;
+                                               -fx-min-width: 46; -fx-min-height: 46; -fx-cursor: hand;"
+                                        onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                                <Label text="Parcourir"
+                                       style="-fx-text-fill: #7C3AED; -fx-font-size: 9px; -fx-font-weight: bold;"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Aperçu image -->
+                        <StackPane fx:id="panneauApercu" visible="false" managed="false"
+                                   style="-fx-background-color: #1E1B4B; -fx-background-radius: 12;
+                                          -fx-padding: 6; -fx-min-height: 160;">
+                            <ImageView fx:id="imgApercu" fitWidth="520" fitHeight="160"
+                                       preserveRatio="true" smooth="true"/>
+                        </StackPane>
+
+                        <!-- Serveur local fixe — pas de ngrok -->
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="�" style="-fx-font-size: 13px;"/>
+                            <Label text="Serveur IA local : localhost:5000"
+                                   style="-fx-text-fill: #7C3AED; -fx-font-size: 11px; -fx-font-style: italic;"
+                                   HBox.hgrow="ALWAYS"/>
+                            <VBox alignment="CENTER" spacing="2">
+                                <Button fx:id="btnAnalyserIA" onAction="#handleAnalyserIA" text="🔍"
+                                        style="-fx-background-color: linear-gradient(to bottom right, #5B21B6, #7C3AED);
+                                               -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 12;
+                                               -fx-min-width: 46; -fx-min-height: 46; -fx-cursor: hand;"
+                                        onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                                <Label text="Analyser"
+                                       style="-fx-text-fill: #5B21B6; -fx-font-size: 9px; -fx-font-weight: bold;"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Résultat IA -->
+                        <VBox fx:id="panneauResultatIA" visible="false" managed="false" spacing="6"
+                              style="-fx-background-color: white; -fx-background-radius: 12;
+                                     -fx-padding: 12 14;
+                                     -fx-border-color: #DDD6FE; -fx-border-radius: 12; -fx-border-width: 1;">
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label fx:id="lblIAIcone" text="🤖" style="-fx-font-size: 22px;"/>
+                                <VBox spacing="2">
+                                    <Label fx:id="lblIAEtat" text=""
+                                           style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                                    <Label fx:id="lblIAConfiance" text="" styleClass="field-hint"/>
+                                </VBox>
+                            </HBox>
+                            <Label fx:id="lblIAMessage" text="" wrapText="true"
+                                   style="-fx-text-fill: #475569; -fx-font-size: 11px; -fx-font-style: italic;"/>
+                            <VBox spacing="3">
+                                <HBox alignment="CENTER_LEFT" spacing="6">
+                                    <Label text="Confiance IA :" styleClass="field-hint"/>
+                                    <Label fx:id="lblIAPct" text="0%"
+                                           style="-fx-text-fill: #5B21B6; -fx-font-size: 10px; -fx-font-weight: bold;"/>
+                                </HBox>
+                                <StackPane prefHeight="8">
+                                    <Region style="-fx-background-color: #EDE9FE; -fx-background-radius: 4;"/>
+                                    <Region fx:id="barreConfiance"
+                                            style="-fx-background-color: linear-gradient(to right, #7C3AED, #5B21B6);
+                                                   -fx-background-radius: 4;"
+                                            StackPane.alignment="CENTER_LEFT"/>
+                                </StackPane>
+                            </VBox>
+                        </VBox>
+
+                        <!-- Chargement -->
+                        <HBox fx:id="panneauChargement" visible="false" managed="false"
+                              spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 6 0;">
+                            <ProgressIndicator prefWidth="20" prefHeight="20"
+                                               style="-fx-accent: #7C3AED;"/>
+                            <Label text="Analyse en cours…"
+                                   style="-fx-text-fill: #7C3AED; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Section Image Simple (autres imageries — sans IA) -->
+                    <VBox fx:id="panneauImageSimple" spacing="8" visible="false" managed="false"
+                          style="-fx-background-color: #F0FDF4; -fx-background-radius: 16;
+                                 -fx-padding: 16 18;
+                                 -fx-border-color: #86EFAC; -fx-border-radius: 16; -fx-border-width: 1;">
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <StackPane>
+                                <Region prefWidth="36" prefHeight="36"
+                                        style="-fx-background-color: rgba(22,163,74,0.12); -fx-background-radius: 10;"/>
+                                <Label text="🖼" style="-fx-font-size: 18px;"/>
+                            </StackPane>
+                            <VBox spacing="2">
+                                <Label text="Image d'Imagerie Médicale"
+                                       style="-fx-text-fill: #15803D; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                                <Label text="Importez l'image médicale à joindre au résultat"
+                                       style="-fx-text-fill: #16A34A; -fx-font-size: 10px;"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <TextField fx:id="tfFichierJointSimple"
+                                       promptText="Chemin de l'image médicale (jpg, png…)"
+                                       HBox.hgrow="ALWAYS" styleClass="text-field"
+                                       style="-fx-border-color: #86EFAC;"/>
+                            <VBox alignment="CENTER" spacing="2">
+                                <Button fx:id="btnParcourirSimple" onAction="#handleParcourirImageSimple" text="📂"
+                                        style="-fx-background-color: linear-gradient(to bottom right, #16A34A, #15803D);
+                                               -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 12;
+                                               -fx-min-width: 46; -fx-min-height: 46; -fx-cursor: hand;"
+                                        onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                                <Label text="Parcourir"
+                                       style="-fx-text-fill: #15803D; -fx-font-size: 9px; -fx-font-weight: bold;"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Aperçu image simple -->
+                        <StackPane fx:id="panneauApercuSimple" visible="false" managed="false"
+                                   style="-fx-background-color: #14532D; -fx-background-radius: 12;
+                                          -fx-padding: 6; -fx-min-height: 160;">
+                            <ImageView fx:id="imgApercuSimple" fitWidth="520" fitHeight="160"
+                                       preserveRatio="true" smooth="true"/>
+                        </StackPane>
+                    </VBox>
+
+                    <!-- État du résultat -->
+                    <VBox spacing="6">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="État du résultat *" styleClass="field-label"/>
+                            <Label text="(rempli automatiquement par l'IA si image importée)"
+                                   style="-fx-text-fill: #7C3AED; -fx-font-size: 10px;
+                                          -fx-background-color: #EDE9FE;
+                                          -fx-padding: 2 8; -fx-background-radius: 6;"/>
+                        </HBox>
+                        <ComboBox fx:id="cbEtat" maxWidth="Infinity" styleClass="combo-box"/>
+                    </VBox>
+
+                    <!-- Score de gravité -->
+                    <VBox fx:id="panneauScore" visible="false" managed="false" spacing="10"
+                          style="-fx-background-radius: 16; -fx-padding: 16 18;
+                                 -fx-border-radius: 16; -fx-border-width: 1.5;">
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <StackPane>
+                                <Region prefWidth="40" prefHeight="40"
+                                        style="-fx-background-color: rgba(0,0,0,0.08); -fx-background-radius: 12;"/>
+                                <Label text="🧠" style="-fx-font-size: 20px;"/>
+                            </StackPane>
+                            <VBox spacing="2">
+                                <Label text="Score de Gravité Intelligent"
+                                       style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                                <Label fx:id="lblNiveauGravite" text=""
+                                       style="-fx-font-size: 11px; -fx-font-weight: bold;
+                                              -fx-padding: 2 10; -fx-background-radius: 20;"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <VBox alignment="CENTER">
+                                <Label fx:id="lblScoreNum" text="0"
+                                       style="-fx-font-size: 32px; -fx-font-weight: bold;"/>
+                                <Label text="/ 100" styleClass="field-hint"/>
+                            </VBox>
+                        </HBox>
+                        <VBox spacing="4">
+                            <StackPane prefHeight="12">
+                                <Region style="-fx-background-color: #E2E8F0; -fx-background-radius: 6;"/>
+                                <Region fx:id="barreScore" style="-fx-background-radius: 6;"
+                                        StackPane.alignment="CENTER_LEFT"/>
+                            </StackPane>
+                        </VBox>
+                        <VBox spacing="4"
+                              style="-fx-background-color: rgba(255,255,255,0.6); -fx-background-radius: 10; -fx-padding: 10 12;">
+                            <Label text="📌  Recommandation :"
+                                   style="-fx-text-fill: #475569; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                            <Label fx:id="lblRecommandation" text="" wrapText="true"
+                                   style="-fx-text-fill: #334155; -fx-font-size: 11px;"/>
+                        </VBox>
+                    </VBox>
+
+                    <Region prefHeight="1"
+                            style="-fx-background-color: linear-gradient(to right, #DBEAFE, #CCFBF1);"/>
+
+                    <!-- Boutons -->
+                    <HBox spacing="14">
+                        <VBox alignment="CENTER" spacing="4">
+                            <Button onAction="#handleAjouter" text="💾"
+                                    styleClass="btn, btn-primary"
+                                    style="-fx-font-size: 22px; -fx-background-radius: 16;
+                                           -fx-min-width: 58; -fx-min-height: 58;"
+                                    onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                            <Label text="Enregistrer" styleClass="stat-hint"
+                                   style="-fx-text-fill: #22C55E; -fx-font-weight: bold;"/>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="4">
+                            <Button onAction="#handleVider" text="🗑️"
+                                    styleClass="btn, btn-secondary"
+                                    style="-fx-font-size: 22px; -fx-background-radius: 16;
+                                           -fx-min-width: 58; -fx-min-height: 58;"
+                                    onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                            <Label text="Vider" styleClass="stat-hint" style="-fx-font-weight: bold;"/>
+                        </VBox>
+                    </HBox>
+
+                    <Label fx:id="lblMessage" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+
+                </VBox>
+            </StackPane>
+        </ScrollPane>
+    </center>
+
+    <!-- ── FOOTER ── -->
+    <bottom>
+        <HBox alignment="CENTER" spacing="16" styleClass="footer">
+            <Label text="REVIVE" styleClass="footer-label"
+                   style="-fx-text-fill: rgba(255,255,255,0.80); -fx-font-weight: bold;"/>
+            <Label text="•" styleClass="footer-label"/>
+            <Label text="Laboratoire &amp; Imagerie — Urgences" styleClass="footer-label"/>
+            <Label text="•" styleClass="footer-label"/>
+            <Label text="© 2025" styleClass="footer-label"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

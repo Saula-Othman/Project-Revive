@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../css/styleMateriel.css"
+      fx:controller="pro.revive.controllers.ControllersMateriel.SalleFormController"
+      styleClass="form-root"
+      spacing="0"
+      prefWidth="480">
+
+    <!-- HEADER du formulaire -->
+    <VBox styleClass="form-header" spacing="4">
+        <Label fx:id="lblTitre" text="Nouvelle Salle" styleClass="form-title"/>
+        <Label text="Remplissez les informations de la salle" styleClass="form-subtitle"/>
+    </VBox>
+
+    <!-- CORPS du formulaire -->
+    <VBox styleClass="form-body" spacing="20">
+
+        <!-- Nom -->
+        <VBox spacing="6">
+            <Label text="Nom de la salle *" styleClass="field-label"/>
+            <TextField fx:id="txtNom"
+                       promptText="Ex : Salle de Déchoquage 1"
+                       styleClass="field-input"/>
+        </VBox>
+
+        <!-- Type -->
+        <VBox spacing="6">
+            <Label text="Type de salle *" styleClass="field-label"/>
+            <ComboBox fx:id="cmbType"
+                      promptText="Sélectionner un type"
+                      styleClass="combo-box"
+                      maxWidth="Infinity"/>
+        </VBox>
+
+        <!-- Statut -->
+        <VBox spacing="6">
+            <Label text="Statut *" styleClass="field-label"/>
+            <ComboBox fx:id="cmbStatut"
+                      promptText="Sélectionner un statut"
+                      styleClass="combo-box"
+                      maxWidth="Infinity"/>
+        </VBox>
+
+        <HBox spacing="15">
+            <!-- Capacité (Spinner) -->
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Nombre de lits *" styleClass="field-label"/>
+                <Spinner fx:id="spnCapacite" min="1" max="100" initialValue="1"
+                         styleClass="field-input" prefWidth="9999" editable="true"/>
+            </VBox>
+            <!-- Étage (Spinner) -->
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Étage" styleClass="field-label"/>
+                <Spinner fx:id="spnEtage" min="0" max="20" initialValue="0"
+                         styleClass="field-input" prefWidth="9999" editable="true"/>
+            </VBox>
+        </HBox>
+
+        <!-- Aile -->
+        <VBox spacing="6">
+            <Label text="Aile / Secteur" styleClass="field-label"/>
+            <ComboBox fx:id="cmbAile" promptText="Sélectionner une aile"
+                      styleClass="combo-box" maxWidth="Infinity"/>
+        </VBox>
+
+        <!-- Message d'erreur -->
+        <Label fx:id="lblErreur"
+               text=""
+               styleClass="error-label"
+               wrapText="true"/>
+
+    </VBox>
+
+    <!-- BOUTONS -->
+    <HBox styleClass="form-footer" spacing="12" alignment="CENTER_RIGHT">
+        <Button fx:id="btnAnnuler"
+                text="Annuler"
+                styleClass="btn-cancel"
+                onAction="#onAnnuler"/>
+        <Button fx:id="btnEnregistrer"
+                text="Enregistrer"
+                styleClass="btn-save"
+                onAction="#onEnregistrer"
+                defaultButton="true"/>
+    </HBox>
+
+</VBox>

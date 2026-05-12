@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../css/styleMateriel.css"
+      fx:controller="pro.revive.controllers.ControllersMateriel.MaterielFormController"
+      styleClass="form-root"
+      spacing="0"
+      prefWidth="500">
+
+    <!-- HEADER du formulaire -->
+    <VBox styleClass="form-header" spacing="4">
+        <Label fx:id="lblTitre" text="Nouveau Matériel" styleClass="form-title"/>
+        <Label text="Remplissez les informations de l'équipement" styleClass="form-subtitle"/>
+    </VBox>
+
+    <!-- CORPS du formulaire -->
+    <VBox styleClass="form-body" spacing="18">
+
+        <!-- Nom -->
+        <VBox spacing="6">
+            <Label text="Nom du matériel *" styleClass="field-label"/>
+            <TextField fx:id="txtNom"
+                       promptText="Ex : Défibrillateur Zoll"
+                       styleClass="field-input"/>
+        </VBox>
+
+        <!-- Salle -->
+        <VBox spacing="6">
+            <Label text="Salle affectée" styleClass="field-label"/>
+            <ComboBox fx:id="cmbSalle"
+                      promptText="Réserve (aucune salle)"
+                      styleClass="combo-box"
+                      maxWidth="Infinity"/>
+            <Label text="Laisser 'Réserve' si le matériel n'est pas affecté à une salle."
+                   styleClass="field-hint"/>
+        </VBox>
+
+        <!-- Date de maintenance -->
+        <VBox spacing="6">
+            <Label text="Date de dernière maintenance *" styleClass="field-label"/>
+            <DatePicker fx:id="dpMaintenance"
+                        promptText="jj/mm/aaaa"
+                        styleClass="field-input"
+                        maxWidth="Infinity"/>
+        </VBox>
+
+        <!-- État -->
+        <VBox spacing="6">
+            <Label text="État *" styleClass="field-label"/>
+            <ComboBox fx:id="cmbEtat"
+                      promptText="Sélectionner l'état"
+                      styleClass="combo-box"
+                      maxWidth="Infinity"/>
+        </VBox>
+
+        <!-- Quantité -->
+        <VBox spacing="6">
+            <Label text="Quantité *" styleClass="field-label"/>
+            <Spinner fx:id="spnQuantite"
+                     styleClass="field-input"
+                     prefWidth="120"/>
+        </VBox>
+
+        <!-- Message d'erreur -->
+        <Label fx:id="lblErreur"
+               text=""
+               styleClass="error-label"
+               wrapText="true"/>
+
+    </VBox>
+
+    <!-- BOUTONS -->
+    <HBox styleClass="form-footer" spacing="12" alignment="CENTER_RIGHT">
+        <Button fx:id="btnAnnuler"
+                text="Annuler"
+                styleClass="btn-cancel"
+                onAction="#onAnnuler"/>
+        <Button fx:id="btnEnregistrer"
+                text="Enregistrer"
+                styleClass="btn-save"
+                onAction="#onEnregistrer"
+                defaultButton="true"/>
+    </HBox>
+
+</VBox>

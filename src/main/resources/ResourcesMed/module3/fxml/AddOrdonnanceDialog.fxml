@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMed.AddOrdonnanceController"
+            styleClass="main-pane"
+            prefWidth="480" prefHeight="400">
+
+    <!-- ══ HEADER ═══════════════════════════════════════════════════════ -->
+    <top>
+        <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <HBox spacing="6" alignment="CENTER_LEFT">
+                    <Label text="Ordonnances  ›" styleClass="header-subtitle"/>
+                    <Label fx:id="labelConsultationId" text="Consultation #—"
+                           styleClass="header-subtitle"/>
+                </HBox>
+                <Label text="Ajouter une ordonnance" styleClass="header-title"/>
+            </VBox>
+        </HBox>
+    </top>
+
+    <!-- ══ FORMULAIRE ═══════════════════════════════════════════════════ -->
+    <center>
+        <VBox styleClass="content-area" spacing="14">
+
+            <VBox styleClass="card" spacing="14">
+
+                <!-- Médicament -->
+                <VBox spacing="4">
+                    <Label text="Médicament *" styleClass="form-label"/>
+                    <TextField fx:id="fieldMedicament"
+                               promptText="Ex : Paracétamol 1g, Amoxicilline 500mg…"
+                               maxWidth="Infinity"/>
+                    <!-- Feature 3 — Alerte interaction medicamenteuse -->
+                    <Label fx:id="lblInteraction" text=""
+                           style="-fx-font-size: 11px;" wrapText="true"/>
+                </VBox>
+
+                <!-- Posologie -->
+                <VBox spacing="4">
+                    <Label text="Posologie *" styleClass="form-label"/>
+                    <TextArea fx:id="areaPosologie"
+                              promptText="Ex : 1 comprimé 3 fois par jour, pendant les repas…"
+                              prefRowCount="3" wrapText="true"/>
+                </VBox>
+
+                <!-- Durée -->
+                <VBox spacing="4">
+                    <Label text="Durée (jours) *" styleClass="form-label"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Spinner fx:id="spinnerDuree" prefWidth="130" editable="true"/>
+                        <Label text="jour(s)" styleClass="info-label"/>
+                    </HBox>
+                </VBox>
+
+            </VBox>
+        </VBox>
+    </center>
+
+    <!-- ══ BOUTONS + FOOTER ═════════════════════════════════════════════ -->
+    <bottom>
+        <VBox>
+            <HBox styleClass="action-bar" spacing="10" alignment="CENTER_RIGHT">
+                <padding><Insets top="12" bottom="12" left="20" right="20"/></padding>
+                <Button fx:id="btnAnnuler" text="Annuler"
+                        styleClass="btn-outline"
+                        onAction="#onAnnuler"
+                        prefHeight="36" prefWidth="100"/>
+                <Button fx:id="btnValider" text="✔  Valider"
+                        styleClass="btn-success"
+                        onAction="#onValider"
+                        prefHeight="36" prefWidth="130"/>
+            </HBox>
+            <HBox styleClass="footer-bar" alignment="CENTER">
+                <Label text="REVIVE — Système de Gestion des Urgences" styleClass="footer-label"/>
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

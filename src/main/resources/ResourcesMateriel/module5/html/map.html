@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ambulance Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- LEAFET_CSS_REPLACED_BY_JAVA -->
+    <!-- LEAFLET_JS_REPLACED_BY_JAVA -->
+    <style>
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: #0f172a;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+        }
+        .ambulance-icon {
+            font-size: 24px;
+        }
+        /* Remove the default white background Leaflet puts on divIcons */
+        .leaflet-div-icon {
+            background: transparent !important;
+            border: none !important;
+        }
+        /*
+         * JavaFX WebKit compositing fix:
+         * Leaflet uses CSS translate3d() for hardware-accelerated tile positioning.
+         * JavaFX's WebKit compositor doesn't handle translate3d properly — tiles
+         * end up in wrong positions or overlap.
+         * Force Leaflet to fall back to simple CSS top/left positioning.
+         */
+        .leaflet-container .leaflet-tile-pane,
+        .leaflet-container .leaflet-tile-container,
+        .leaflet-container .leaflet-overlay-pane,
+        .leaflet-container .leaflet-marker-pane,
+        .leaflet-container .leaflet-shadow-pane,
+        .leaflet-container .leaflet-popup-pane {
+            -webkit-transform: none !important;
+            transform: none !important;
+        }
+        /*
+         * Ensure the tile pane uses simple left/top positioning.
+         * Leaflet will fall back to this if translate3d is not available.
+         */
+        .leaflet-container .leaflet-map-pane {
+            -webkit-transform: none !important;
+            transform: none !important;
+        }
+        /* Disable all CSS transitions in JavaFX WebKit — they cause stuttering */
+        .leaflet-tile,
+        .leaflet-tile-container,
+        .leaflet-tile-pane,
+        .leaflet-map-pane,
+        .leaflet-overlay-pane,
+        .leaflet-marker-pane {
+            -webkit-transition: none !important;
+            transition: none !important;
+        }
+        /* Fix tile images rendering */
+        .leaflet-tile {
+            -webkit-backface-visibility: hidden;
+            image-rendering: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script>
+        console.log('[Map] Leaflet loaded, initializing map...');
+
+        // ── Disable CSS 3D transforms for JavaFX WebKit ──────────────
+        // Leaflet auto-detects 3D transform support and uses translate3d()
+        // for tile positioning. JavaFX WebKit says it supports it, but the
+        // compositor doesn't render correctly, producing black rectangles
+        // and misaligned tiles. Force Leaflet to use simple positioning.
+        L.Browser.any3d = false;
+        L.Browser.ie3d = false;
+        L.Browser.webkit3d = false;
+        L.Browser.gecko3d = false;
+
+        // Also disable CSS transforms entirely for tile positioning
+        if (L.DomUtil && L.DomUtil.TRANSFORM) {
+            // Keep 2D transform string but make sure 3d is off
+            L.DomUtil.TRANSITION = '';
+        }
+
+        // ── Map init ──────────────────────────────────────────────────
+        // preferCanvas: false — Canvas renderer causes black rectangles
+        //   in JavaFX WebKit.
+        // zoomAnimation / fadeAnimation off — WebKit in WebView stutters.
+        var map = L.map('map', {
+            zoomControl: false,
+            attributionControl: false,
+            fadeAnimation: false,
+            zoomAnimation: false,
+            markerZoomAnimation: false,
+            zoomSnap: 1,
+            // Explicitly disable 3D transform for the map pane
+            // (belt-and-suspenders with L.Browser.any3d = false above)
+            preferCanvas: false
+        }).setView([36.8065, 10.1815], 13);
+
+        console.log('[Map] Map initialized, container size:',
+            document.getElementById('map').offsetWidth + 'x' + document.getElementById('map').offsetHeight);
+
+        // Suppress warnings about missing default icon assets (CSS is inlined)
+        L.Icon.Default.prototype.options.imagePath = '';
+
+        // Tile layer — crossOrigin is intentionally omitted.
+        // JavaFX WebKit blocks tiles when crossOrigin:"anonymous" is set because
+        // OpenStreetMap does not send Access-Control-Allow-Origin headers.
+        var tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            keepBuffer: 4,
+            updateWhenIdle: false,
+            updateWhenZooming: false
+        }).addTo(map);
+
+        // Listen for tile errors to diagnose loading issues
+        map.on('tileerror', function(err) {
+            console.error('[Map] Tile error:', err.tile.src, err.error);
+        });
+
+        // Log tile loads for debugging
+        tileLayer.on('loading', function() { console.log('[Map] Tiles loading...'); });
+        tileLayer.on('load', function() {
+            console.log('[Map] Tiles loaded successfully.');
+            // Extra invalidateSize after all tiles loaded to fix any remaining misalignment
+            setTimeout(function() { map.invalidateSize(false); }, 100);
+        });
+
+        // ── invalidateSize — called at multiple intervals ──────────────
+        // JavaFX layout settles in stages; fire at several times.
+        function fixSize() {
+            map.invalidateSize(false);
+            console.log('[Map] invalidateSize called, container:',
+                document.getElementById('map').offsetWidth + 'x' + document.getElementById('map').offsetHeight);
+        }
+        setTimeout(fixSize, 100);
+        setTimeout(fixSize, 300);
+        setTimeout(fixSize, 600);
+        setTimeout(fixSize, 1000);
+        setTimeout(fixSize, 2000);
+        // One more late pass to catch any final layout shift
+        setTimeout(fixSize, 3000);
+
+        // Also hook into window resize so the map heals itself if the
+        // JavaFX stage is resized or the scene graph changes later.
+        window.addEventListener('resize', function() {
+            map.invalidateSize(false);
+        });
+
+        // ResizeObserver on the map div — catches container-only resizes
+        // that don't trigger a window resize event (common in WebView).
+        if (typeof ResizeObserver !== 'undefined') {
+            new ResizeObserver(function() {
+                map.invalidateSize(false);
+            }).observe(document.getElementById('map'));
+        }
+
+        // ── Click → Java ──────────────────────────────────────────────
+        map.on('click', function(e) {
+            if (window.javaConnector) {
+                window.javaConnector.onMapClick(e.latlng.lat, e.latlng.lng);
+            }
+        });
+
+        var markers         = {};
+        var routeLine       = null;
+        var ambulanceMarker = null;
+        var animFrameId     = null;
+
+        // ── Markers ───────────────────────────────────────────────────
+        function setMarker(id, lat, lon, label, iconText) {
+            if (markers[id]) map.removeLayer(markers[id]);
+            var icon = L.divIcon({
+                html: '<div style="font-size:26px;line-height:1;">' + iconText + '</div>',
+                className: '',          // empty string removes Leaflet's white-box default
+                iconSize:   [32, 32],
+                iconAnchor: [16, 16]
+            });
+            markers[id] = L.marker([lat, lon], { icon: icon }).addTo(map).bindPopup(label);
+            autoZoom();
+        }
+
+        function autoZoom() {
+            var group = new L.featureGroup(Object.values(markers));
+            if (group.getLayers().length > 0) {
+                map.fitBounds(group.getBounds(), { padding: [60, 60], animate: false });
+            }
+        }
+
+        // ── Route drawing ─────────────────────────────────────────────
+        function drawRoute(coordinates) {
+            if (routeLine) map.removeLayer(routeLine);
+            routeLine = L.polyline(coordinates, {
+                color: '#3b82f6',
+                weight: 4,
+                opacity: 0.8,
+                smoothFactor: 1.5
+            }).addTo(map);
+        }
+
+        // ── Ambulance animation — capped at 30 fps ────────────────────
+        function animateAmbulance(coordinates, durationSeconds) {
+            if (ambulanceMarker) map.removeLayer(ambulanceMarker);
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+
+            var icon = L.divIcon({
+                html: '<div style="font-size:26px;line-height:1;">🚑</div>',
+                className: '',
+                iconSize:   [32, 32],
+                iconAnchor: [16, 16]
+            });
+            ambulanceMarker = L.marker(coordinates[0], { icon: icon }).addTo(map);
+
+            var totalPoints = coordinates.length;
+            var totalMs     = durationSeconds * 1000;
+
+            // Sub-sample long routes to stay near 30 fps
+            var step = Math.max(1, Math.floor(totalPoints / 300));
+            var sampled = [];
+            for (var i = 0; i < totalPoints; i += step) sampled.push(coordinates[i]);
+            if (sampled[sampled.length - 1] !== coordinates[totalPoints - 1]) {
+                sampled.push(coordinates[totalPoints - 1]);
+            }
+
+            var msPerStep = Math.max(33, totalMs / sampled.length);
+            var index     = 0;
+            var lastTime  = performance.now();
+
+            function move(now) {
+                if (now - lastTime >= msPerStep) {
+                    if (index < sampled.length) {
+                        ambulanceMarker.setLatLng(sampled[index++]);
+                        lastTime = now;
+                    }
+                }
+                if (index < sampled.length) {
+                    animFrameId = requestAnimationFrame(move);
+                } else {
+                    ambulanceMarker.setLatLng(sampled[sampled.length - 1]);
+                    animFrameId = null;
+                }
+            }
+            animFrameId = requestAnimationFrame(move);
+        }
+
+        // ── Clear ─────────────────────────────────────────────────────
+        function clearMap() {
+            if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
+            Object.values(markers).forEach(function(m) { map.removeLayer(m); });
+            markers = {};
+            if (routeLine)       { map.removeLayer(routeLine);       routeLine = null; }
+            if (ambulanceMarker) { map.removeLayer(ambulanceMarker); ambulanceMarker = null; }
+        }
+
+        // ── Show existing trip (called from Java for live tracking) ───
+        function afficherTrajetExistant(baseLat, baseLon, urgLat, urgLon,
+                                        depart, urgence, distanceKm, dureeMin) {
+            clearMap();
+            setMarker('base',    baseLat, baseLon, '🏥 ' + depart,  '🏥');
+            setMarker('urgence', urgLat,  urgLon,  '🚨 ' + urgence, '🚨');
+
+            var osrmUrl = 'https://router.project-osrm.org/route/v1/driving/' +
+                          baseLon + ',' + baseLat + ';' +
+                          urgLon  + ',' + urgLat  +
+                          '?overview=full&geometries=geojson';
+
+            var controller = new AbortController();
+            var timeoutId  = setTimeout(function() { controller.abort(); }, 8000);
+
+            fetch(osrmUrl, { signal: controller.signal })
+                .then(function(r) { clearTimeout(timeoutId); return r.json(); })
+                .then(function(data) {
+                    if (data.routes && data.routes.length > 0) {
+                        var coords = data.routes[0].geometry.coordinates.map(function(c) {
+                            return [c[1], c[0]];
+                        });
+                        drawRoute(coords);
+
+                        var ambIcon = L.divIcon({
+                            html: '<div style="font-size:26px;line-height:1;">🚑</div>',
+                            className: '',
+                            iconSize: [32, 32], iconAnchor: [16, 16]
+                        });
+                        if (ambulanceMarker) map.removeLayer(ambulanceMarker);
+                        ambulanceMarker = L.marker([baseLat, baseLon], { icon: ambIcon }).addTo(map);
+                        ambulanceMarker.bindPopup(
+                            '🚑 En mission<br>' + distanceKm.toFixed(1) + ' km — ' + dureeMin + ' min'
+                        );
+
+                        var group = new L.featureGroup([markers['base'], markers['urgence']]);
+                        map.fitBounds(group.getBounds(), { padding: [60, 60], animate: false });
+                    } else {
+                        drawRoute([[baseLat, baseLon], [urgLat, urgLon]]);
+                    }
+                })
+                .catch(function() {
+                    clearTimeout(timeoutId);
+                    drawRoute([[baseLat, baseLon], [urgLat, urgLon]]);
+                });
+
+            return 'SUCCESS';
+        }
+    </script>
+</body>
+</html>

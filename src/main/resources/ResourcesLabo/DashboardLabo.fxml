@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.chart.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="pro.revive.controllers.ControllersLabo.DashboardController"
+            prefWidth="1200" prefHeight="780"
+            stylesheets="@css/labo.css">
+
+    <!-- ── SIDEBAR ── -->
+    <left>
+        <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+            <VBox styleClass="logo-wrap">
+                <ImageView fitWidth="170" preserveRatio="true" pickOnBounds="true">
+                    <image><Image url="@Images/logo_revive.png"/></image>
+                </ImageView>
+                <Label styleClass="logo-sub" text="Laboratoire &amp; Imagerie Médicale"/>
+            </VBox>
+
+            <Label styleClass="nav-section" text="NAVIGATION"/>
+
+            <Button mnemonicParsing="false" styleClass="nav-item, active"
+                    text="🏠  Tableau de Bord" onAction="#showDashboard"/>
+            <Button mnemonicParsing="false" styleClass="nav-item"
+                    text="🔬  Examens Demandés" onAction="#showExamens"
+                    onMouseEntered="#onSidebarHoverEnter" onMouseExited="#onSidebarHoverExit"/>
+            <Button mnemonicParsing="false" styleClass="nav-item"
+                    text="📋  Résultats d'Examens" onAction="#showResultats"
+                    onMouseEntered="#onSidebarHoverEnter" onMouseExited="#onSidebarHoverExit"/>
+            <Button mnemonicParsing="false" styleClass="nav-item"
+                    text="📄  Rapport du Biologiste" onAction="#showRapport"
+                    onMouseEntered="#onSidebarHoverEnter" onMouseExited="#onSidebarHoverExit"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <VBox styleClass="sidebar-card">
+                <Label styleClass="sc-title" text="MODULE"/>
+                <Label styleClass="sc-alert" text="Labo &amp; Imagerie"/>
+                <Label style="-fx-text-fill: rgba(255,255,255,0.50); -fx-font-size: 10px;" text="v2.0"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ── MAIN ── -->
+    <center>
+        <VBox styleClass="main" BorderPane.alignment="CENTER">
+
+            <!-- Topbar -->
+            <HBox styleClass="topbar">
+                <VBox spacing="2">
+                    <Label styleClass="page-title" text="Tableau de Bord"/>
+                    <Label fx:id="lblDate" styleClass="page-sub" text="..."/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox styleClass="user-chip">
+                    <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label styleClass="user-name" text="Biologiste"/>
+                        <Label styleClass="user-role" text="Labo &amp; Imagerie"/>
+                    </VBox>
+                    <Label styleClass="user-av" text="B"/>
+                </HBox>
+            </HBox>
+            <Region styleClass="topbar-stripe"/>
+
+            <!-- Scrollable content area -->
+            <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+                <content>
+                    <VBox spacing="0">
+
+                        <!-- Stat cards -->
+                        <HBox styleClass="stats-row" spacing="16">
+                            <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS">
+                                <Label styleClass="stat-lbl" text="Total Examens"/>
+                                <Label fx:id="lblExamensJour" styleClass="stat-val, blue" text="0"/>
+                                <Label styleClass="stat-hint" text="examens enregistrés"/>
+                            </VBox>
+                            <VBox styleClass="stat-card, green" HBox.hgrow="ALWAYS">
+                                <Label styleClass="stat-lbl" text="Total Résultats"/>
+                                <Label fx:id="lblResultatsTotal" styleClass="stat-val, green" text="0"/>
+                                <Label styleClass="stat-hint" text="résultats disponibles"/>
+                            </VBox>
+                            <VBox styleClass="stat-card, orange" HBox.hgrow="ALWAYS">
+                                <Label styleClass="stat-lbl" text="Urgents en Attente"/>
+                                <Label fx:id="lblUrgentsAttente" styleClass="stat-val, orange" text="0"/>
+                                <Label styleClass="stat-hint" text="examens urgents non réalisés"/>
+                            </VBox>
+                            <VBox styleClass="stat-card, red" HBox.hgrow="ALWAYS">
+                                <Label styleClass="stat-lbl" text="Résultats Graves"/>
+                                <Label fx:id="lblResultatsCritiques" styleClass="stat-val, red" text="0"/>
+                                <Label styleClass="stat-hint" text="nécessitent attention urgente"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Content row: Notifications + Chart -->
+                        <HBox styleClass="content-row" spacing="18">
+
+                            <!-- Notifications panel -->
+                            <VBox styleClass="patients-panel" HBox.hgrow="ALWAYS" minHeight="420">
+                                <HBox styleClass="panel-hdr">
+                                    <HBox spacing="12" alignment="CENTER_LEFT">
+                                        <Label styleClass="section-title" text="🔔  Demandes des Médecins"/>
+                                        <HBox alignment="CENTER"
+                                              style="-fx-background-color: #EF4444; -fx-background-radius: 20; -fx-padding: 3 11;">
+                                            <Label fx:id="lblBadgeNotifs" text="0"
+                                                   style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px;"/>
+                                        </HBox>
+                                    </HBox>
+                                </HBox>
+                                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 10px; -fx-padding: 4 18;"
+                                       text="Consultations avec statut : Envoyée — en attente de traitement"/>
+                                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll">
+                                    <VBox fx:id="containerNotifsMedecins" spacing="0"
+                                          style="-fx-padding: 14 18;"/>
+                                </ScrollPane>
+                            </VBox>
+
+                            <!-- Chart panel -->
+                            <VBox styleClass="rooms-panel" spacing="14" prefWidth="295" minHeight="420">
+                                <HBox styleClass="panel-hdr" spacing="12" alignment="CENTER_LEFT">
+                                    <Label styleClass="section-title" text="📊  Répartition des Résultats"/>
+                                </HBox>
+                                <PieChart fx:id="pieResultats"
+                                          prefHeight="215"
+                                          labelsVisible="true"
+                                          legendVisible="false"
+                                          style="-fx-font-size: 11px; -fx-padding: 0 12;"/>
+                                <VBox spacing="10" style="-fx-padding: 4 16 16 16;">
+                                    <HBox spacing="12" alignment="CENTER_LEFT"
+                                          style="-fx-background-color: #F0FDF4; -fx-padding: 11 16; -fx-background-radius: 14;
+                                                 -fx-border-color: rgba(22,163,74,0.18); -fx-border-radius: 14; -fx-border-width: 1;">
+                                        <Region prefWidth="10" prefHeight="10"
+                                                style="-fx-background-color: #16A34A; -fx-background-radius: 5;"/>
+                                        <Label text="Propre (Normal)"
+                                               style="-fx-text-fill: #15803D; -fx-font-size: 11px; -fx-font-weight: bold;"
+                                               HBox.hgrow="ALWAYS"/>
+                                        <Label fx:id="lblPctPropre" text="0%"
+                                               style="-fx-text-fill: #16A34A; -fx-font-size: 17px; -fx-font-weight: bold;"/>
+                                    </HBox>
+                                    <HBox spacing="12" alignment="CENTER_LEFT"
+                                          style="-fx-background-color: #FEF2F2; -fx-padding: 11 16; -fx-background-radius: 14;
+                                                 -fx-border-color: rgba(220,38,38,0.16); -fx-border-radius: 14; -fx-border-width: 1;">
+                                        <Region prefWidth="10" prefHeight="10"
+                                                style="-fx-background-color: #DC2626; -fx-background-radius: 5;"/>
+                                        <Label text="Critique (Grave)"
+                                               style="-fx-text-fill: #B91C1C; -fx-font-size: 11px; -fx-font-weight: bold;"
+                                               HBox.hgrow="ALWAYS"/>
+                                        <Label fx:id="lblPctCritique" text="0%"
+                                               style="-fx-text-fill: #DC2626; -fx-font-size: 17px; -fx-font-weight: bold;"/>
+                                    </HBox>
+                                </VBox>
+                            </VBox>
+
+                        </HBox>
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+        </VBox>
+    </center>
+
+</BorderPane>

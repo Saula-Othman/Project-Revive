@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMed.DashboardController"
+            prefWidth="1200" prefHeight="800"
+            stylesheets="@../css/revive-dark.css">
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SIDEBAR — Harmonisée avec module Triage
+         ══════════════════════════════════════════════════════════════════ -->
+    <left>
+        <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+            
+            <!-- Logo -->
+            <VBox styleClass="logo-wrap">
+                <ImageView fitWidth="170.0" preserveRatio="true" pickOnBounds="true">
+                    <image><Image url="@../images/logo.png" /></image>
+                </ImageView>
+                <Label styleClass="logo-sub" text="Systeme de Gestion des Urgences" />
+            </VBox>
+            
+            <!-- Navigation -->
+            <Label styleClass="nav-section" text="MENU" />
+            <Button mnemonicParsing="false" styleClass="nav-item, active" 
+                    text="🏠  Tableau de Bord" onAction="#goDashboard" />
+            <Button mnemonicParsing="false" styleClass="nav-item" 
+                    text="📋  Consultations" onAction="#handleNavConsultations" />
+            <Button mnemonicParsing="false" styleClass="nav-item" 
+                    text="➕  Nouvelle Consultation" onAction="#handleNavAjouter" />
+            <Button mnemonicParsing="false" styleClass="nav-item" 
+                    text="💊  Ordonnances" onAction="#handleNavListe" />
+            
+            <Region VBox.vgrow="ALWAYS" />
+            
+            <!-- Sidebar Card — Stats -->
+            <VBox styleClass="sidebar-card">
+                <Label styleClass="sc-title" text="STATISTIQUES" />
+                <Label fx:id="lblSideTotal" styleClass="sc-alert" text="— consultations" />
+                <Label fx:id="lblSideOrdos" styleClass="sc-title" text="— ordonnances" />
+                <Button mnemonicParsing="false" styleClass="sc-btn" 
+                        text="Deconnexion" />
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         MAIN CONTENT
+         ══════════════════════════════════════════════════════════════════ -->
+    <center>
+        <VBox styleClass="main" BorderPane.alignment="CENTER">
+
+            <!-- ── TOPBAR ────────────────────────────────────────────── -->
+            <HBox styleClass="topbar">
+                <VBox spacing="2">
+                    <Label styleClass="page-sub" text="Module 3 — Urgences" />
+                    <Label styleClass="page-title" text="Tableau de Bord" />
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button mnemonicParsing="false" styleClass="btn-refresh" 
+                        text="Actualiser" onAction="#handleRefresh" />
+                <Button mnemonicParsing="false" styleClass="btn, btn-primary" 
+                        text="📄  Exporter PDF" onAction="#handleExportRapport" />
+                <HBox styleClass="user-chip">
+                    <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label styleClass="user-name" text="Dr. Utilisateur" />
+                        <Label styleClass="user-role" text="Medecin Urgentiste" />
+                    </VBox>
+                    <Label styleClass="user-av" text="U" />
+                </HBox>
+            </HBox>
+            <Region styleClass="topbar-stripe" />
+
+            <!-- ── STAT CARDS (Réduit à 4 pour éviter surcharge cognitive) ── -->
+            <HBox styleClass="stats-row" spacing="16.0">
+                <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS">
+                    <Label styleClass="stat-lbl" text="Total Actifs" />
+                    <Label fx:id="lblTotal" styleClass="stat-val, blue" text="0" />
+                    <Label styleClass="stat-hint" text="consultations" />
+                </VBox>
+                <VBox styleClass="stat-card, orange" HBox.hgrow="ALWAYS">
+                    <Label styleClass="stat-lbl" text="En cours" />
+                    <Label fx:id="lblEnCours" styleClass="stat-val, orange" text="0" />
+                    <Label styleClass="stat-hint" text="actives" />
+                </VBox>
+                <VBox styleClass="stat-card, green" HBox.hgrow="ALWAYS">
+                    <Label styleClass="stat-lbl" text="Cloturees" />
+                    <Label fx:id="lblCloturees" styleClass="stat-val, green" text="0" />
+                    <Label styleClass="stat-hint" text="terminees" />
+                </VBox>
+                <VBox styleClass="stat-card, red" HBox.hgrow="ALWAYS">
+                    <Label styleClass="stat-lbl" text="Ordonnances" />
+                    <Label fx:id="lblOrdos" styleClass="stat-val, red" text="0" />
+                    <Label styleClass="stat-hint" text="prescriptions" />
+                </VBox>
+            </HBox>
+
+            <!-- ── SCROLLABLE CONTENT ─────────────────────────────────── -->
+            <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+                <VBox spacing="0">
+
+                    <!-- Section : Statistiques Rapides -->
+                    <VBox style="-fx-padding: 16px 28px 0px 28px; -fx-spacing: 12px;">
+                        <Label text="📊  Statistiques Rapides" 
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; 
+                                      -fx-text-fill: #0B4EA2;" />
+                        <HBox spacing="16.0">
+                            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="8">
+                                <Label text="Aujourd'hui" styleClass="stat-lbl" />
+                                <Label fx:id="lblAujourdhui" styleClass="stat-val, blue" 
+                                       text="0" style="-fx-font-size: 28px;" />
+                                <Label text="consultations" styleClass="stat-hint" />
+                            </VBox>
+                            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="8">
+                                <Label text="Cette semaine" styleClass="stat-lbl" />
+                                <Label fx:id="lblSemaine" styleClass="stat-val, orange" 
+                                       text="0" style="-fx-font-size: 28px;" />
+                                <Label text="consultations" styleClass="stat-hint" />
+                            </VBox>
+                            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="8">
+                                <Label text="Duree moyenne" styleClass="stat-lbl" />
+                                <Label fx:id="lblDureeMoy" styleClass="stat-val, green" 
+                                       text="—" style="-fx-font-size: 28px;" />
+                                <Label text="par consultation" styleClass="stat-hint" />
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Section : Graphiques -->
+                    <VBox style="-fx-padding: 16px 28px 0px 28px; -fx-spacing: 12px;">
+                        <Label text="📈  Analyses Visuelles" 
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; 
+                                      -fx-text-fill: #0B4EA2;" />
+                        <HBox spacing="16.0">
+                            <!-- PieChart orientations -->
+                            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
+                                <Label text="Repartition par Orientation" 
+                                       styleClass="section-title"/>
+                                <PieChart fx:id="pieOrientation"
+                                          prefHeight="260"
+                                          labelsVisible="true"
+                                          legendVisible="true"
+                                          style="-fx-background-color: transparent;"/>
+                            </VBox>
+
+                            <!-- BarChart activite 7 jours -->
+                            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
+                                <Label text="Activite — 7 derniers jours" 
+                                       styleClass="section-title"/>
+                                <BarChart fx:id="barActivite" prefHeight="260"
+                                          style="-fx-background-color: transparent;"
+                                          animated="true" legendVisible="false">
+                                    <xAxis><CategoryAxis fx:id="barXAxis"/></xAxis>
+                                    <yAxis><NumberAxis fx:id="barYAxis" minorTickCount="1"/></yAxis>
+                                </BarChart>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Section : Top Médecins + Activité Récente -->
+                    <VBox style="-fx-padding: 16px 28px 24px 28px; -fx-spacing: 12px;">
+                        <Label text="👥  Performance & Activité" 
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; 
+                                      -fx-text-fill: #0B4EA2;" />
+                        <HBox spacing="16.0">
+                            <!-- Top medecins -->
+                            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="12" 
+                                  prefWidth="380">
+                                <HBox alignment="CENTER_LEFT">
+                                    <Label text="Top Medecins" styleClass="section-title"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Label text="par consultations" styleClass="info-label"/>
+                                </HBox>
+                                <VBox fx:id="vboxTopMedecins" spacing="0"/>
+                            </VBox>
+
+                            <!-- Activite recente -->
+                            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
+                                <HBox alignment="CENTER_LEFT">
+                                    <Label text="Activite Recente" styleClass="section-title"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Label text="5 dernieres consultations" 
+                                           styleClass="info-label"/>
+                                </HBox>
+                                <VBox fx:id="vboxRecent" spacing="8"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+            <!-- ── FOOTER ──────────────────────────────────────────────── -->
+            <HBox styleClass="footer" alignment="CENTER">
+                <Label styleClass="footer-label" 
+                       text="REVIVE — Systeme de Gestion des Urgences  |  Module 3 : Consultation Medicale" />
+            </HBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>

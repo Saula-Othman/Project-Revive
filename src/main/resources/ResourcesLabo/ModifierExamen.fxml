@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="pro.revive.controllers.ControllersLabo.ModifierExamenController"
+            prefWidth="660" prefHeight="580"
+            stylesheets="@css/labo.css">
+
+    <!-- ── TOPBAR ── -->
+    <top>
+        <HBox styleClass="topbar" spacing="14" alignment="CENTER_LEFT">
+            <StackPane>
+                <Region prefWidth="42" prefHeight="42"
+                        style="-fx-background-color: rgba(255,255,255,0.18); -fx-background-radius: 12;"/>
+                <Label text="✏" style="-fx-font-size: 22px;"/>
+            </StackPane>
+            <VBox spacing="2">
+                <Label styleClass="page-title" text="Modifier un Examen"/>
+                <Label styleClass="page-sub" text="Mise à jour des informations de l'examen"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox styleClass="user-chip">
+                <Label text="🏥" style="-fx-font-size: 13px;"/>
+                <Label text="Labo &amp; Imagerie"
+                       style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- ── FORMULAIRE ── -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="scroll"
+                    style="-fx-background-color: #EEF4FB; -fx-background: #EEF4FB;">
+            <StackPane style="-fx-padding: 28 32; -fx-background-color: #EEF4FB;">
+                <VBox spacing="16" maxWidth="560" styleClass="card">
+
+                    <!-- En-tête carte -->
+                    <HBox spacing="14" alignment="CENTER_LEFT">
+                        <StackPane>
+                            <Region prefWidth="46" prefHeight="46"
+                                    style="-fx-background-color: rgba(8,145,178,0.10); -fx-background-radius: 14;"/>
+                            <Label text="✏" style="-fx-font-size: 22px; -fx-text-fill: #0891B2;"/>
+                        </StackPane>
+                        <VBox spacing="3">
+                            <Label text="Modifier l'Examen"
+                                   style="-fx-text-fill: #0891B2; -fx-font-size: 19px; -fx-font-weight: bold;"/>
+                            <Label text="Modifiez les informations ci-dessous" styleClass="field-hint"/>
+                        </VBox>
+                    </HBox>
+
+                    <Region prefHeight="1"
+                            style="-fx-background-color: linear-gradient(to right, #DBEAFE, #CFFAFE);"/>
+
+                    <!-- Patient (lecture seule) -->
+                    <VBox spacing="6">
+                        <HBox spacing="6" alignment="CENTER_LEFT">
+                            <Label text="Patient" styleClass="field-label"/>
+                            <Label text="(non modifiable)"
+                                   style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;
+                                          -fx-background-color: #F1F5F9; -fx-padding: 2 8; -fx-background-radius: 6;"/>
+                        </HBox>
+                        <HBox styleClass="info-item">
+                            <Label fx:id="lblIdConsultationVal"
+                                   style="-fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Type d'examen -->
+                    <VBox spacing="6">
+                        <Label text="Type d'examen *" styleClass="field-label"/>
+                        <Label text="Description textuelle (ex : Radiographie, IRM, Analyse sanguine…)"
+                               styleClass="field-hint"/>
+                        <TextField fx:id="tfTypeExamen"
+                                   promptText="Ex : Radiographie, IRM, Analyse sanguine"
+                                   styleClass="text-field"/>
+                        <Label fx:id="lblErrTypeExamen" styleClass="error-label"/>
+                    </VBox>
+
+                    <!-- Statut -->
+                    <VBox spacing="6">
+                        <Label text="Statut" styleClass="field-label"/>
+                        <ComboBox fx:id="cbStatut" maxWidth="Infinity" styleClass="combo-box"/>
+                    </VBox>
+
+                    <!-- Urgent -->
+                    <CheckBox fx:id="cbUrgent" text="⚠  Examen urgent"
+                              style="-fx-text-fill: #EA580C; -fx-font-weight: bold; -fx-font-size: 13px;"/>
+
+                    <Region prefHeight="1"
+                            style="-fx-background-color: linear-gradient(to right, #DBEAFE, #CFFAFE);"/>
+
+                    <!-- Boutons -->
+                    <HBox spacing="14">
+                        <VBox alignment="CENTER" spacing="4">
+                            <Button onAction="#handleModifier" text="✏️"
+                                    style="-fx-background-color: linear-gradient(to bottom right, #0891B2, #0EA5E9);
+                                           -fx-text-fill: white; -fx-font-size: 22px; -fx-background-radius: 16;
+                                           -fx-min-width: 58; -fx-min-height: 58; -fx-cursor: hand;
+                                           -fx-effect: dropshadow(gaussian,rgba(8,145,178,0.45),12,0,0,4);"
+                                    onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                            <Label text="Enregistrer"
+                                   style="-fx-text-fill: #0891B2; -fx-font-size: 10px; -fx-font-weight: bold;"/>
+                        </VBox>
+                    </HBox>
+
+                    <Label fx:id="lblMessage" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+
+                </VBox>
+            </StackPane>
+        </ScrollPane>
+    </center>
+
+    <!-- ── FOOTER ── -->
+    <bottom>
+        <HBox alignment="CENTER" spacing="16" styleClass="footer">
+            <Label text="REVIVE" styleClass="footer-label"
+                   style="-fx-text-fill: rgba(255,255,255,0.80); -fx-font-weight: bold;"/>
+            <Label text="•" styleClass="footer-label"/>
+            <Label text="Laboratoire &amp; Imagerie — Urgences" styleClass="footer-label"/>
+            <Label text="•" styleClass="footer-label"/>
+            <Label text="© 2025" styleClass="footer-label"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="pro.revive.controllers.ControllersLabo.RapportBiologisteController"
+            prefWidth="1200" prefHeight="780"
+            stylesheets="@css/labo.css">
+
+    <!-- ── SIDEBAR ── -->
+    <left>
+        <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+            <VBox styleClass="logo-wrap">
+                <ImageView fitWidth="170" preserveRatio="true" pickOnBounds="true">
+                    <image><Image url="@Images/logo_revive.png"/></image>
+                </ImageView>
+                <Label styleClass="logo-sub" text="Laboratoire &amp; Imagerie Médicale"/>
+            </VBox>
+            <Label styleClass="nav-section" text="NAVIGATION"/>
+            <Button mnemonicParsing="false" styleClass="nav-item"
+                    text="🏠  Tableau de Bord" onAction="#showDashboard"
+                    onMouseEntered="#onSidebarHoverEnter" onMouseExited="#onSidebarHoverExit"/>
+            <Button mnemonicParsing="false" styleClass="nav-item"
+                    text="🔬  Examens Demandés" onAction="#showExamens"
+                    onMouseEntered="#onSidebarHoverEnter" onMouseExited="#onSidebarHoverExit"/>
+            <Button mnemonicParsing="false" styleClass="nav-item"
+                    text="📋  Résultats d'Examens" onAction="#showResultats"
+                    onMouseEntered="#onSidebarHoverEnter" onMouseExited="#onSidebarHoverExit"/>
+            <Button mnemonicParsing="false" styleClass="nav-item, active"
+                    text="📄  Rapport du Biologiste" onAction="#showRapport"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <VBox styleClass="sidebar-card">
+                <Label styleClass="sc-title" text="MODULE"/>
+                <Label styleClass="sc-alert" text="Labo &amp; Imagerie"/>
+                <Label style="-fx-text-fill: rgba(255,255,255,0.50); -fx-font-size: 10px;" text="v2.0"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ── MAIN ── -->
+    <center>
+        <VBox styleClass="main" BorderPane.alignment="CENTER">
+            <HBox styleClass="topbar">
+                <VBox spacing="2">
+                    <Label styleClass="page-title" text="Rapport du Biologiste"/>
+                    <Label styleClass="page-sub" text="Synthèse complète des résultats par patient"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox styleClass="user-chip">
+                    <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label styleClass="user-name" text="Biologiste"/>
+                        <Label styleClass="user-role" text="Labo &amp; Imagerie"/>
+                    </VBox>
+                    <Label styleClass="user-av" text="B"/>
+                </HBox>
+            </HBox>
+            <Region styleClass="topbar-stripe"/>
+
+            <VBox spacing="16" style="-fx-padding: 24 28;" VBox.vgrow="ALWAYS">
+
+                <!-- Barre de recherche -->
+                <HBox spacing="12" alignment="CENTER_LEFT"
+                      style="-fx-background-color: white; -fx-background-radius: 16;
+                             -fx-padding: 14 20;
+                             -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.10),12,0,0,4);
+                             -fx-border-color: rgba(11,78,162,0.08); -fx-border-radius: 16; -fx-border-width: 1;">
+                    <Label text="🔍" style="-fx-font-size: 16px;"/>
+                    <TextField fx:id="tfRecherche"
+                               promptText="Rechercher par nom du patient…"
+                               HBox.hgrow="ALWAYS"
+                               styleClass="text-field"/>
+                    <VBox alignment="CENTER" spacing="3">
+                        <Button onAction="#handleRecherche" text="🔍"
+                                style="-fx-background-color: linear-gradient(to right, #0B4EA2, #1D6FD8);
+                                       -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 12;
+                                       -fx-min-width: 44; -fx-min-height: 44; -fx-cursor: hand;
+                                       -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.35),8,0,0,3);"
+                                onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                        <Label text="Chercher" styleClass="stat-hint" style="-fx-font-weight: bold;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="3">
+                        <Button onAction="#handleAfficherTous" text="👥"
+                                style="-fx-background-color: #DBEAFE; -fx-text-fill: #0B4EA2; -fx-font-size: 18px;
+                                       -fx-background-radius: 12; -fx-min-width: 44; -fx-min-height: 44; -fx-cursor: hand;
+                                       -fx-border-color: rgba(11,78,162,0.20); -fx-border-radius: 12;"
+                                onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                        <Label text="Tous" styleClass="stat-hint" style="-fx-font-weight: bold;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Zone d'affichage des rapports -->
+                <SplitPane dividerPositions="0.35" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: transparent;">
+
+                    <!-- Liste des patients -->
+                    <VBox styleClass="patients-panel">
+                        <HBox styleClass="panel-hdr" spacing="10" alignment="CENTER_LEFT">
+                            <StackPane>
+                                <Region prefWidth="30" prefHeight="30"
+                                        style="-fx-background-color: rgba(11,78,162,0.10); -fx-background-radius: 8;"/>
+                                <Label text="👥" style="-fx-font-size: 14px;"/>
+                            </StackPane>
+                            <Label text="Patients" styleClass="section-title"/>
+                        </HBox>
+                        <Region prefHeight="1"
+                                style="-fx-background-color: linear-gradient(to right, #DBEAFE, #CCFBF1);"/>
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll">
+                            <VBox fx:id="containerPatients" spacing="0"/>
+                        </ScrollPane>
+                    </VBox>
+
+                    <!-- Détail du rapport -->
+                    <VBox styleClass="rooms-panel">
+                        <HBox styleClass="panel-hdr" spacing="12" alignment="CENTER_LEFT">
+                            <StackPane>
+                                <Region prefWidth="30" prefHeight="30"
+                                        style="-fx-background-color: rgba(14,155,138,0.10); -fx-background-radius: 8;"/>
+                                <Label text="📄" style="-fx-font-size: 14px;"/>
+                            </StackPane>
+                            <Label text="Rapport Détaillé" styleClass="section-title"
+                                   style="-fx-text-fill: #0E9B8A;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button fx:id="btnTelechargerPdf" onAction="#handleTelechargerPdf"
+                                    text="📥" disable="true"
+                                    style="-fx-background-color: linear-gradient(to bottom right, #0B4EA2, #1D6FD8);
+                                           -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 14;
+                                           -fx-min-width: 46; -fx-min-height: 46; -fx-cursor: hand;
+                                           -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.40),10,0,0,3);"
+                                    onMouseEntered="#onBtnHoverEnter" onMouseExited="#onBtnHoverExit"/>
+                        </HBox>
+                        <Region prefHeight="1"
+                                style="-fx-background-color: linear-gradient(to right, #CCFBF1, #DBEAFE);"/>
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll">
+                            <VBox fx:id="containerRapportDetail" spacing="16" style="-fx-padding: 20;"/>
+                        </ScrollPane>
+                    </VBox>
+
+                </SplitPane>
+
+                <Label fx:id="lblMessage" text=""
+                       style="-fx-text-fill: #0B4EA2; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

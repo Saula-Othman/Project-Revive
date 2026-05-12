@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMed.AfficherConsultationController"
+            prefWidth="1050" prefHeight="680"
+            style="-fx-background-color: #F3F8FF;">
+
+    <!-- ══ SIDEBAR ══ -->
+    <left>
+        <VBox prefWidth="210"
+              style="-fx-background-color: white;
+                     -fx-effect: dropshadow(gaussian, rgba(11,78,162,0.10), 12, 0, 2, 0);"
+              spacing="0">
+
+            <!-- Logo -->
+            <VBox alignment="CENTER"
+                  style="-fx-padding: 22 12 18 12;
+                         -fx-border-color: #E8F0FB; -fx-border-width: 0 0 1 0;">
+                <ImageView fitWidth="120" fitHeight="46" preserveRatio="true">
+                    <image><Image url="@../images/logo.png"/></image>
+                </ImageView>
+                <Label text="Gestion des Urgences"
+                       style="-fx-text-fill: #8AAAD4; -fx-font-size: 10px; -fx-padding: 5 0 0 0;"/>
+            </VBox>
+
+            <!-- Nav items -->
+            <VBox style="-fx-padding: 14 10 0 10;" spacing="4">
+                <Label text="NAVIGATION"
+                       style="-fx-text-fill: #A0B4C8; -fx-font-size: 9px; -fx-font-weight: bold; -fx-padding: 0 0 4 6;"/>
+
+                <Button text="🏠  Tableau de Bord" maxWidth="Infinity"
+                        onAction="#handleNavDashboard"
+                        style="-fx-background-color: transparent; -fx-text-fill: #4A6080;
+                               -fx-font-size: 12px; -fx-alignment: CENTER_LEFT;
+                               -fx-padding: 9 12; -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+                <Button text="🏥  Consultations" maxWidth="Infinity"
+                        style="-fx-background-color: #EBF2FF; -fx-text-fill: #0B4EA2;
+                               -fx-font-size: 12px; -fx-font-weight: bold;
+                               -fx-alignment: CENTER_LEFT; -fx-padding: 9 12;
+                               -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+                <Button text="💊  Ordonnances" maxWidth="Infinity"
+                        onAction="#handleNavOrdonnances"
+                        style="-fx-background-color: transparent; -fx-text-fill: #4A6080;
+                               -fx-font-size: 12px; -fx-alignment: CENTER_LEFT;
+                               -fx-padding: 9 12; -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+                <Button text="➕  Nouvelle Consultation" maxWidth="Infinity"
+                        onAction="#handleAjouter"
+                        style="-fx-background-color: transparent; -fx-text-fill: #4A6080;
+                               -fx-font-size: 12px; -fx-alignment: CENTER_LEFT;
+                               -fx-padding: 9 12; -fx-background-radius: 8; -fx-cursor: hand;"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Stats card -->
+            <VBox style="-fx-background-color: #F0F6FF; -fx-background-radius: 12;
+                         -fx-border-color: #C8DCFF; -fx-border-radius: 12; -fx-border-width: 1;
+                         -fx-padding: 14; -fx-margin: 12;">
+                <padding><Insets top="0" right="10" bottom="16" left="10"/></padding>
+                <Label text="📊 Module 3"
+                       style="-fx-text-fill: #0B4EA2; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                <Label fx:id="lblSideTotal" text="Chargement..."
+                       style="-fx-text-fill: #1D6FD8; -fx-font-size: 10px; -fx-padding: 4 0 2 0;"/>
+                <Label fx:id="lblSideOrdos" text=""
+                       style="-fx-text-fill: #7A9CC0; -fx-font-size: 10px; -fx-padding: 0 0 10 0;"/>
+                <Button text="Déconnexion" maxWidth="Infinity"
+                        style="-fx-background-color: #0B4EA2; -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-font-size: 11px;
+                               -fx-background-radius: 8; -fx-padding: 8 0; -fx-cursor: hand;"/>
+            </VBox>
+
+        </VBox>
+    </left>
+
+    <!-- ══ MAIN ══ -->
+    <center>
+        <VBox style="-fx-background-color: #F3F8FF;" spacing="0">
+
+            <!-- Topbar -->
+            <HBox style="-fx-background-color: white; -fx-padding: 16 24;
+                         -fx-effect: dropshadow(gaussian, rgba(11,78,162,0.07), 8, 0, 0, 2);"
+                  alignment="CENTER_LEFT" spacing="12">
+                <VBox spacing="3">
+                    <Label text="Consultations Médicales"
+                           style="-fx-text-fill: #0F172A; -fx-font-size: 19px; -fx-font-weight: bold;"/>
+                    <Label text="Liste de toutes les consultations — Module 3"
+                           style="-fx-text-fill: #8AAAD4; -fx-font-size: 11px;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="⟳  Actualiser" onAction="#handleRefresh"
+                        style="-fx-background-color: white; -fx-text-fill: #4A6080;
+                               -fx-border-color: #C8D8EE; -fx-border-radius: 9;
+                               -fx-background-radius: 9; -fx-border-width: 1.5;
+                               -fx-font-size: 12px; -fx-font-weight: 600;
+                               -fx-padding: 8 16; -fx-cursor: hand;"/>
+                <Button text="📄  Exporter PDF" onAction="#handleExportPdf"
+                        style="-fx-background-color: #16A34A; -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-font-size: 12px;
+                               -fx-background-radius: 9; -fx-padding: 8 16; -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(22,163,74,0.3), 6, 0, 0, 2);"/>
+                <Button text="➕  Nouvelle Consultation" onAction="#handleAjouter"
+                        style="-fx-background-color: #0B4EA2; -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-font-size: 12px;
+                               -fx-background-radius: 9; -fx-padding: 8 18; -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(11,78,162,0.3), 6, 0, 0, 2);"/>
+                <VBox style="-fx-background-color: #F0F6FF; -fx-background-radius: 18;
+                             -fx-border-color: #C8DCFF; -fx-border-radius: 18;
+                             -fx-border-width: 1; -fx-padding: 7 14;" alignment="CENTER">
+                    <Label text="Dr. Trabelsi Leila"
+                           style="-fx-text-fill: #0F172A; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                    <Label text="Médecin Urgentiste"
+                           style="-fx-text-fill: #8AAAD4; -fx-font-size: 10px;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Page content -->
+            <VBox style="-fx-padding: 20;" spacing="16">
+
+                <!-- Stat cards -->
+                <HBox spacing="14">
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 14;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06),10,0,0,2);
+                                 -fx-padding: 16 18; -fx-border-color: transparent transparent transparent #0B4EA2;
+                                 -fx-border-width: 0 0 0 4;"
+                          HBox.hgrow="ALWAYS" spacing="4">
+                        <Label text="Total" style="-fx-text-fill: #8AAAD4; -fx-font-size: 11px;"/>
+                        <Label fx:id="lblTotal" text="0"
+                               style="-fx-text-fill: #0B4EA2; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                        <Label text="consultations" style="-fx-text-fill: #A0B4C8; -fx-font-size: 10px;"/>
+                    </VBox>
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 14;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06),10,0,0,2);
+                                 -fx-padding: 16 18; -fx-border-color: transparent transparent transparent #F59E0B;
+                                 -fx-border-width: 0 0 0 4;"
+                          HBox.hgrow="ALWAYS" spacing="4">
+                        <Label text="En cours" style="-fx-text-fill: #8AAAD4; -fx-font-size: 11px;"/>
+                        <Label fx:id="lblEnCours" text="0"
+                               style="-fx-text-fill: #F59E0B; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                        <Label text="sans date de fin" style="-fx-text-fill: #A0B4C8; -fx-font-size: 10px;"/>
+                    </VBox>
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 14;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06),10,0,0,2);
+                                 -fx-padding: 16 18; -fx-border-color: transparent transparent transparent #22C55E;
+                                 -fx-border-width: 0 0 0 4;"
+                          HBox.hgrow="ALWAYS" spacing="4">
+                        <Label text="Clôturées" style="-fx-text-fill: #8AAAD4; -fx-font-size: 11px;"/>
+                        <Label fx:id="lblCloturees" text="0"
+                               style="-fx-text-fill: #22C55E; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                        <Label text="terminées" style="-fx-text-fill: #A0B4C8; -fx-font-size: 10px;"/>
+                    </VBox>
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 14;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06),10,0,0,2);
+                                 -fx-padding: 16 18; -fx-border-color: transparent transparent transparent #EF4444;
+                                 -fx-border-width: 0 0 0 4;"
+                          HBox.hgrow="ALWAYS" spacing="4">
+                        <Label text="Ordonnances" style="-fx-text-fill: #8AAAD4; -fx-font-size: 11px;"/>
+                        <Label fx:id="lblOrdos" text="0"
+                               style="-fx-text-fill: #EF4444; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                        <Label text="prescriptions" style="-fx-text-fill: #A0B4C8; -fx-font-size: 10px;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Search -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="txtRecherche"
+                               promptText="🔍  Rechercher par patient, médecin ou diagnostic..."
+                               onKeyReleased="#handleRecherche"
+                               HBox.hgrow="ALWAYS"
+                               style="-fx-background-color: white;
+                                      -fx-border-color: #C8D8EE; -fx-border-radius: 10;
+                                      -fx-background-radius: 10; -fx-border-width: 1.5;
+                                      -fx-padding: 9 14; -fx-font-size: 12px;"/>
+                    <ComboBox fx:id="cmbFiltre" promptText="Toutes orientations"
+                              onAction="#handleFiltre"
+                              style="-fx-background-color: white; -fx-border-color: #C8D8EE;
+                                     -fx-border-radius: 9; -fx-border-width: 1.5; -fx-font-size: 12px;"/>
+                </HBox>
+
+                <!-- Table card -->
+                <VBox style="-fx-background-color: white; -fx-background-radius: 16;
+                             -fx-effect: dropshadow(gaussian, rgba(11,78,162,0.08),14,0,0,3);
+                             -fx-padding: 18;"
+                      VBox.vgrow="ALWAYS" spacing="12">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Liste des Consultations"
+                               style="-fx-text-fill: #0F172A; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblCount" text="0 résultat(s)"
+                               style="-fx-text-fill: #8AAAD4; -fx-font-size: 11px;"/>
+                    </HBox>
+
+                    <TableView fx:id="tableConsultations" VBox.vgrow="ALWAYS"
+                               style="-fx-background-color: transparent;
+                                      -fx-border-color: #E8F0FB; -fx-border-radius: 10;
+                                      -fx-border-width: 1;">
+                        <columns>
+                            <TableColumn fx:id="colId"          text="ID"           prefWidth="55"/>
+                            <TableColumn fx:id="colPatient"     text="Patient"      prefWidth="155"/>
+                            <TableColumn fx:id="colMedecin"     text="Médecin"      prefWidth="145"/>
+                            <TableColumn fx:id="colDebut"       text="Début"        prefWidth="125"/>
+                            <TableColumn fx:id="colFin"         text="Fin"          prefWidth="125"/>
+                            <TableColumn fx:id="colDiagnostic"  text="Diagnostic"   prefWidth="195"/>
+                            <TableColumn fx:id="colOrientation" text="Orientation"  prefWidth="110"/>
+                            <TableColumn fx:id="colActions"     text="Actions"      prefWidth="150"/>
+                        </columns>
+                        <placeholder>
+                            <Label text="Aucune consultation trouvée."
+                                   style="-fx-text-fill: #8AAAD4; -fx-font-size: 13px;"/>
+                        </placeholder>
+                    </TableView>
+                </VBox>
+
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

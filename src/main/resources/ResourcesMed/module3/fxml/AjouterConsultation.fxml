@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMed.AjouterConsultationController"
+            prefWidth="1050" prefHeight="700"
+            style="-fx-background-color: #F3F8FF;">
+
+    <!-- ══ SIDEBAR ══ -->
+    <left>
+        <VBox prefWidth="210"
+              style="-fx-background-color: white;
+                     -fx-effect: dropshadow(gaussian, rgba(11,78,162,0.10), 12, 0, 2, 0);"
+              spacing="0">
+            <VBox alignment="CENTER"
+                  style="-fx-padding: 22 12 18 12; -fx-border-color: #E8F0FB; -fx-border-width: 0 0 1 0;">
+                <ImageView fitWidth="120" fitHeight="46" preserveRatio="true">
+                    <image><Image url="@../images/logo.png"/></image>
+                </ImageView>
+                <Label text="Gestion des Urgences"
+                       style="-fx-text-fill: #8AAAD4; -fx-font-size: 10px; -fx-padding: 5 0 0 0;"/>
+            </VBox>
+            <VBox style="-fx-padding: 14 10 0 10;" spacing="4">
+                <Label text="NAVIGATION"
+                       style="-fx-text-fill: #A0B4C8; -fx-font-size: 9px; -fx-font-weight: bold; -fx-padding: 0 0 4 6;"/>
+                <Button text="🏠  Tableau de Bord" maxWidth="Infinity"
+                        onAction="#handleNavDashboard"
+                        style="-fx-background-color: transparent; -fx-text-fill: #4A6080;
+                               -fx-font-size: 12px; -fx-alignment: CENTER_LEFT;
+                               -fx-padding: 9 12; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                <Button text="🏥  Consultations" maxWidth="Infinity"
+                        onAction="#handleNavListe"
+                        style="-fx-background-color: transparent; -fx-text-fill: #4A6080;
+                               -fx-font-size: 12px; -fx-alignment: CENTER_LEFT;
+                               -fx-padding: 9 12; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                <Button text="➕  Nouvelle Consultation" maxWidth="Infinity"
+                        style="-fx-background-color: #EBF2FF; -fx-text-fill: #0B4EA2;
+                               -fx-font-size: 12px; -fx-font-weight: bold;
+                               -fx-alignment: CENTER_LEFT; -fx-padding: 9 12;
+                               -fx-background-radius: 8; -fx-cursor: hand;"/>
+                <Button text="💊  Ordonnances" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #4A6080;
+                               -fx-font-size: 12px; -fx-alignment: CENTER_LEFT;
+                               -fx-padding: 9 12; -fx-background-radius: 8; -fx-cursor: hand;"/>
+            </VBox>
+            <Region VBox.vgrow="ALWAYS"/>
+            <VBox style="-fx-background-color: #FFF8EC; -fx-background-radius: 12;
+                         -fx-border-color: #FFD580; -fx-border-radius: 12; -fx-border-width: 1;
+                         -fx-padding: 14;">
+                <padding><Insets top="0" right="10" bottom="16" left="10"/></padding>
+                <Label text="💡 Conseil"
+                       style="-fx-text-fill: #B45309; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                <Label text="Remplissez le diagnostic et l'orientation avant de valider."
+                       style="-fx-text-fill: #92400E; -fx-font-size: 10px; -fx-wrap-text: true; -fx-padding: 4 0 10 0;"
+                       wrapText="true"/>
+                <Button text="Déconnexion" maxWidth="Infinity"
+                        style="-fx-background-color: #0B4EA2; -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-font-size: 11px;
+                               -fx-background-radius: 8; -fx-padding: 8 0; -fx-cursor: hand;"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ══ MAIN ══ -->
+    <center>
+        <VBox style="-fx-background-color: #F3F8FF;" spacing="0">
+
+            <!-- Topbar -->
+            <HBox style="-fx-background-color: white; -fx-padding: 16 24;
+                         -fx-effect: dropshadow(gaussian, rgba(11,78,162,0.07), 8, 0, 0, 2);"
+                  alignment="CENTER_LEFT" spacing="12">
+                <VBox spacing="3">
+                    <Label text="Nouvelle Consultation"
+                           style="-fx-text-fill: #0F172A; -fx-font-size: 19px; -fx-font-weight: bold;"/>
+                    <Label text="Saisir les informations de la consultation médicale"
+                           style="-fx-text-fill: #8AAAD4; -fx-font-size: 11px;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <VBox style="-fx-background-color: #F0F6FF; -fx-background-radius: 18;
+                             -fx-border-color: #C8DCFF; -fx-border-radius: 18;
+                             -fx-border-width: 1; -fx-padding: 7 14;" alignment="CENTER">
+                    <Label text="Dr. Trabelsi Leila"
+                           style="-fx-text-fill: #0F172A; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                    <Label text="Médecin Urgentiste"
+                           style="-fx-text-fill: #8AAAD4; -fx-font-size: 10px;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Scrollable form + right panel -->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0;">
+                <HBox style="-fx-padding: 22 20;" spacing="20" alignment="TOP_LEFT">
+
+                    <!-- ── FORMULAIRE GAUCHE ── -->
+                    <VBox spacing="16" HBox.hgrow="ALWAYS">
+
+                        <!-- Patient -->
+                        <VBox style="-fx-background-color: white; -fx-background-radius: 18;
+                                     -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.08),14,0,0,3);
+                                     -fx-padding: 22;" spacing="14">
+                            <Label text="👤  Sélection du Patient"
+                                   style="-fx-text-fill: #0B4EA2; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <ComboBox fx:id="cmbAdmission"
+                                          promptText="Sélectionner une admission active..."
+                                          HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                                          onAction="#handleAdmissionChange"
+                                          style="-fx-font-size: 12px;"/>
+                                <Button text="⟳" onAction="#handleRefreshAdmissions"
+                                        style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
+                                               -fx-border-color: #C8D8EE; -fx-border-radius: 8;
+                                               -fx-background-radius: 8; -fx-border-width: 1.5;
+                                               -fx-padding: 8 12; -fx-cursor: hand;"/>
+                            </HBox>
+                            <!-- Infos patient -->
+                            <HBox fx:id="panePatient" spacing="24" alignment="CENTER_LEFT"
+                                  style="-fx-background-color: #F0F6FF; -fx-background-radius: 10;
+                                         -fx-border-color: #C8DCFF; -fx-border-radius: 10;
+                                         -fx-border-width: 1; -fx-padding: 12;"
+                                  visible="false" managed="false">
+                                <VBox spacing="3">
+                                    <Label text="Patient" style="-fx-text-fill: #8AAAD4; -fx-font-size: 10px;"/>
+                                    <Label fx:id="lblPatient" text="—"
+                                           style="-fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-font-size: 13px;"/>
+                                </VBox>
+                                <VBox spacing="3">
+                                    <Label text="Mode arrivée" style="-fx-text-fill: #8AAAD4; -fx-font-size: 10px;"/>
+                                    <Label fx:id="lblMode" text="—"
+                                           style="-fx-text-fill: #4A6080; -fx-font-size: 12px;"/>
+                                </VBox>
+                                <VBox spacing="3">
+                                    <Label text="Motif" style="-fx-text-fill: #8AAAD4; -fx-font-size: 10px;"/>
+                                    <Label fx:id="lblMotif" text="—"
+                                           style="-fx-text-fill: #4A6080; -fx-font-size: 12px; -fx-font-style: italic;"/>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Diagnostic + orientation -->
+                        <VBox style="-fx-background-color: white; -fx-background-radius: 18;
+                                     -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.08),14,0,0,3);
+                                     -fx-padding: 22;" spacing="14">
+                            <Label text="🩺  Diagnostic et Orientation"
+                                   style="-fx-text-fill: #0B4EA2; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                            <VBox spacing="6">
+                                <Label text="Diagnostic *"
+                                       style="-fx-text-fill: #374151; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                                <TextArea fx:id="taDiagnostic"
+                                          promptText="Saisir le diagnostic médical..."
+                                          prefRowCount="4" wrapText="true"
+                                          style="-fx-background-color: #F8FAFF;
+                                                 -fx-border-color: #C8D8EE; -fx-border-radius: 8;
+                                                 -fx-background-radius: 8; -fx-border-width: 1.5;
+                                                 -fx-padding: 10 12; -fx-font-size: 12px;"/>
+                            </VBox>
+                            <HBox spacing="16">
+                                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                    <Label text="Orientation *"
+                                           style="-fx-text-fill: #374151; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                                    <ComboBox fx:id="cmbOrientation"
+                                              promptText="Choisir l'orientation..."
+                                              maxWidth="Infinity"
+                                              style="-fx-font-size: 12px;"/>
+                                </VBox>
+                                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                    <Label text="Médecin"
+                                           style="-fx-text-fill: #374151; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                                    <ComboBox fx:id="cmbMedecin"
+                                              promptText="Médecin traitant..."
+                                              maxWidth="Infinity"
+                                              style="-fx-font-size: 12px;"/>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Ordonnances -->
+                        <VBox style="-fx-background-color: white; -fx-background-radius: 18;
+                                     -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.08),14,0,0,3);
+                                     -fx-padding: 22;" spacing="14">
+                            <HBox alignment="CENTER_LEFT">
+                                <Label text="💊  Prescriptions Médicamenteuses"
+                                       style="-fx-text-fill: #0B4EA2; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button text="➕  Ajouter" onAction="#handleAfficherLigneOrdonnance"
+                                        style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
+                                               -fx-border-color: #0B4EA2; -fx-border-radius: 8;
+                                               -fx-background-radius: 8; -fx-border-width: 1.5;
+                                               -fx-font-weight: bold; -fx-font-size: 11px;
+                                               -fx-padding: 6 14; -fx-cursor: hand;"/>
+                            </HBox>
+
+                            <!-- Ligne ajout rapide -->
+                            <HBox fx:id="paneLigneOrdo" spacing="10" alignment="CENTER_LEFT"
+                                  style="-fx-background-color: #F0F6FF; -fx-background-radius: 10;
+                                         -fx-border-color: #0B4EA2; -fx-border-radius: 10;
+                                         -fx-border-width: 1; -fx-padding: 12;"
+                                  visible="false" managed="false">
+                                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                    <Label text="Médicament *"
+                                           style="-fx-text-fill: #374151; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                                    <TextField fx:id="tfMedicament" promptText="ex: Paracétamol 1g"
+                                               style="-fx-background-color: white; -fx-border-color: #C8D8EE;
+                                                      -fx-border-radius: 8; -fx-background-radius: 8;
+                                                      -fx-border-width: 1.5; -fx-padding: 7 10; -fx-font-size: 12px;"/>
+                                </VBox>
+                                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                    <Label text="Posologie"
+                                           style="-fx-text-fill: #374151; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                                    <TextField fx:id="tfPosologie" promptText="ex: 1 cp / 6h"
+                                               style="-fx-background-color: white; -fx-border-color: #C8D8EE;
+                                                      -fx-border-radius: 8; -fx-background-radius: 8;
+                                                      -fx-border-width: 1.5; -fx-padding: 7 10; -fx-font-size: 12px;"/>
+                                </VBox>
+                                <VBox spacing="4" prefWidth="90">
+                                    <Label text="Jours"
+                                           style="-fx-text-fill: #374151; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                                    <TextField fx:id="tfDuree" promptText="5"
+                                               style="-fx-background-color: white; -fx-border-color: #C8D8EE;
+                                                      -fx-border-radius: 8; -fx-background-radius: 8;
+                                                      -fx-border-width: 1.5; -fx-padding: 7 10; -fx-font-size: 12px;"/>
+                                </VBox>
+                                <VBox alignment="BOTTOM_CENTER" spacing="4">
+                                    <Label text=" " style="-fx-font-size: 11px;"/>
+                                    <HBox spacing="6">
+                                        <Button text="✓" onAction="#handleConfirmerOrdo"
+                                                style="-fx-background-color: #22C55E; -fx-text-fill: white;
+                                                       -fx-font-weight: bold; -fx-background-radius: 8;
+                                                       -fx-padding: 8 14; -fx-cursor: hand;"/>
+                                        <Button text="✕" onAction="#handleAnnulerOrdo"
+                                                style="-fx-background-color: white; -fx-text-fill: #EF4444;
+                                                       -fx-border-color: #EF4444; -fx-border-radius: 8;
+                                                       -fx-background-radius: 8; -fx-border-width: 1.5;
+                                                       -fx-padding: 8 14; -fx-cursor: hand;"/>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+
+                            <!-- Liste ordonnances -->
+                            <TableView fx:id="tableOrdonnances" prefHeight="150"
+                                       style="-fx-background-color: transparent;
+                                              -fx-border-color: #E8F0FB; -fx-border-radius: 10;
+                                              -fx-border-width: 1;">
+                                <columns>
+                                    <TableColumn fx:id="colOrdoMed"    text="Médicament"  prefWidth="200"/>
+                                    <TableColumn fx:id="colOrdoPos"    text="Posologie"   prefWidth="170"/>
+                                    <TableColumn fx:id="colOrdoDuree"  text="Durée"       prefWidth="80"/>
+                                    <TableColumn fx:id="colOrdoSup"    text=""            prefWidth="70"/>
+                                </columns>
+                                <placeholder>
+                                    <Label text="Aucune prescription."
+                                           style="-fx-text-fill: #8AAAD4; -fx-font-size: 11px;"/>
+                                </placeholder>
+                            </TableView>
+                        </VBox>
+
+                        <!-- Message + Boutons -->
+                        <Label fx:id="lblMessage" text="" wrapText="true"
+                               style="-fx-font-size: 12px; -fx-font-weight: bold;"/>
+
+                        <HBox spacing="12">
+                            <Button text="❌  Annuler" onAction="#handleAnnuler"
+                                    style="-fx-background-color: white; -fx-text-fill: #4A6080;
+                                           -fx-border-color: #C8D8EE; -fx-border-radius: 9;
+                                           -fx-background-radius: 9; -fx-border-width: 1.5;
+                                           -fx-font-size: 12px; -fx-font-weight: 600;
+                                           -fx-padding: 10 20; -fx-cursor: hand;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="💾  Enregistrer Brouillon" onAction="#handleBrouillon"
+                                    style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
+                                           -fx-border-color: #0B4EA2; -fx-border-radius: 9;
+                                           -fx-background-radius: 9; -fx-border-width: 1.5;
+                                           -fx-font-weight: bold; -fx-font-size: 12px;
+                                           -fx-padding: 10 20; -fx-cursor: hand;"/>
+                            <Button text="✅  Valider Consultation" onAction="#handleValider"
+                                    style="-fx-background-color: #0B4EA2; -fx-text-fill: white;
+                                           -fx-font-weight: bold; -fx-font-size: 12px;
+                                           -fx-background-radius: 9; -fx-padding: 10 24;
+                                           -fx-cursor: hand;
+                                           -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.3),6,0,0,2);"/>
+                        </HBox>
+
+                    </VBox>
+
+                    <!-- ── PANNEAU DROIT ── -->
+                    <VBox spacing="14" prefWidth="270">
+
+                        <!-- Statut -->
+                        <VBox style="-fx-background-color: #EBF2FF; -fx-background-radius: 16;
+                                     -fx-border-color: #0B4EA2; -fx-border-radius: 16;
+                                     -fx-border-width: 1.5; -fx-padding: 20;"
+                              alignment="CENTER" spacing="10">
+                            <Label text="STATUT"
+                                   style="-fx-text-fill: #6B7280; -fx-font-size: 10px; -fx-font-weight: bold;"/>
+                            <Label fx:id="lblStatutIcon" text="🩺" style="-fx-font-size: 38px;"/>
+                            <Label fx:id="lblStatut" text="En cours"
+                                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2;"/>
+                            <Separator style="-fx-background-color: #C8DCFF;"/>
+                            <Label fx:id="lblStatutDetail"
+                                   text="Remplissez le formulaire..."
+                                   style="-fx-font-size: 11px; -fx-text-fill: #4A6080; -fx-wrap-text: true;"
+                                   wrapText="true" textAlignment="CENTER"/>
+                        </VBox>
+
+                        <!-- Guide orientation -->
+                        <VBox style="-fx-background-color: white; -fx-background-radius: 16;
+                                     -fx-effect: dropshadow(gaussian,rgba(15,23,42,0.08),14,0,0,3);
+                                     -fx-padding: 18;" spacing="10">
+                            <Label text="ℹ️  Guide Orientation"
+                                   style="-fx-text-fill: #0B4EA2; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="Sortie"
+                                       style="-fx-background-color: #DCFCE7; -fx-text-fill: #16A34A;
+                                              -fx-background-radius: 6; -fx-padding: 3 8;
+                                              -fx-font-size: 10px; -fx-font-weight: bold;"/>
+                                <Label text="Patient peut rentrer"
+                                       style="-fx-font-size: 11px; -fx-text-fill: #4A6080;"/>
+                            </HBox>
+                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="Hospitalisation"
+                                       style="-fx-background-color: #EBF2FF; -fx-text-fill: #0B4EA2;
+                                              -fx-background-radius: 6; -fx-padding: 3 8;
+                                              -fx-font-size: 10px; -fx-font-weight: bold;"/>
+                                <Label text="Admission en service"
+                                       style="-fx-font-size: 11px; -fx-text-fill: #4A6080;"/>
+                            </HBox>
+                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="Transfert"
+                                       style="-fx-background-color: #FEF3C7; -fx-text-fill: #D97706;
+                                              -fx-background-radius: 6; -fx-padding: 3 8;
+                                              -fx-font-size: 10px; -fx-font-weight: bold;"/>
+                                <Label text="Transfert vers un autre établissement"
+                                       style="-fx-font-size: 11px; -fx-text-fill: #4A6080; -fx-wrap-text: true;"
+                                       wrapText="true"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Résultat (visible après validation) -->
+                        <VBox fx:id="paneResultat"
+                              style="-fx-background-color: #F0FDF4; -fx-background-radius: 16;
+                                     -fx-border-color: #22C55E; -fx-border-radius: 16;
+                                     -fx-border-width: 1.5; -fx-padding: 18;"
+                              spacing="10" visible="false" managed="false">
+                            <Label text="✅  Consultation enregistrée !"
+                                   style="-fx-text-fill: #16A34A; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                            <VBox spacing="5">
+                                <HBox><Label text="ID : " style="-fx-text-fill: #6B7280; -fx-font-size: 12px;"/>
+                                     <Label fx:id="lblResId" text="—" style="-fx-font-weight: bold; -fx-font-size: 12px;"/></HBox>
+                                <HBox><Label text="Patient : " style="-fx-text-fill: #6B7280; -fx-font-size: 12px;"/>
+                                     <Label fx:id="lblResPatient" text="—" style="-fx-font-weight: bold; -fx-font-size: 12px;"/></HBox>
+                                <HBox><Label text="Orientation : " style="-fx-text-fill: #6B7280; -fx-font-size: 12px;"/>
+                                     <Label fx:id="lblResOrientation" text="—" style="-fx-font-weight: bold; -fx-font-size: 12px;"/></HBox>
+                                <HBox><Label text="Ordonnances : " style="-fx-text-fill: #6B7280; -fx-font-size: 12px;"/>
+                                     <Label fx:id="lblResOrdos" text="0" style="-fx-font-weight: bold; -fx-font-size: 12px;"/></HBox>
+                            </VBox>
+                            <HBox spacing="8">
+                                <Button text="🖨 PDF" onAction="#handlePdf"
+                                        HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                                        style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
+                                               -fx-border-color: #0B4EA2; -fx-border-radius: 8;
+                                               -fx-background-radius: 8; -fx-border-width: 1.5;
+                                               -fx-font-weight: bold; -fx-font-size: 11px;
+                                               -fx-padding: 8 0; -fx-cursor: hand;"/>
+                                <Button text="➕ Nouveau" onAction="#handleNouveau"
+                                        HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                                        style="-fx-background-color: #0B4EA2; -fx-text-fill: white;
+                                               -fx-font-weight: bold; -fx-font-size: 11px;
+                                               -fx-background-radius: 8; -fx-padding: 8 0; -fx-cursor: hand;"/>
+                            </HBox>
+                        </VBox>
+
+                    </VBox>
+
+                </HBox>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>

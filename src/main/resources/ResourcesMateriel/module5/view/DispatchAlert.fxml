@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../css/styleMateriel.css"
+      fx:controller="pro.revive.controllers.ControllersMateriel.DispatchAlertController"
+      spacing="0"
+      prefWidth="480"
+      style="-fx-background-color: #0f172a; -fx-background-radius: 12;">
+
+   <!-- ── En-tête ── -->
+   <VBox spacing="6" style="-fx-background-color: #ef4444; -fx-background-radius: 12 12 0 0; -fx-padding: 20 24 20 24;">
+      <Label text="🚨  ALERTE URGENCE REÇUE" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+      <Label text="Un email d'urgence a été détecté" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 12px;" />
+   </VBox>
+
+   <!-- ── Corps ── -->
+   <VBox spacing="16" style="-fx-padding: 24;">
+
+      <!-- Expéditeur -->
+      <VBox spacing="4">
+         <Label text="📧  EXPÉDITEUR" style="-fx-text-fill: #64748b; -fx-font-size: 10px; -fx-font-weight: bold;" />
+         <Label fx:id="lblSender" text="..." style="-fx-text-fill: #e2e8f0; -fx-font-size: 13px;" wrapText="true" />
+      </VBox>
+
+      <!-- Sujet -->
+      <VBox spacing="4">
+         <Label text="📌  SUJET" style="-fx-text-fill: #64748b; -fx-font-size: 10px; -fx-font-weight: bold;" />
+         <Label fx:id="lblSubject" text="..." style="-fx-text-fill: #e2e8f0; -fx-font-size: 13px;" wrapText="true" />
+      </VBox>
+
+      <!-- Message -->
+      <VBox spacing="4">
+         <Label text="💬  MESSAGE" style="-fx-text-fill: #64748b; -fx-font-size: 10px; -fx-font-weight: bold;" />
+         <TextArea fx:id="txtBody" editable="false" wrapText="true" prefRowCount="3"
+                   style="-fx-background-color: #1e293b; -fx-text-fill: #cbd5e1; -fx-font-size: 12px;
+                          -fx-border-color: #334155; -fx-border-radius: 6; -fx-background-radius: 6;
+                          -fx-control-inner-background: #1e293b;" />
+      </VBox>
+
+      <Separator style="-fx-background-color: #334155;" />
+
+      <!-- Localisation -->
+      <VBox spacing="4">
+         <Label text="📍  LOCALISATION DÉTECTÉE" style="-fx-text-fill: #64748b; -fx-font-size: 10px; -fx-font-weight: bold;" />
+         <Label fx:id="lblLocation" text="..." style="-fx-text-fill: #38bdf8; -fx-font-size: 13px;" wrapText="true" />
+      </VBox>
+
+      <!-- Stats distance / temps -->
+      <HBox spacing="16">
+         <!-- Distance -->
+         <VBox spacing="4" HBox.hgrow="ALWAYS"
+               style="-fx-background-color: #1e293b; -fx-background-radius: 8; -fx-padding: 14; -fx-alignment: center;">
+            <Label text="📏  DISTANCE" style="-fx-text-fill: #64748b; -fx-font-size: 10px; -fx-font-weight: bold;" />
+            <Label fx:id="lblDistance" text="Calcul..."
+                   style="-fx-text-fill: #34d399; -fx-font-size: 22px; -fx-font-weight: bold;" />
+         </VBox>
+         <!-- Temps -->
+         <VBox spacing="4" HBox.hgrow="ALWAYS"
+               style="-fx-background-color: #1e293b; -fx-background-radius: 8; -fx-padding: 14; -fx-alignment: center;">
+            <Label text="⏱  TEMPS ESTIMÉ" style="-fx-text-fill: #64748b; -fx-font-size: 10px; -fx-font-weight: bold;" />
+            <Label fx:id="lblTime" text="Calcul..."
+                   style="-fx-text-fill: #fbbf24; -fx-font-size: 22px; -fx-font-weight: bold;" />
+         </VBox>
+      </HBox>
+
+      <!-- Statut calcul -->
+      <Label fx:id="lblCalcStatus" text="⏳ Calcul de l'itinéraire en cours..."
+             style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;" />
+
+      <Separator style="-fx-background-color: #334155;" />
+
+      <!-- Boutons -->
+      <HBox spacing="12">
+         <Button fx:id="btnAccept" text="✅  ACCEPTER LA MISSION" onAction="#onAccept"
+                 maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                 style="-fx-background-color: #22c55e; -fx-text-fill: white; -fx-font-weight: bold;
+                        -fx-font-size: 13px; -fx-padding: 14; -fx-background-radius: 8;
+                        -fx-cursor: hand;" />
+         <Button fx:id="btnRefuse" text="❌  REFUSER" onAction="#onRefuse"
+                 maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                 style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;
+                        -fx-font-size: 13px; -fx-padding: 14; -fx-background-radius: 8;
+                        -fx-cursor: hand;" />
+      </HBox>
+
+ 

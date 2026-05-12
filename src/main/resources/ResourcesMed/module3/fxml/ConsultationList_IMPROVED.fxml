@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMed.ConsultationListController"
+            prefWidth="1200" prefHeight="800"
+            stylesheets="@../css/revive-dark.css">
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SIDEBAR — Harmonisée avec module Triage
+         ══════════════════════════════════════════════════════════════════ -->
+    <left>
+        <VBox styleClass="sidebar" BorderPane.alignment="CENTER">
+            
+            <!-- Logo -->
+            <VBox styleClass="logo-wrap">
+                <ImageView fitWidth="170.0" preserveRatio="true" pickOnBounds="true">
+                    <image><Image url="@../images/logo.png" /></image>
+                </ImageView>
+                <Label styleClass="logo-sub" text="Systeme de Gestion des Urgences" />
+            </VBox>
+            
+            <!-- Navigation -->
+            <Label styleClass="nav-section" text="MENU" />
+            <Button mnemonicParsing="false" styleClass="nav-item" 
+                    text="🏠  Tableau de Bord" onAction="#onDashboard" />
+            <Button mnemonicParsing="false" styleClass="nav-item, active" 
+                    text="📋  Consultations" />
+            <Button mnemonicParsing="false" styleClass="nav-item" 
+                    text="➕  Nouvelle Consultation" onAction="#onNouvelleConsultation" />
+            <Button mnemonicParsing="false" styleClass="nav-item" 
+                    text="💊  Ordonnances" />
+            
+            <Region VBox.vgrow="ALWAYS" />
+            
+            <!-- Sidebar Card — Alertes -->
+            <VBox styleClass="sidebar-card">
+                <Label styleClass="sc-title" text="ALERTES ACTIVES" />
+                <Label styleClass="sc-alert" text="0 alerte(s) critique(s)" />
+                <Button mnemonicParsing="false" styleClass="sc-btn" 
+                        text="Deconnexion" />
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         MAIN CONTENT
+         ══════════════════════════════════════════════════════════════════ -->
+    <center>
+        <VBox styleClass="main" BorderPane.alignment="CENTER">
+
+            <!-- ── TOPBAR ────────────────────────────────────────────── -->
+            <HBox styleClass="topbar">
+                <VBox spacing="2">
+                    <Label styleClass="page-sub" text="Module 3 — Urgences" />
+                    <Label styleClass="page-title" text="Consultations Medicales" />
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button mnemonicParsing="false" styleClass="btn, btn-primary" 
+                        text="➕  Nouvelle Consultation" onAction="#onNouvelleConsultation" />
+                <HBox styleClass="user-chip">
+                    <VBox alignment="CENTER_RIGHT" styleClass="user-info">
+                        <Label styleClass="user-name" text="Dr. Utilisateur" />
+                        <Label styleClass="user-role" text="Medecin Urgentiste" />
+                    </VBox>
+                    <Label styleClass="user-av" text="U" />
+                </HBox>
+            </HBox>
+            <Region styleClass="topbar-stripe" />
+
+            <!-- ── STAT CARDS ─────────────────────────────────────────── -->
+            <HBox styleClass="stats-row" spacing="16.0">
+                <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS">
+                    <Label styleClass="stat-lbl" text="Total Actifs" />
+                    <Label fx:id="lblStatTotal" styleClass="stat-val, blue" text="0" />
+                    <Label styleClass="stat-hint" text="consultations" />
+                </VBox>
+                <VBox styleClass="stat-card, orange" HBox.hgrow="ALWAYS">
+                    <Label styleClass="stat-lbl" text="En cours" />
+                    <Label fx:id="lblStatEnCours" styleClass="stat-val, orange" text="0" />
+                    <Label styleClass="stat-hint" text="actives" />
+                </VBox>
+                <VBox styleClass="stat-card, green" HBox.hgrow="ALWAYS">
+                    <Label styleClass="stat-lbl" text="Cloturees" />
+                    <Label fx:id="lblStatCloturees" styleClass="stat-val, green" text="0" />
+                    <Label styleClass="stat-hint" text="terminees" />
+                </VBox>
+                <VBox styleClass="stat-card, red" HBox.hgrow="ALWAYS">
+                    <Label styleClass="stat-lbl" text="Ordonnances" />
+                    <Label fx:id="lblStatOrdos" styleClass="stat-val, red" text="0" />
+                    <Label styleClass="stat-hint" text="prescriptions" />
+                </VBox>
+            </HBox>
+
+            <!-- ── FILTERS BAR ────────────────────────────────────────── -->
+            <HBox styleClass="filters" spacing="10.0" alignment="CENTER_LEFT">
+                <Button fx:id="btnAll" mnemonicParsing="false" 
+                        styleClass="filter-btn, active" text="Tous" 
+                        onAction="#onFiltrer" />
+                <Button fx:id="btnEnCours" mnemonicParsing="false" 
+                        styleClass="filter-btn, orange" text="🟠  En cours" 
+                        onAction="#onFiltrer" />
+                <Button fx:id="btnCloturees" mnemonicParsing="false" 
+                        styleClass="filter-btn, green" text="🟢  Cloturees" 
+                        onAction="#onFiltrer" />
+                <Button fx:id="btnHospitalisation" mnemonicParsing="false" 
+                        styleClass="filter-btn" text="🏥  Hospitalisation" 
+                        onAction="#onFiltrer" />
+                <Button fx:id="btnTransfert" mnemonicParsing="false" 
+                        styleClass="filter-btn" text="🚑  Transfert" 
+                        onAction="#onFiltrer" />
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox alignment="CENTER_LEFT"
+                      style="-fx-background-color: white; -fx-border-color: #CBD5E1; 
+                             -fx-border-width: 1.5px; -fx-background-radius: 10px; 
+                             -fx-border-radius: 10px; -fx-padding: 5px 14px; -fx-spacing: 8px;">
+                    <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 13px;" text="🔍" />
+                    <TextField fx:id="searchField" promptText="Rechercher un patient..."
+                               style="-fx-background-color: transparent; -fx-border-width: 0; 
+                                      -fx-font-size: 13px;"
+                               HBox.hgrow="ALWAYS" />
+                </HBox>
+                <Button mnemonicParsing="false" styleClass="btn-refresh" 
+                        text="Actualiser" onAction="#onActualiser" />
+                <Label fx:id="labelCount" styleClass="panel-cnt" text="0 consultations" />
+            </HBox>
+
+            <!-- ── CONSULTATION CARDS LIST ────────────────────────────── -->
+            <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+                <VBox fx:id="cardsContainer" spacing="10.0" 
+                      style="-fx-padding: 16px 28px 24px 28px;" />
+            </ScrollPane>
+
+            <!-- ── FOOTER ──────────────────────────────────────────────── -->
+            <HBox styleClass="footer" alignment="CENTER">
+                <Label styleClass="footer-label" 
+                       text="REVIVE — Systeme de Gestion des Urgences  |  Module 3 : Consultation Medicale" />
+            </HBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>

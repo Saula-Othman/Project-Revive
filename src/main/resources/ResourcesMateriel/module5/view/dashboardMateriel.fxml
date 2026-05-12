@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersMateriel.DashboardController"
+            stylesheets="@../css/styleMateriel.css"
+            prefWidth="1100" prefHeight="720">
+
+    <!-- SIDEBAR -->
+    <left>
+        <VBox styleClass="sidebar" prefWidth="250" spacing="0">
+            <VBox styleClass="logo-wrap" alignment="CENTER" spacing="4">
+                <Label text="🏥 REVIVE" styleClass="logo-fallback"/>
+                <Label text="Gestion des Urgences" styleClass="logo-sub"/>
+            </VBox>
+            <Label text="NAVIGATION" styleClass="nav-section"/>
+            <Button text="📊  Tableau de Bord"
+                    styleClass="nav-item, active"
+                    maxWidth="Infinity" alignment="CENTER_LEFT"/>
+            <Button text="🏠  Salles Physiques"
+                    styleClass="nav-item" maxWidth="Infinity"
+                    alignment="CENTER_LEFT"
+                    onAction="#onNavSalles" fx:id="btnNavSalles"/>
+            <Button text="🔧  Matériel d'Urgence"
+                    styleClass="nav-item" maxWidth="Infinity"
+                    alignment="CENTER_LEFT"
+                    onAction="#onNavMateriel" fx:id="btnNavMateriel"/>
+            <Button text="🚑  Gestion Ambulances"
+                    styleClass="nav-item" maxWidth="Infinity"
+                    alignment="CENTER_LEFT"
+                    onAction="#onNavAmbulances" fx:id="btnNavAmbulances"/>
+            <Button text="🗺  Simulation Trajet"
+                    styleClass="nav-item" maxWidth="Infinity"
+                    alignment="CENTER_LEFT"
+                    onAction="#onNavSimulation" fx:id="btnNavSimulation"/>
+            <Button text="📋  Historique Missions"
+                    styleClass="nav-item" maxWidth="Infinity"
+                    alignment="CENTER_LEFT"
+                    onAction="#onNavHistorique" fx:id="btnNavHistorique"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="🔓  Déconnexion"
+                    onAction="#onDeconnexion"
+                    maxWidth="Infinity" alignment="CENTER_LEFT"
+                    style="-fx-background-color: transparent; -fx-text-fill: #ef4444;
+                           -fx-font-size: 13px; -fx-font-weight: bold;
+                           -fx-padding: 12px 20px; -fx-cursor: hand;
+                           -fx-border-color: transparent;"/>
+            <VBox styleClass="sidebar-card" alignment="CENTER" spacing="2">
+                <Label text="Module actif" styleClass="sc-title"/>
+                <Label text="Logistique" styleClass="sc-alert"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- CONTENU -->
+    <center>
+        <VBox spacing="0">
+
+            <!-- HEADER -->
+            <VBox styleClass="topbar" spacing="4">
+                <HBox alignment="CENTER_LEFT">
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Gestion des Salles et Matériel" styleClass="page-sub"/>
+                        <Label text="Tableau de Bord" styleClass="page-title"/>
+                    </VBox>
+                    <Button fx:id="btnTheme" text="🌙  Mode Sombre"
+                            styleClass="btn-secondary"
+                            style="-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white;
+                                   -fx-border-color: rgba(255,255,255,0.40); -fx-border-width: 1px;
+                                   -fx-border-radius: 8px; -fx-background-radius: 8px;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-padding: 9px 18px; -fx-cursor: hand; -fx-margin: 0 8 0 0;"
+                            onAction="#onToggleTheme"/>
+                    <Button fx:id="btnRecherche" text="🔍  Recherche"
+                            style="-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white;
+                                   -fx-border-color: rgba(255,255,255,0.40); -fx-border-width: 1px;
+                                   -fx-border-radius: 8px; -fx-background-radius: 8px;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-padding: 9px 18px; -fx-cursor: hand; -fx-margin: 0 8 0 0;"
+                            onAction="#onOuvrirRecherche"/>
+                    <Button fx:id="btnActualiser" text="⟳  Actualiser"
+                            style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
+                                   -fx-border-width: 0; -fx-background-radius: 8px;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-padding: 9px 18px; -fx-cursor: hand;"
+                            onAction="#onActualiser"/>
+                </HBox>
+            </VBox>
+
+            <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
+                <VBox spacing="24" styleClass="dashboard-body">
+
+                    <!-- ── CARTES SALLES ── -->
+                    <VBox spacing="12">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="🏠  Salles Physiques" styleClass="section-title" HBox.hgrow="ALWAYS"/>
+                            <Button text="Voir tout →" onAction="#onNavSalles"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #3b82f6; -fx-font-size: 12px; -fx-cursor: hand; -fx-border-color: transparent;"/>
+                        </HBox>
+                        <HBox spacing="16">
+                            <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS" spacing="6">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label text="🏥" style="-fx-font-size: 20px;"/>
+                                    <Label text="Total Salles" styleClass="stat-lbl"/>
+                                </HBox>
+                                <Label fx:id="lblTotalSalles" text="0" styleClass="stat-val, blue"/>
+                                <Label text="salles enregistrées" styleClass="stat-hint"/>
+                            </VBox>
+                            <VBox styleClass="stat-card, green" HBox.hgrow="ALWAYS" spacing="6">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label text="✅" style="-fx-font-size: 20px;"/>
+                                    <Label text="Disponibles" styleClass="stat-lbl"/>
+                                </HBox>
+                                <Label fx:id="lblSallesDisponibles" text="0" styleClass="stat-val, green"/>
+                                <Label text="prêtes à l'usage" styleClass="stat-hint"/>
+                            </VBox>
+                            <VBox styleClass="stat-card, orange" HBox.hgrow="ALWAYS" spacing="6">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label text="🔴" style="-fx-font-size: 20px;"/>
+                                    <Label text="Occupées" styleClass="stat-lbl"/>
+                                </HBox>
+                                <Label fx:id="lblSallesOccupees" text="0" styleClass="stat-val, orange"/>
+                                <Label text="en cours d'utilisation" styleClass="stat-hint"/>
+                            </VBox>
+                            <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS" spacing="6">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label text="🧹" style="-fx-font-size: 20px;"/>
+                                    <Label text="Nettoyage" styleClass="stat-lbl"/>
+                                </HBox>
+                                <Label fx:id="lblSallesNettoyage" text="0" styleClass="stat-val, blue"/>
+                                <Label text="en cours de nettoyage" styleClass="stat-hint"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- ── CARTES MATÉRIEL ── -->
+                    <VBox spacing="12">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="🔧  Matériel d'Urgence" styleClass="section-title" HBox.hgrow="ALWAYS"/>
+                            <Button text="Voir tout →" onAction="#onNavMateriel"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #3b82f6; -fx-font-size: 12px; -fx-cursor: hand; -fx-border-color: transparent;"/>
+                        </HBox>
+                        <HBox spacing="16">
+                            <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS" spacing="6">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label text="📦" style="-fx-font-size: 20px;"/>
+                                    <Label text="Total Équipements" styleClass="stat-lbl"/>
+                                </HBox>
+                                <Label fx:id="lblTotalMateriel" text="0" styleClass="stat-val, blue"/>
+                                <Label text="équipements inventoriés" styleClass="stat-hint"/>
+                            </VBox>
+                            <VBox styleClass="stat-card, green" HBox.hgrow="ALWAYS" spacing="6">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label text="✅" style="-fx-font-size: 20px;"/>
+                                    <Label text="Fonctionnels" styleClass="stat-lbl"/>
+                                </HBox>
+                                <Label fx:id="lblMaterielFonctionnel" text="0" styleClass="stat-val, green"/>
+                                <Label text="en bon état" styleClass="stat-hint"/>
+                            </VBox>
+                            <VBox styleClass="stat-card, red" HBox.hgrow="ALWAYS" spacing="6">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label text="⚠️" style="-fx-font-size: 20px;"/>
+                                    <Label text="À Réviser" styleClass="stat-lbl"/>
+                                </HBox>
+                                <Label fx:id="lblMaterielAReviser" text="0" styleClass="stat-val, red"/>
+                                <Label text="nécessitent maintenance" styleClass="stat-hint"/>
+                            </VBox>
+                            <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS" spacing="6">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label text="🗄" style="-fx-font-size: 20px;"/>
+                                    <Label text="En Réserve" styleClass="stat-lbl"/>
+                                </HBox>
+                                <Label fx:id="lblMaterielReserve" text="0" styleClass="stat-val, blue"/>
+                                <Label text="non affectés" styleClass="stat-hint"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- ── GRAPHIQUES ── -->
+                    <VBox spacing="12">
+                        <Label text="📊  Analyses Graphiques" styleClass="section-title"/>
+                        <HBox spacing="20">
+                            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
+                                <HBox alignment="CENTER_LEFT">
+                                    <Label text="Répartition des Statuts de Salles" styleClass="card-title" HBox.hgrow="ALWAYS"/>
+                                </HBox>
+                                <PieChart fx:id="pieStatutSalles"
+                                          styleClass="revive-chart"
+                                          prefHeight="260"
+                                          labelsVisible="true"
+                                          legendVisible="true"/>
+                            </VBox>
+                            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
+                                <HBox alignment="CENTER_LEFT">
+                                    <Label text="Matériel par Salle" styleClass="card-title" HBox.hgrow="ALWAYS"/>
+                                </HBox>
+                                <BarChart fx:id="barMaterielParSalle"
+                                          styleClass="revive-chart"
+                                          prefHeight="260"
+                                          legendVisible="true">
+                                    <xAxis><CategoryAxis label="Salle"/></xAxis>
+                                    <yAxis><NumberAxis label="Quantité"/></yAxis>
+                                </BarChart>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+    <!-- FOOTER -->
+    <bottom>
+        <HBox alignment="CENTER" style="-fx-padding: 8px;
+                                        -fx-background-color: linear-gradient(to bottom, #0B4EA2, #0E9B8A);">
+            <Label text="REVIVE — Système de Gestion des Urgences"
+                   style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 11px;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
