@@ -12,12 +12,14 @@
             margin: 0; padding: 0;
             width: 100%; height: 100%;
             overflow: hidden;
-            background: #0f172a;
+            background: #1a1a2e;
         }
         #map {
-            width: 100%;
-            height: 100%;
-            background: #0f172a;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100% !important;
+            height: 100% !important;
+            background: #1a1a2e;
         }
         .ambulance-icon {
             font-size: 24px;
@@ -27,44 +29,67 @@
             background: transparent !important;
             border: none !important;
         }
+
         /*
-         * JavaFX WebKit compositing fix:
-         * Leaflet uses CSS translate3d() for hardware-accelerated tile positioning.
-         * JavaFX's WebKit compositor doesn't handle translate3d properly — tiles
-         * end up in wrong positions or overlap.
-         * Force Leaflet to fall back to simple CSS top/left positioning.
+         * ── JavaFX WebKit Rendering Fixes ──────────────────────────────
+         *
+         * JavaFX's WebKit compositor has a broken translate3d() implementation.
+         * Setting L.Browser.any3d = false forces Leaflet to use 2D translate()
+         * for the map-pane (pan positioning) and plain CSS left/top for tiles.
+         *
+         * However, Leaflet's CSS still defines transition rules that cause
+         * stuttering in JavaFX WebKit. We disable those transitions below.
+         *
+         * IMPORTANT: We do NOT override transform on .leaflet-map-pane because
+         * Leaflet NEEDS transforms on the map-pane for panning. The any3d=false
+         * flag ensures it uses translate() instead of translate3d().
          */
-        .leaflet-container .leaflet-tile-pane,
-        .leaflet-container .leaflet-tile-container,
-        .leaflet-container .leaflet-overlay-pane,
-        .leaflet-container .leaflet-marker-pane,
-        .leaflet-container .leaflet-shadow-pane,
-        .leaflet-container .leaflet-popup-pane {
-            -webkit-transform: none !important;
-            transform: none !important;
-        }
-        /*
-         * Ensure the tile pane uses simple left/top positioning.
-         * Leaflet will fall back to this if translate3d is not available.
-         */
-        .leaflet-container .leaflet-map-pane {
-            -webkit-transform: none !important;
-            transform: none !important;
-        }
-        /* Disable all CSS transitions in JavaFX WebKit — they cause stuttering */
+
+        /* Disable all CSS transitions — they cause stuttering in JavaFX WebKit */
         .leaflet-tile,
         .leaflet-tile-container,
         .leaflet-tile-pane,
         .leaflet-map-pane,
         .leaflet-overlay-pane,
-        .leaflet-marker-pane {
+        .leaflet-marker-pane,
+        .leaflet-zoom-animated {
             -webkit-transition: none !important;
             transition: none !important;
         }
-        /* Fix tile images rendering */
+
+        /* Disable 3D rendering hints on tiles — prevents compositing artifacts */
         .leaflet-tile {
             -webkit-backface-visibility: hidden;
+            -webkit-perspective: 0;
+            -webkit-transform-style: flat;
+            will-change: auto !important;
             image-rendering: auto;
+        }
+
+        /* Prevent the Safari-specific tile container hack from interfering */
+        .leaflet-safari .leaflet-tile-container {
+            width: auto;
+            height: auto;
+            -webkit-transform-origin: 0 0;
+        }
+
+        /* Fix tile images: disable blend mode that JavaFX WebKit doesn't support well */
+        .leaflet-container img.leaflet-tile {
+            mix-blend-mode: normal !important;
+        }
+
+        /* Ensure the zoom-animated class doesn't trigger 3D transforms */
+        .leaflet-zoom-animated {
+            -webkit-transform-origin: 0 0;
+            transform-origin: 0 0;
+            will-change: auto !important;
+        }
+
+        /* Disable fade animations — cause ghosting in WebView */
+        .leaflet-fade-anim .leaflet-popup {
+            -webkit-transition: none !important;
+            transition: none !important;
+            opacity: 1 !important;
         }
     </style>
 </head>
@@ -76,91 +101,91 @@
 
         // ── Disable CSS 3D transforms for JavaFX WebKit ──────────────
         // Leaflet auto-detects 3D transform support and uses translate3d()
-        // for tile positioning. JavaFX WebKit says it supports it, but the
-        // compositor doesn't render correctly, producing black rectangles
-        // and misaligned tiles. Force Leaflet to use simple positioning.
+        // for tile positioning. JavaFX WebKit claims support but the
+        // compositor doesn't render correctly.
+        // Setting any3d = false makes Leaflet use translate() for the map-pane
+        // and simple left/top for tile positioning.
         L.Browser.any3d = false;
         L.Browser.ie3d = false;
         L.Browser.webkit3d = false;
         L.Browser.gecko3d = false;
 
-        // Also disable CSS transforms entirely for tile positioning
-        if (L.DomUtil && L.DomUtil.TRANSFORM) {
-            // Keep 2D transform string but make sure 3d is off
+        // Disable transitions entirely — JavaFX WebKit handles them poorly
+        if (L.DomUtil && L.DomUtil.TRANSITION) {
             L.DomUtil.TRANSITION = '';
         }
 
         // ── Map init ──────────────────────────────────────────────────
-        // preferCanvas: false — Canvas renderer causes black rectangles
-        //   in JavaFX WebKit.
-        // zoomAnimation / fadeAnimation off — WebKit in WebView stutters.
         var map = L.map('map', {
-            zoomControl: false,
-            attributionControl: false,
+            zoomControl: true,
+            attributionControl: true,
             fadeAnimation: false,
             zoomAnimation: false,
             markerZoomAnimation: false,
             zoomSnap: 1,
-            // Explicitly disable 3D transform for the map pane
-            // (belt-and-suspenders with L.Browser.any3d = false above)
-            preferCanvas: false
+            preferCanvas: false,
+            // Prevent transform3DLimit from triggering resets
+            transform3DLimit: Infinity
         }).setView([36.8065, 10.1815], 13);
 
         console.log('[Map] Map initialized, container size:',
             document.getElementById('map').offsetWidth + 'x' + document.getElementById('map').offsetHeight);
 
-        // Suppress warnings about missing default icon assets (CSS is inlined)
+        // Suppress warnings about missing default icon assets
         L.Icon.Default.prototype.options.imagePath = '';
 
-        // Tile layer — crossOrigin is intentionally omitted.
-        // JavaFX WebKit blocks tiles when crossOrigin:"anonymous" is set because
-        // OpenStreetMap does not send Access-Control-Allow-Origin headers.
+        // ── Tile layer ────────────────────────────────────────────────
+        // No crossOrigin — JavaFX WebKit blocks tiles with CORS headers
         var tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             keepBuffer: 4,
-            updateWhenIdle: false,
-            updateWhenZooming: false
+            updateWhenIdle: true,
+            updateWhenZooming: false,
+            attribution: '&copy; OpenStreetMap'
         }).addTo(map);
 
         // Listen for tile errors to diagnose loading issues
         map.on('tileerror', function(err) {
-            console.error('[Map] Tile error:', err.tile.src, err.error);
+            console.error('[Map] Tile error:', err.tile ? err.tile.src : 'unknown', err.error);
         });
 
         // Log tile loads for debugging
         tileLayer.on('loading', function() { console.log('[Map] Tiles loading...'); });
         tileLayer.on('load', function() {
-            console.log('[Map] Tiles loaded successfully.');
-            // Extra invalidateSize after all tiles loaded to fix any remaining misalignment
-            setTimeout(function() { map.invalidateSize(false); }, 100);
+            console.log('[Map] All tiles loaded.');
+            // Final invalidateSize after tiles are loaded to fix alignment
+            setTimeout(function() {
+                map.invalidateSize({ animate: false, pan: false });
+            }, 200);
         });
 
         // ── invalidateSize — called at multiple intervals ──────────────
         // JavaFX layout settles in stages; fire at several times.
         function fixSize() {
-            map.invalidateSize(false);
-            console.log('[Map] invalidateSize called, container:',
-                document.getElementById('map').offsetWidth + 'x' + document.getElementById('map').offsetHeight);
+            if (typeof map !== 'undefined' && map._container) {
+                map.invalidateSize({ animate: false, pan: false });
+                console.log('[Map] invalidateSize, container:',
+                    document.getElementById('map').offsetWidth + 'x' +
+                    document.getElementById('map').offsetHeight);
+            }
         }
-        setTimeout(fixSize, 100);
-        setTimeout(fixSize, 300);
-        setTimeout(fixSize, 600);
+        setTimeout(fixSize, 200);
+        setTimeout(fixSize, 500);
         setTimeout(fixSize, 1000);
         setTimeout(fixSize, 2000);
-        // One more late pass to catch any final layout shift
-        setTimeout(fixSize, 3000);
+        setTimeout(fixSize, 3500);
+        setTimeout(fixSize, 5000);
 
-        // Also hook into window resize so the map heals itself if the
-        // JavaFX stage is resized or the scene graph changes later.
+        // Also hook into window resize
         window.addEventListener('resize', function() {
-            map.invalidateSize(false);
+            setTimeout(fixSize, 50);
+            setTimeout(fixSize, 300);
         });
 
-        // ResizeObserver on the map div — catches container-only resizes
-        // that don't trigger a window resize event (common in WebView).
+        // ResizeObserver on the map div
         if (typeof ResizeObserver !== 'undefined') {
             new ResizeObserver(function() {
-                map.invalidateSize(false);
+                setTimeout(fixSize, 50);
             }).observe(document.getElementById('map'));
         }
 

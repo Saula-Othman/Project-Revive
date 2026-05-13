@@ -10,3 +10,11 @@ target/
 # OS
 .DS_Store
 Thumbs.db
+
+# Large AI/speech models — too big for GitHub (>100 MB hard limit)
+src/main/resources/ResourcesMed/vosk-model-small-ar-tn-0.1-linto/
+
+# Local config — never commit real credentials
+config.properties
+application-local.properties
+*.env

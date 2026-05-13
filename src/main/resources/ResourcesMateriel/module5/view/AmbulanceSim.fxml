@@ -152,9 +152,10 @@
                         </VBox>
 
                         <!-- MAP AREA -->
-                        <StackPane HBox.hgrow="ALWAYS" style="-fx-background-color: #111827;">
+                        <StackPane HBox.hgrow="ALWAYS" minWidth="200" minHeight="200" style="-fx-background-color: #111827;">
                            <children>
                               <WebView fx:id="webView"
+                                       minWidth="200" minHeight="200"
                                        maxWidth="Infinity" maxHeight="Infinity"
                                        prefWidth="-1" prefHeight="-1" />
                            </children>

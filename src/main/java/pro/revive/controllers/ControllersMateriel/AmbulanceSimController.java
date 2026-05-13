@@ -102,12 +102,11 @@ public class AmbulanceSimController implements Initializable {
                 // JavaFX layout settles in stages, so we fire at several intervals.
                 // The HTML page also has its own ResizeObserver + window resize listener.
                 webEngine.executeScript(
-                    "setTimeout(function(){ map.invalidateSize(false); }, 100);" +
-                    "setTimeout(function(){ map.invalidateSize(false); }, 300);" +
-                    "setTimeout(function(){ map.invalidateSize(false); }, 600);" +
-                    "setTimeout(function(){ map.invalidateSize(false); }, 1000);" +
-                    "setTimeout(function(){ map.invalidateSize(false); }, 2000);" +
-                    "setTimeout(function(){ map.invalidateSize(false); }, 3000);"
+                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize({animate:false,pan:false}); }, 200);" +
+                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize({animate:false,pan:false}); }, 500);" +
+                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize({animate:false,pan:false}); }, 1000);" +
+                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize({animate:false,pan:false}); }, 2000);" +
+                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize({animate:false,pan:false}); }, 3500);"
                 );
                 
                 // Si on a une ambulance à suivre, charger son dernier trajet
@@ -126,16 +125,16 @@ public class AmbulanceSimController implements Initializable {
         webView.widthProperty().addListener((o, ov, nv) -> {
             if (mapLoaded) {
                 webEngine.executeScript(
-                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize(false); }, 50);" +
-                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize(false); }, 300);"
+                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize({animate:false,pan:false}); }, 100);" +
+                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize({animate:false,pan:false}); }, 500);"
                 );
             }
         });
         webView.heightProperty().addListener((o, ov, nv) -> {
             if (mapLoaded) {
                 webEngine.executeScript(
-                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize(false); }, 50);" +
-                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize(false); }, 300);"
+                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize({animate:false,pan:false}); }, 100);" +
+                    "setTimeout(function(){ if(typeof map!=='undefined') map.invalidateSize({animate:false,pan:false}); }, 500);"
                 );
             }
         });

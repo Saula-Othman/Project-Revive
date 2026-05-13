@@ -14,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import pro.revive.App;
 import pro.revive.SessionManager;
+import pro.revive.controllers.ControllersAdmission.MainController;
 import pro.revive.entities.EntitiesUser.Personne;
 import pro.revive.services.ServicesUser.AuditService;
 import pro.revive.services.ServicesUser.CaptchaService;
@@ -150,7 +151,7 @@ public class LoginController implements Initializable {
      *   Infirmier Triage        → Module 2  (Triage)          DashboardTriage.fxml
      *   Biologiste Radiologue   → Module 4  (Labo)            DashboardLabo.fxml
      *   Responsable Logistique  → Module 5  (Matériel)        dashboardMateriel.fxml
-     *   Agent Accueil           → Module 6  (Personnel view)  M6_Dashboard.fxml
+     *   Agent Accueil           → Module 1  (Admission)       MainAdmission.fxml
      */
     private void openModuleForUser(Personne user) {
         // First login — force password change regardless of role
@@ -174,14 +175,25 @@ public class LoginController implements Initializable {
         try {
             switch (role) {
 
-                case "Administrateur":
-                case "Agent Accueil": {
+                case "Administrateur": {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource(
                             "/ResourcesUser/images/fxml/M6_Dashboard.fxml"));
                     Parent root = loader.load();
                     M6DashboardController ctrl = loader.getController();
                     ctrl.setCurrentUser(user);
                     navigateTo(root, "REVIVE — Gestion du Personnel");
+                    break;
+                }
+
+                case "Agent Accueil": {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                            "/ResourceAdmission/urgence/fxml/MainAdmission.fxml"));
+                    Parent root = loader.load();
+                    root.getStylesheets().add(getClass().getResource(
+                            "/ResourceAdmission/urgence/css/theme.css").toExternalForm());
+                    MainController ctrl = loader.getController();
+                    ctrl.initData();
+                    navigateTo(root, "REVIVE — Admission & Accueil");
                     break;
                 }
 
