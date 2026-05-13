@@ -10,29 +10,31 @@ import java.util.List;
 
 public class AdmissionDAO {
 
-    // Real DB column names:
-    //   PK  : id_admission   (not "id")
-    //   FK  : id_patient     (not "patient_id")
-    //   date: date_heure_arrivee  (not "date_admission")
-    //   motif: motif_consultation (not "motif_admission")
+    // Colonnes EXACTES de la table `admissions` dans la BDD :
+    //   id_admission, id_patient, date_admission, mode_arrivee,
+    //   motif_admission, statut, priorite_initiale, agent_accueil_id,
+    //   notes, ambulance_id, patient_inconnu
+    //
+    // ⚠️ PAS de colonne "actif" dans admissions (elle existe dans patients, pas ici)
+    // ⚠️ La colonne date s'appelle "date_admission" (pas "date_heure_arrivee")
+    // ⚠️ Le motif s'appelle "motif_admission" (pas "motif_consultation")
 
     public int save(Admission a) throws SQLException {
-        String sql = "INSERT INTO admissions (id_patient, date_heure_arrivee, mode_arrivee, motif_consultation, statut, " +
-                     "priorite_initiale, agent_accueil_id, notes, ambulance_id, patient_inconnu, actif) " +
-                     "VALUES (?,NOW(),?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO admissions (id_patient, date_admission, mode_arrivee, motif_admission, " +
+                "statut, priorite_initiale, agent_accueil_id, notes, ambulance_id, patient_inconnu) " +
+                "VALUES (?,NOW(),?,?,?,?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setInt(1, a.getPatientId());
+            stmt.setInt(1,    a.getPatientId());
             stmt.setString(2, a.getModeArrivee());
             stmt.setString(3, a.getMotifAdmission());
             stmt.setString(4, a.getStatut());
             stmt.setString(5, a.getPrioriteInitiale());
-            stmt.setInt(6, a.getAgentAccueilId());
+            stmt.setInt(6,    a.getAgentAccueilId());
             stmt.setString(7, a.getNotes());
             if (a.getAmbulanceId() != null) stmt.setInt(8, a.getAmbulanceId());
-            else stmt.setNull(8, Types.INTEGER);
+            else                            stmt.setNull(8, Types.INTEGER);
             stmt.setBoolean(9, a.isPatientInconnu());
-            stmt.setBoolean(10, true);
             stmt.executeUpdate();
             try (ResultSet gk = stmt.getGeneratedKeys()) {
                 if (gk.next()) return gk.getInt(1);
@@ -42,8 +44,8 @@ public class AdmissionDAO {
     }
 
     public void update(Admission a) throws SQLException {
-        String sql = "UPDATE admissions SET mode_arrivee=?, motif_consultation=?, statut=?, priorite_initiale=?, notes=? " +
-                     "WHERE id_admission=?";
+        String sql = "UPDATE admissions SET mode_arrivee=?, motif_admission=?, statut=?, " +
+                "priorite_initiale=?, notes=? WHERE id_admission=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, a.getModeArrivee());
@@ -51,7 +53,7 @@ public class AdmissionDAO {
             stmt.setString(3, a.getStatut());
             stmt.setString(4, a.getPrioriteInitiale());
             stmt.setString(5, a.getNotes());
-            stmt.setInt(6, a.getId());
+            stmt.setInt(6,    a.getId());
             stmt.executeUpdate();
         }
     }
@@ -61,26 +63,27 @@ public class AdmissionDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, statut);
-            stmt.setInt(2, id);
+            stmt.setInt(2,    id);
             stmt.executeUpdate();
         }
     }
 
+    // -------------------------------------------------------------------------
+    // La colonne "actif" n'existe PAS dans admissions.
+    // Pour simuler la désactivation, on utilise le statut "Sorti".
+    // Cette méthode met à jour le statut en conséquence.
+    // -------------------------------------------------------------------------
     public void updateActif(int id, boolean actif) throws SQLException {
-        String sql = "UPDATE admissions SET actif=? WHERE id_admission=?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setBoolean(1, actif);
-            stmt.setInt(2, id);
-            stmt.executeUpdate();
-        }
+        // actif=false → statut "Sorti"  |  actif=true → statut "En attente triage"
+        String nouveauStatut = actif ? "En attente triage" : "Sorti";
+        updateStatut(id, nouveauStatut);
     }
 
     public List<Admission> findByPatient(int patientId) throws SQLException {
         List<Admission> list = new ArrayList<>();
         String sql = "SELECT a.*, p.nom, p.prenom FROM admissions a " +
-                     "JOIN patients p ON a.id_patient = p.id_patient " +
-                     "WHERE a.id_patient = ? ORDER BY a.date_heure_arrivee DESC";
+                "JOIN patients p ON a.id_patient = p.id_patient " +
+                "WHERE a.id_patient = ? ORDER BY a.date_admission DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, patientId);
@@ -94,8 +97,8 @@ public class AdmissionDAO {
     public List<Admission> findTodayAdmissions() throws SQLException {
         List<Admission> list = new ArrayList<>();
         String sql = "SELECT a.*, p.nom, p.prenom FROM admissions a " +
-                     "JOIN patients p ON a.id_patient = p.id_patient " +
-                     "WHERE DATE(a.date_heure_arrivee) = CURDATE() ORDER BY a.date_heure_arrivee DESC";
+                "JOIN patients p ON a.id_patient = p.id_patient " +
+                "WHERE DATE(a.date_admission) = CURDATE() ORDER BY a.date_admission DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -107,8 +110,8 @@ public class AdmissionDAO {
     public List<Admission> findAll() throws SQLException {
         List<Admission> list = new ArrayList<>();
         String sql = "SELECT a.*, p.nom, p.prenom FROM admissions a " +
-                     "JOIN patients p ON a.id_patient = p.id_patient " +
-                     "ORDER BY a.date_heure_arrivee DESC LIMIT 100";
+                "JOIN patients p ON a.id_patient = p.id_patient " +
+                "ORDER BY a.date_admission DESC LIMIT 100";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -118,7 +121,7 @@ public class AdmissionDAO {
     }
 
     public int countToday() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM admissions WHERE DATE(date_heure_arrivee) = CURDATE()";
+        String sql = "SELECT COUNT(*) FROM admissions WHERE DATE(date_admission) = CURDATE()";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -137,14 +140,22 @@ public class AdmissionDAO {
         return 0;
     }
 
+    public void delete(int id) throws SQLException {
+        String sql = "DELETE FROM admissions WHERE id_admission=?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
     private Admission mapResultSet(ResultSet rs) throws SQLException {
         Admission a = new Admission();
         a.setId(rs.getInt("id_admission"));
         a.setPatientId(rs.getInt("id_patient"));
         a.setModeArrivee(rs.getString("mode_arrivee"));
-        a.setMotifAdmission(rs.getString("motif_consultation"));
+        a.setMotifAdmission(rs.getString("motif_admission"));       // ← colonne réelle
         a.setStatut(rs.getString("statut"));
-        // New columns added by migration — tolerate absence gracefully
         try { a.setPrioriteInitiale(rs.getString("priorite_initiale")); } catch (SQLException ignored) {}
         try { a.setAgentAccueilId(rs.getInt("agent_accueil_id")); }      catch (SQLException ignored) {}
         try { a.setNotes(rs.getString("notes")); }                        catch (SQLException ignored) {}
@@ -153,26 +164,21 @@ public class AdmissionDAO {
             if (!rs.wasNull()) a.setAmbulanceId(ambId);
         } catch (SQLException ignored) {}
         try { a.setPatientInconnu(rs.getBoolean("patient_inconnu")); }   catch (SQLException ignored) {}
-        try { a.setActif(rs.getBoolean("actif")); } catch (SQLException ignored) { a.setActif(true); }
-        Timestamp ts = rs.getTimestamp("date_heure_arrivee");
+
+        // Pas de colonne "actif" dans admissions.
+        // On déduit l'état actif depuis le statut : "Sorti" = désactivé.
+        String statut = a.getStatut();
+        a.setActif(statut == null || !statut.equals("Sorti"));
+
+        Timestamp ts = rs.getTimestamp("date_admission");               // ← colonne réelle
         if (ts != null) a.setDateAdmission(ts.toLocalDateTime());
-        // Embedded patient info
+
+        // Infos patient embarquées via le JOIN
         Patient p = new Patient();
         p.setId(rs.getInt("id_patient"));
-        try {
-            p.setNom(rs.getString("nom"));
-            p.setPrenom(rs.getString("prenom"));
-        } catch (SQLException ignored) {}
+        try { p.setNom(rs.getString("nom")); }       catch (SQLException ignored) {}
+        try { p.setPrenom(rs.getString("prenom")); } catch (SQLException ignored) {}
         a.setPatient(p);
         return a;
-    }
-
-    public void delete(int id) throws SQLException {
-        String sql = "DELETE FROM admissions WHERE id_admission=?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-        }
     }
 }

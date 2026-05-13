@@ -9,17 +9,16 @@ import java.util.List;
 
 public class PatientDAO {
 
-    // Real DB column names:
-    //   PK   : id_patient           (not "id")
-    //   secu : num_secu             (not "num_securite_sociale")
-    //   phone: telephone_urgence    (not "telephone")
-    // New columns added by migration: sexe, adresse, allergies, antecedents,
-    //   nationalite, num_cin, contact_urgence_nom, contact_urgence_tel, actif, date_creation
+    // Noms EXACTS des colonnes dans la BDD (revive__4_.sql) :
+    //   id_patient, nom, prenom, date_naissance, sexe, groupe_sanguin,
+    //   num_securite_sociale, telephone, adresse, allergies, antecedents,
+    //   nationalite, num_cin, contact_urgence_nom, contact_urgence_tel,
+    //   date_creation, actif
 
     public List<Patient> findAll() throws SQLException {
         List<Patient> patients = new ArrayList<>();
-        // actif column may not exist before migration; fall back to all rows
-        String sql = "SELECT * FROM patients ORDER BY nom, prenom";
+        // ✅ CORRECTION : filtrer uniquement les patients actifs (actif = 1)
+        String sql = "SELECT * FROM patients WHERE actif = 1 ORDER BY nom, prenom";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -29,7 +28,8 @@ public class PatientDAO {
     }
 
     public Patient findById(int id) throws SQLException {
-        String sql = "SELECT * FROM patients WHERE id_patient = ?";
+        // ✅ CORRECTION : ne pas retourner un patient supprimé (actif = 0)
+        String sql = "SELECT * FROM patients WHERE id_patient = ? AND actif = 1";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -42,9 +42,9 @@ public class PatientDAO {
 
     public List<Patient> search(String query) throws SQLException {
         List<Patient> patients = new ArrayList<>();
-        // num_cin and num_secu may not exist before migration — search gracefully
-        String sql = "SELECT * FROM patients WHERE " +
-                     "(nom LIKE ? OR prenom LIKE ?) ORDER BY nom, prenom";
+        // ✅ CORRECTION : exclure les patients supprimés (actif = 0) de la recherche
+        String sql = "SELECT * FROM patients WHERE actif = 1 AND " +
+                "(nom LIKE ? OR prenom LIKE ?) ORDER BY nom, prenom";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             String q = "%" + query + "%";
@@ -58,21 +58,22 @@ public class PatientDAO {
     }
 
     public int save(Patient p) throws SQLException {
-        // Core columns that always exist; new columns added conditionally
-        String sql = "INSERT INTO patients (nom, prenom, date_naissance, groupe_sanguin, num_secu, telephone_urgence, " +
-                     "sexe, adresse, allergies, antecedents, nationalite, num_cin, contact_urgence_nom, contact_urgence_tel) " +
-                     "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO patients " +
+                "(nom, prenom, date_naissance, sexe, groupe_sanguin, num_securite_sociale, " +
+                "telephone, adresse, allergies, antecedents, nationalite, " +
+                "num_cin, contact_urgence_nom, contact_urgence_tel) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, p.getNom());
-            stmt.setString(2, p.getPrenom());
-            stmt.setObject(3, p.getDateNaissance());
-            stmt.setString(4, p.getGroupeSanguin());
-            stmt.setString(5, p.getNumSecuriteSociale());
-            stmt.setString(6, p.getTelephone());
-            stmt.setString(7, p.getSexe());
-            stmt.setString(8, p.getAdresse());
-            stmt.setString(9, p.getAllergies());
+            stmt.setString(1,  p.getNom());
+            stmt.setString(2,  p.getPrenom());
+            stmt.setObject(3,  p.getDateNaissance());
+            stmt.setString(4,  p.getSexe());
+            stmt.setString(5,  p.getGroupeSanguin());
+            stmt.setString(6,  p.getNumSecuriteSociale());
+            stmt.setString(7,  p.getTelephone());
+            stmt.setString(8,  p.getAdresse());
+            stmt.setString(9,  p.getAllergies());
             stmt.setString(10, p.getAntecedents());
             stmt.setString(11, p.getNationalite());
             stmt.setString(12, p.getNumCin());
@@ -87,41 +88,40 @@ public class PatientDAO {
     }
 
     public void update(Patient p) throws SQLException {
-        String sql = "UPDATE patients SET nom=?, prenom=?, date_naissance=?, groupe_sanguin=?, num_secu=?, " +
-                     "telephone_urgence=?, sexe=?, adresse=?, allergies=?, antecedents=?, nationalite=?, " +
-                     "num_cin=?, contact_urgence_nom=?, contact_urgence_tel=? WHERE id_patient=?";
+        String sql = "UPDATE patients SET " +
+                "nom=?, prenom=?, date_naissance=?, sexe=?, groupe_sanguin=?, " +
+                "num_securite_sociale=?, telephone=?, adresse=?, allergies=?, " +
+                "antecedents=?, nationalite=?, num_cin=?, " +
+                "contact_urgence_nom=?, contact_urgence_tel=? " +
+                "WHERE id_patient=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, p.getNom());
-            stmt.setString(2, p.getPrenom());
-            stmt.setObject(3, p.getDateNaissance());
-            stmt.setString(4, p.getGroupeSanguin());
-            stmt.setString(5, p.getNumSecuriteSociale());
-            stmt.setString(6, p.getTelephone());
-            stmt.setString(7, p.getSexe());
-            stmt.setString(8, p.getAdresse());
-            stmt.setString(9, p.getAllergies());
+            stmt.setString(1,  p.getNom());
+            stmt.setString(2,  p.getPrenom());
+            stmt.setObject(3,  p.getDateNaissance());
+            stmt.setString(4,  p.getSexe());
+            stmt.setString(5,  p.getGroupeSanguin());
+            stmt.setString(6,  p.getNumSecuriteSociale());
+            stmt.setString(7,  p.getTelephone());
+            stmt.setString(8,  p.getAdresse());
+            stmt.setString(9,  p.getAllergies());
             stmt.setString(10, p.getAntecedents());
             stmt.setString(11, p.getNationalite());
             stmt.setString(12, p.getNumCin());
             stmt.setString(13, p.getContactUrgenceNom());
             stmt.setString(14, p.getContactUrgenceTel());
-            stmt.setInt(15, p.getId());
+            stmt.setInt(15,    p.getId());
             stmt.executeUpdate();
         }
     }
 
     public void delete(int id) throws SQLException {
-        // Soft-delete via actif flag (column added by migration); fallback hard-delete
-        try {
-            String sql = "UPDATE patients SET actif = 0 WHERE id_patient = ?";
-            try (Connection conn = DatabaseConnection.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, id);
-                stmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            // actif column not yet added — skip; row remains visible
+        // Soft-delete : mettre actif = 0 au lieu de supprimer la ligne
+        String sql = "UPDATE patients SET actif = 0 WHERE id_patient = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
         }
     }
 
@@ -144,19 +144,22 @@ public class PatientDAO {
         p.setPrenom(rs.getString("prenom"));
         Date dn = rs.getDate("date_naissance");
         if (dn != null) p.setDateNaissance(dn.toLocalDate());
+        p.setSexe(rs.getString("sexe"));
         p.setGroupeSanguin(rs.getString("groupe_sanguin"));
-        p.setNumSecuriteSociale(rs.getString("num_secu"));
-        p.setTelephone(rs.getString("telephone_urgence"));
-        // Columns added by migration — tolerate absence
-        try { p.setSexe(rs.getString("sexe")); }                           catch (SQLException ignored) {}
-        try { p.setAdresse(rs.getString("adresse")); }                     catch (SQLException ignored) {}
-        try { p.setAllergies(rs.getString("allergies")); }                 catch (SQLException ignored) {}
-        try { p.setAntecedents(rs.getString("antecedents")); }             catch (SQLException ignored) {}
-        try { p.setNationalite(rs.getString("nationalite")); }             catch (SQLException ignored) {}
-        try { p.setNumCin(rs.getString("num_cin")); }                      catch (SQLException ignored) {}
-        try { p.setContactUrgenceNom(rs.getString("contact_urgence_nom")); } catch (SQLException ignored) {}
-        try { p.setContactUrgenceTel(rs.getString("contact_urgence_tel")); } catch (SQLException ignored) {}
-        try { p.setActif(rs.getBoolean("actif")); } catch (SQLException ignored) { p.setActif(true); }
+        p.setNumSecuriteSociale(rs.getString("num_securite_sociale"));
+        p.setTelephone(rs.getString("telephone"));
+        p.setAdresse(rs.getString("adresse"));
+        p.setAllergies(rs.getString("allergies"));
+        p.setAntecedents(rs.getString("antecedents"));
+        p.setNationalite(rs.getString("nationalite"));
+        p.setNumCin(rs.getString("num_cin"));
+        p.setContactUrgenceNom(rs.getString("contact_urgence_nom"));
+        p.setContactUrgenceTel(rs.getString("contact_urgence_tel"));
+        try {
+            p.setActif(rs.getBoolean("actif"));
+        } catch (SQLException ignored) {
+            p.setActif(true);
+        }
         try {
             Timestamp ts = rs.getTimestamp("date_creation");
             if (ts != null) p.setDateCreation(ts.toLocalDateTime());
