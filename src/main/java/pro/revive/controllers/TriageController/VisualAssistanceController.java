@@ -13,6 +13,7 @@ import pro.revive.App;
 import pro.revive.Navigator;
 import pro.revive.services.TriageServices.VisualAssistanceService;
 import pro.revive.utils.TriageUtils.AppExecutor;
+import pro.revive.utils.TriageUtils.VoiceOutputService;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -40,6 +41,7 @@ public class VisualAssistanceController implements Initializable {
     @FXML private Label     lblNoCamera;
     @FXML private Button    btnToggle;
     @FXML private Label     lblUserName;
+    @FXML private Button    btnMute;
 
     // ── Service ───────────────────────────────────────────────────────────
     private final VisualAssistanceService service = new VisualAssistanceService();
@@ -139,16 +141,20 @@ public class VisualAssistanceController implements Initializable {
                     boolean ready   = (now - lastAnalysisTime) >= COOLDOWN_MS && !analysing.get();
                     BufferedImage prev = prevMotionFrame;
 
-                    if (ready && prev != null && service.motionDetected(prev, current)) {
+                    if (ready) {
                         lastAnalysisTime = now;
                         analysing.set(true);
-                        Platform.runLater(() -> lblCommentary.setText("🔍 Mouvement détecté — Analyse IA en cours..."));
+                        Platform.runLater(() -> lblCommentary.setText("🔍 Analyse IA en cours..."));
 
                         // Run the AI call on a separate thread so it doesn't block the motion loop
                         final BufferedImage frameToAnalyse = current;
                         AppExecutor.run(() -> {
                             String result = service.analyzeFrame(frameToAnalyse);
                             Platform.runLater(() -> lblCommentary.setText(result));
+                            // Speak every confirmed analysis — skip API errors
+                            if (!result.startsWith("❌")) {
+                                VoiceOutputService.speak(result);
+                            }
                             analysing.set(false);
                         });
                     }
@@ -165,6 +171,7 @@ public class VisualAssistanceController implements Initializable {
 
     private void stopCamera() {
         running.set(false);
+        VoiceOutputService.stop();
         shutdownExecutor(cameraExecutor);
         shutdownExecutor(motionExecutor);
         cameraExecutor = null;
@@ -214,6 +221,20 @@ public class VisualAssistanceController implements Initializable {
         if (exec != null && !exec.isShutdown()) {
             exec.shutdownNow();
             try { exec.awaitTermination(500, TimeUnit.MILLISECONDS); } catch (InterruptedException ignored) {}
+        }
+    }
+
+    // ── Mute ─────────────────────────────────────────────────────────────
+
+    @FXML
+    public void toggleMute() {
+        boolean nowMuted = VoiceOutputService.toggleMute();
+        if (nowMuted) {
+            btnMute.setText("🔇  Son coupé");
+            btnMute.setStyle("-fx-background-color: #DC2626; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 10px 20px; -fx-background-radius: 10px; -fx-cursor: hand;");
+        } else {
+            btnMute.setText("🔊  Son activé");
+            btnMute.setStyle("-fx-background-color: #475569; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 10px 20px; -fx-background-radius: 10px; -fx-cursor: hand;");
         }
     }
 

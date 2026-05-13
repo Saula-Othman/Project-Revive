@@ -100,6 +100,12 @@
                              maxWidth="Infinity"
                              style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12px 20px; -fx-background-radius: 10px; -fx-cursor: hand;" />
 
+                     <!-- Mute button -->
+                     <Button fx:id="btnMute"
+                             text="🔊  Son activé"
+                             onAction="#toggleMute"
+                             maxWidth="Infinity"
+                             style="-fx-background-color: #475569; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 10px 20px; -fx-background-radius: 10px; -fx-cursor: hand;" />
 
                   </VBox>
 

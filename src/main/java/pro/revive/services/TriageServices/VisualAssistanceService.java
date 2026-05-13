@@ -25,8 +25,8 @@ import java.util.Base64;
 public class VisualAssistanceService {
 
     // ── Groq config ───────────────────────────────────────────────────────
-    private static final String GROQ_API_KEY = "KEY";
-    private static final String GROQ_URL     = "URL";
+    private static final String GROQ_API_KEY = "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";
+    private static final String GROQ_URL     = "https://api.groq.com/openai/v1/chat/completions";
     private static final String MODEL        = "meta-llama/llama-4-scout-17b-16e-instruct";
 
     // ── Motion detection threshold ────────────────────────────────────────
@@ -35,10 +35,14 @@ public class VisualAssistanceService {
 
     // ── Prompt (escaped for direct JSON embedding) ────────────────────────
     private static final String PROMPT_JSON =
-        "\"Analyse le haut du corps de ce patient en 2 lignes maximum.\\n" +
-        "Ligne 1 — Mouvement : ce que le patient fait (ex: tient son bras droit, prot\\u00e8ge son \\u00e9paule gauche).\\n" +
-        "Ligne 2 — Sympt\\u00f4me probable : la blessure ou douleur suspect\\u00e9e (ex: fracture, luxation, entorse).\\n" +
-        "Sois court, direct, en fran\\u00e7ais. Pas d'explication. Termine par le niveau : \\u26a0 Critique / \\u2139 Mod\\u00e9r\\u00e9 / \\u2713 L\\u00e9ger.\"";
+        "\"Tu es une infirmi\\u00e8re aux urgences qui observe un patient en temps r\\u00e9el.\\n" +
+        "R\\u00e8gles strictes :\\n" +
+        "- Si le patient croise un bras sur sa poitrine ou tient sa poitrine : r\\u00e9ponds uniquement soit fracture du bras soit douleur thoracique selon le geste exact.\\n" +
+        "- Si le patient tient ou prot\\u00e8ge un membre : identifie lequel et dis fracture, entorse ou luxation probable.\\n" +
+        "- R\\u00e9ponds toujours en UNE seule phrase courte en fran\\u00e7ais.\\n" +
+        "- Pas d\\u2019\\u00e9moji, pas d\\u2019\\u00e9tiquette, pas d\\u2019explication.\\n" +
+        "Exemple 1 : Le patient croise le bras gauche sur la poitrine, possible fracture du bras gauche.\\n" +
+        "Exemple 2 : Le patient tient sa poitrine avec les deux mains, suspicion de douleur thoracique.\"";
 
     // ── Shared HTTP client (thread-safe, reused across calls) ─────────────
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
