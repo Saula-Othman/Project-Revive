@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersAdmission.MainController"
+            styleClass="main-root">
+
+    <!-- TOP BAR -->
+    <top>
+        <HBox styleClass="topbar" alignment="CENTER_LEFT" spacing="0">
+            <padding><Insets top="0" bottom="0" left="20" right="20"/></padding>
+
+            <!-- Logo -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="⚕" styleClass="topbar-logo-icon"/>
+                <VBox alignment="CENTER_LEFT" spacing="1">
+                    <Label text="REVIVE" styleClass="topbar-logo-brand"/>
+                    <Label text="Systeme de Gestion des Urgences" styleClass="topbar-logo-sub"/>
+                </VBox>
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Badge Système actif -->
+            <Label text="● Systeme actif" styleClass="topbar-status-badge"/>
+
+            <Region minWidth="14"/>
+
+            <!-- Bouton Agent d'Accueil -->
+            <Button text="Agent d'Accueil" styleClass="topbar-agent-btn"/>
+
+            <Region minWidth="10"/>
+
+            <!-- Avatar initiales -->
+            <Label styleClass="topbar-avatar" fx:id="avatarLabel" text="AA"/>
+
+            <!-- Labels cachés pour le contrôleur (compat stats) -->
+            <Label fx:id="statAdmissions" text="0" visible="false" managed="false"/>
+            <Label fx:id="statAttente" text="0" visible="false" managed="false"/>
+            <Label fx:id="statAmbulances" text="0" visible="false" managed="false"/>
+            <Label fx:id="userNameLabel" text="" visible="false" managed="false"/>
+        </HBox>
+    </top>
+
+    <!-- SIDEBAR + CONTENT -->
+    <center>
+        <HBox>
+            <!-- SIDEBAR -->
+            <VBox styleClass="sidebar" spacing="4" minWidth="220" maxWidth="220">
+                <padding><Insets top="24" bottom="24" left="14" right="14"/></padding>
+
+                <Label text="MENU" styleClass="sidebar-section-title"/>
+                <Region minHeight="10"/>
+
+                <Button text="  🏠  Tableau de Bord" onAction="#showDashboard"
+                        styleClass="sidebar-btn" maxWidth="Infinity" fx:id="btnDashboard"/>
+                <Button text="  👥  Patients" onAction="#showPatients"
+                        styleClass="sidebar-btn" maxWidth="Infinity" fx:id="btnPatients"/>
+                <Button text="  📋  Admissions" onAction="#showAdmissions"
+                        styleClass="sidebar-btn" maxWidth="Infinity" fx:id="btnAdmissions"/>
+                <Button text="  🚑  Suivi Ambulances" onAction="#showAmbulances"
+                        styleClass="sidebar-btn" maxWidth="Infinity" fx:id="btnAmbulances"/>
+
+                <Region VBox.vgrow="ALWAYS"/>
+
+                <Separator styleClass="sidebar-divider"/>
+
+                <!-- Zone utilisateur -->
+                <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 8 4 4 4;">
+                    <Label styleClass="sidebar-user-avatar" text="AA"/>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Agent d'Accueil" styleClass="sidebar-user-name"/>
+                        <Label text="Module 1" styleClass="sidebar-user-role"/>
+                    </VBox>
+                </HBox>
+
+                <Button text="⎋  Deconnexion" onAction="#handleLogout"
+                        styleClass="btn-logout" maxWidth="Infinity"/>
+            </VBox>
+
+            <!-- MAIN CONTENT AREA -->
+            <StackPane HBox.hgrow="ALWAYS" fx:id="contentArea" styleClass="content-area"/>
+        </HBox>
+    </center>
+</BorderPane>

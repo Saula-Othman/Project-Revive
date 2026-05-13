@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="pro.revive.controllers.ControllersAdmission.PatientCardsController"
+      styleClass="page-container" spacing="20">
+    <padding><Insets top="28" bottom="28" left="28" right="28"/></padding>
+
+    <!-- Header row -->
+    <HBox alignment="CENTER_LEFT" spacing="16">
+        <VBox spacing="3">
+            <Label text="Patients" styleClass="page-title"/>
+            <Label text="Gestion du fichier patients" styleClass="page-subtitle"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="+ Nouveau Patient" onAction="#handleAdd" styleClass="btn-primary" prefHeight="38"/>
+    </HBox>
+
+    <!-- Search bar -->
+    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="card">
+        <padding><Insets top="14" bottom="14" left="16" right="16"/></padding>
+        <Label text="🔍" style="-fx-font-size: 16px;"/>
+        <TextField fx:id="searchField" promptText="Rechercher par nom, prénom, CIN, N° Sécurité Sociale..."
+                   HBox.hgrow="ALWAYS" styleClass="search-field" onKeyReleased="#handleSearch"/>
+        <Button text="Effacer" onAction="#handleClearSearch" styleClass="btn-ghost"/>
+    </HBox>
+
+    <!-- Cards container -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="cards-scroll" hbarPolicy="NEVER">
+        <VBox fx:id="cardsContainer" spacing="12" styleClass="cards-container">
+            <padding><Insets top="8" bottom="8" left="4" right="4"/></padding>
+        </VBox>
+    </ScrollPane>
+
+    <!-- Status bar -->
+    <HBox styleClass="status-bar" alignment="CENTER_LEFT" spacing="12">
+        <Label fx:id="statusLabel" text="Chargement..." styleClass="status-text"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="countLabel" text="" styleClass="status-count"/>
+    </HBox>
+</VBox>

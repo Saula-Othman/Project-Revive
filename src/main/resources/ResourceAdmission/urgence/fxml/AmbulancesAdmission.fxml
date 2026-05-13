@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.geometry.*?>
+
+<HBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="pro.revive.controllers.ControllersAdmission.AmbulanceController"
+      styleClass="page-container" spacing="0">
+
+    <!-- ── SIDEBAR gauche ── -->
+    <VBox spacing="16" minWidth="320" maxWidth="340" styleClass="ambulance-sidebar">
+        <padding><Insets top="24" bottom="24" left="20" right="20"/></padding>
+
+        <VBox spacing="3">
+            <Label text="Suivi Ambulances" styleClass="page-title"/>
+            <Label text="Mise à jour automatique toutes les 30s" styleClass="page-subtitle"/>
+        </VBox>
+
+        <!-- Indicateur actualisation -->
+        <HBox alignment="CENTER_LEFT" spacing="8" styleClass="refresh-indicator">
+            <padding><Insets top="8" bottom="8" left="12" right="12"/></padding>
+            <Label fx:id="refreshDot" text="●" style="-fx-text-fill:#16a34a; -fx-font-size:10px;"/>
+            <Label fx:id="refreshLabel" text="Actualisation automatique active" styleClass="refresh-text"/>
+        </HBox>
+
+        <!-- Liste des cartes ambulances -->
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane" hbarPolicy="NEVER">
+            <VBox fx:id="ambulanceListBox" spacing="12">
+                <padding><Insets top="4" bottom="4" left="2" right="2"/></padding>
+            </VBox>
+        </ScrollPane>
+
+        <Separator/>
+
+        <!-- Boutons d'action -->
+        <VBox spacing="8">
+            <Button text="+ Pré-inscrire Patient Inconnu"
+                    onAction="#handlePreInscription"
+                    styleClass="btn-primary" maxWidth="Infinity" prefHeight="38"/>
+            <Button fx:id="alertTriageBtn" text="⚠ Alerter le Triage"
+                    onAction="#handleAlerteTriage"
+                    styleClass="btn-danger" maxWidth="Infinity" prefHeight="38"/>
+        </VBox>
+    </VBox>
+
+    <!-- ── CARTE DROITE (WebView Leaflet) ── -->
+    <VBox HBox.hgrow="ALWAYS" spacing="0">
+
+        <!-- En-tête carte -->
+        <HBox styleClass="map-header" alignment="CENTER_LEFT" spacing="12">
+            <padding><Insets top="14" bottom="14" left="20" right="20"/></padding>
+            <Label text="📍 Carte — Tunis (Hôpital Charles Nicolle)" styleClass="map-header-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="🏥 Hôpital" style="-fx-font-size:12px; -fx-text-fill:#475569;"/>
+            <Label text="  🚑 Ambulance" style="-fx-font-size:12px; -fx-text-fill:#475569;"/>
+            <Label text="  🔴 Critique" style="-fx-font-size:12px; -fx-text-fill:#dc2626;"/>
+        </HBox>
+
+        <!-- WebView Leaflet map -->
+        <WebView fx:id="mapView" VBox.vgrow="ALWAYS"
+                 minWidth="200" minHeight="200"/>
+    </VBox>
+</HBox>

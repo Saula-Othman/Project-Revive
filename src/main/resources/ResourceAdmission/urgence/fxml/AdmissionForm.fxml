@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="pro.revive.controllers.ControllersAdmission.AdmissionFormController"
+      styleClass="form-dialog" spacing="0" prefWidth="740" prefHeight="660">
+
+    <HBox styleClass="dialog-header" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="16" bottom="16" left="24" right="24"/></padding>
+        <Label text="&#128203;" style="-fx-font-size:20px;"/>
+        <Label fx:id="dialogTitle" text="Nouvelle Admission" styleClass="dialog-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="&#x2715;" onAction="#handleCancel" styleClass="btn-dialog-close"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="dialog-scroll" hbarPolicy="NEVER">
+        <VBox spacing="20">
+            <padding><Insets top="20" bottom="20" left="28" right="28"/></padding>
+
+            <!-- Patient Selection -->
+            <VBox spacing="12" styleClass="form-section">
+                <Label text="Patient" styleClass="form-section-title"/>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="S&#233;lectionner un patient *" styleClass="field-label"/>
+                        <ComboBox fx:id="patientCombo" promptText="Choisir un patient..."
+                                  styleClass="form-combo" maxWidth="Infinity"/>
+                    </VBox>
+                    <VBox spacing="5">
+                        <Label text=" " styleClass="field-label"/>
+                        <Button text="+ Nouveau" onAction="#handleNewPatient" styleClass="btn-secondary" prefHeight="36"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Patient info card -->
+                <VBox fx:id="patientInfoBox" styleClass="patient-info-card" spacing="6" visible="false" managed="false">
+                    <padding><Insets top="10" bottom="10" left="14" right="14"/></padding>
+                    <HBox spacing="20" alignment="CENTER_LEFT">
+                        <VBox spacing="1">
+                            <Label text="Nom complet" style="-fx-font-size:10px;-fx-text-fill:#94a3b8;"/>
+                            <Label fx:id="infoNom" text="&#8212;" style="-fx-font-weight:bold;-fx-text-fill:#1e293b;"/>
+                        </VBox>
+                        <VBox spacing="1">
+                            <Label text="Naissance" style="-fx-font-size:10px;-fx-text-fill:#94a3b8;"/>
+                            <Label fx:id="infoDN" text="&#8212;" style="-fx-text-fill:#475569;"/>
+                        </VBox>
+                        <VBox spacing="1">
+                            <Label text="Gr. Sang." style="-fx-font-size:10px;-fx-text-fill:#94a3b8;"/>
+                            <Label fx:id="infoGS" text="&#8212;" style="-fx-text-fill:#475569;"/>
+                        </VBox>
+                        <VBox spacing="1">
+                            <Label text="Allergies" style="-fx-font-size:10px;-fx-text-fill:#94a3b8;"/>
+                            <Label fx:id="infoAllergies" text="&#8212;" style="-fx-text-fill:#ef4444;-fx-font-weight:bold;"/>
+                        </VBox>
+                        <VBox spacing="1">
+                            <Label text="Visites" style="-fx-font-size:10px;-fx-text-fill:#94a3b8;"/>
+                            <Label fx:id="infoAdmissions" text="&#8212;" style="-fx-text-fill:#475569;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- MDIA Import -->
+                <VBox fx:id="mdiaBox" styleClass="mdia-card" spacing="8" visible="false" managed="false">
+                    <padding><Insets top="12" bottom="12" left="14" right="14"/></padding>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="&#128193;" style="-fx-font-size:18px;"/>
+                        <VBox spacing="2" HBox.hgrow="ALWAYS">
+                            <Label text="Dossier MDIA disponible" style="-fx-font-weight:bold;-fx-text-fill:#0D629C;"/>
+                            <Label text="Ce patient a des admissions ant&#233;rieures. Importez son dossier m&#233;dical."
+                                   style="-fx-font-size:11px;-fx-text-fill:#475569;-fx-wrap-text:true;"/>
+                        </VBox>
+                        <Button fx:id="mdiaImportBtn" text="Importer MDIA" onAction="#handleMdiaImport"
+                                styleClass="btn-mdia" prefHeight="34"/>
+                    </HBox>
+                    <VBox fx:id="mdiaResultBox" spacing="4" visible="false" managed="false">
+                        <Label fx:id="mdiaStatus" text="" style="-fx-font-size:11px;"/>
+                    </VBox>
+                </VBox>
+            </VBox>
+
+            <!-- Admission Details -->
+            <VBox spacing="12" styleClass="form-section">
+                <Label text="D&#233;tails de l'Admission" styleClass="form-section-title"/>
+                <HBox spacing="14">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="Mode d'Arriv&#233;e *" styleClass="field-label"/>
+                        <ComboBox fx:id="modeArriveeCombo" styleClass="form-combo" maxWidth="Infinity"/>
+                    </VBox>
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="Priorit&#233; Initiale" styleClass="field-label"/>
+                        <ComboBox fx:id="prioriteCombo" styleClass="form-combo" maxWidth="Infinity"/>
+                    </VBox>
+                </HBox>
+                <VBox spacing="4">
+                    <Label text="Motif d'Admission *" styleClass="field-label"/>
+                    <TextArea fx:id="motifArea" promptText="D&#233;crivez le motif d'arriv&#233;e aux urgences..."
+                              styleClass="form-textarea" prefHeight="80" wrapText="true"/>
+                    <Label fx:id="motifError" styleClass="field-error" visible="false" managed="false"/>
+                </VBox>
+                <VBox spacing="4">
+                    <Label text="Notes compl&#233;mentaires" styleClass="field-label"/>
+                    <TextArea fx:id="notesArea" promptText="Observations..."
+                              styleClass="form-textarea" prefHeight="55" wrapText="true"/>
+                </VBox>
+            </VBox>
+
+            <!-- Historique Patient Import -->
+            <VBox fx:id="historiqueImportBox" spacing="10" styleClass="form-section"
+                  visible="false" managed="false">
+                <Label text="Historique du Patient" styleClass="form-section-title"/>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Ce patient a des visites ant&#233;rieures. Consultez et importez des informations depuis son dossier m&#233;dical."
+                           style="-fx-font-size: 11px; -fx-text-fill: #475569; -fx-wrap-text: true;"
+                           HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="openHistoriqueBtn" text="&#128203; Voir Historique"
+                            onAction="#handleOuvrirHistorique" styleClass="btn-secondary" prefHeight="34"/>
+                </HBox>
+                <!-- Confirmation box after import -->
+                <VBox fx:id="importedInfoBox" spacing="6" visible="false" managed="false"
+                      style="-fx-background-color: #f0fdf4; -fx-background-radius: 6px;
+                             -fx-border-color: #86efac; -fx-border-radius: 6px; -fx-padding: 10px;">
+                    <Label text="&#10003; Informations import&#233;es depuis l'historique :"
+                           style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #16a34a;"/>
+                    <Label fx:id="importedInfoLabel" wrapText="true"
+                           style="-fx-font-size: 11px; -fx-text-fill: #475569;"/>
+                    <Button text="&#128465; Effacer" onAction="#handleEffacerImport"
+                            styleClass="btn-ghost" prefHeight="26"/>
+                </VBox>
+            </VBox>
+
+            <!-- Patient Inconnu -->
+            <VBox spacing="12" styleClass="form-section">
+                <Label text="Patient Inconnu / Ambulance" styleClass="form-section-title"/>
+                <CheckBox fx:id="patientInconnuCheck"
+                          text="Patient arrivant par ambulance sans identification"
+                          styleClass="form-checkbox"/>
+                <VBox fx:id="ambInfoBox" spacing="10" visible="false" managed="false">
+                    <!-- Required inconnu info -->
+                    <HBox spacing="14">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="Nom provisoire *" styleClass="field-label"/>
+                            <TextField fx:id="inconnu_nomField" promptText="ex: INCONNU ou nom estim&#233;"
+                                       styleClass="form-field"/>
+                            <Label fx:id="inconnu_nomError" styleClass="field-error" visible="false" managed="false"/>
+                        </VBox>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="Pr&#233;nom provisoire *" styleClass="field-label"/>
+                            <TextField fx:id="inconnu_prenomField" promptText="ex: Patient"
+                                       styleClass="form-field"/>
+                            <Label fx:id="inconnu_prenomError" styleClass="field-error" visible="false" managed="false"/>
+                        </VBox>
+                    </HBox>
+                    <HBox spacing="14">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="&#194;ge estim&#233;" styleClass="field-label"/>
+                            <TextField fx:id="inconnu_ageField" promptText="ex: 45 ans"
+                                       styleClass="form-field"/>
+                        </VBox>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="Sexe apparent" styleClass="field-label"/>
+                            <ComboBox fx:id="inconnu_sexeCombo" styleClass="form-combo" maxWidth="Infinity"/>
+                        </VBox>
+                    </HBox>
+                    <VBox spacing="4">
+                        <Label text="Informations provisoires (&#233;tat, signes vitaux...)" styleClass="field-label"/>
+                        <TextArea fx:id="ambInfoArea" promptText="Ex: Homme ~50 ans, douleur thoracique, TA basse..."
+                                  styleClass="form-textarea" prefHeight="55" wrapText="true"/>
+                    </VBox>
+                    <CheckBox fx:id="alertTriageCheck" text="Envoyer alerte au module Infirmier Triage"
+                              styleClass="form-checkbox" selected="true"/>
+                </VBox>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+
+    <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="12">
+        <padding><Insets top="14" bottom="14" left="24" right="24"/></padding>
+        <Label fx:id="formError" styleClass="form-footer-error" visible="false" managed="false"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Annuler" onAction="#handleCancel" styleClass="btn-secondary" prefWidth="110" prefHeight="38"/>
+        <Button fx:id="saveBtn" text="Enregistrer Admission" onAction="#handleSave"
+                styleClass="btn-primary" prefWidth="190" prefHeight="38"/>
+    </HBox>
+</VBox>

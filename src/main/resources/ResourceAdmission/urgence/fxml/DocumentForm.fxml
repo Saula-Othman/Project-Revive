@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="pro.revive.controllers.ControllersAdmission.DocumentFormController"
+      styleClass="form-dialog" spacing="0" prefWidth="620" prefHeight="560">
+
+    <!-- Header -->
+    <HBox styleClass="dialog-header" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="16" bottom="16" left="24" right="24"/></padding>
+        <Label text="📄" style="-fx-font-size: 20px;"/>
+        <Label fx:id="dialogTitle" text="Ajouter une Note au Dossier" styleClass="dialog-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="✕" onAction="#handleCancel" styleClass="btn-dialog-close"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="dialog-scroll" hbarPolicy="NEVER">
+        <VBox spacing="20">
+            <padding><Insets top="24" bottom="24" left="28" right="28"/></padding>
+
+            <!-- Type + Date -->
+            <HBox spacing="14">
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Type de document *" styleClass="field-label"/>
+                    <ComboBox fx:id="typeCombo" styleClass="form-combo" maxWidth="Infinity"/>
+                    <Label fx:id="typeError" styleClass="field-error" visible="false" managed="false"/>
+                </VBox>
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Date du document *" styleClass="field-label"/>
+                    <DatePicker fx:id="datePicker" styleClass="form-field" maxWidth="Infinity"/>
+                    <Label fx:id="dateError" styleClass="field-error" visible="false" managed="false"/>
+                </VBox>
+            </HBox>
+
+            <!-- Titre -->
+            <VBox spacing="5">
+                <Label text="Titre *" styleClass="field-label"/>
+                <TextField fx:id="titreField" promptText="ex: Consultation cardiologie, Bilan sanguin..."
+                           styleClass="form-field"/>
+                <Label fx:id="titreError" styleClass="field-error" visible="false" managed="false"/>
+            </VBox>
+
+            <!-- Contenu -->
+            <VBox spacing="5">
+                <Label text="Contenu / Résumé *" styleClass="field-label"/>
+                <TextArea fx:id="contenuArea"
+                          promptText="Observations à l'admission, notes de transfert, résumé clinique..."
+                          styleClass="form-textarea" prefHeight="120" wrapText="true"/>
+                <Label fx:id="contenuError" styleClass="field-error" visible="false" managed="false"/>
+            </VBox>
+
+            <!-- Médecin + Établissement -->
+            <HBox spacing="14">
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Médecin" styleClass="field-label"/>
+                    <TextField fx:id="medecinField" promptText="ex: Dr. Ben Ali Sami"
+                               styleClass="form-field"/>
+                </VBox>
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Établissement" styleClass="field-label"/>
+                    <TextField fx:id="etablissementField" promptText="ex: Hôpital Charles Nicolle"
+                               styleClass="form-field"/>
+                </VBox>
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- Footer -->
+    <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="12">
+        <padding><Insets top="14" bottom="14" left="24" right="24"/></padding>
+        <Label fx:id="formError" styleClass="form-footer-error" visible="false" managed="false"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Annuler" onAction="#handleCancel" styleClass="btn-secondary" prefWidth="110" prefHeight="38"/>
+        <Button fx:id="saveBtn" text="Enregistrer" onAction="#handleSave"
+                styleClass="btn-primary" prefWidth="150" prefHeight="38"/>
+    </HBox>
+</VBox>

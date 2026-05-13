@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="pro.revive.controllers.ControllersAdmission.HistoriqueSelectController"
+      styleClass="form-dialog" spacing="0" prefWidth="800" prefHeight="600">
+
+    <!-- Header -->
+    <HBox styleClass="dialog-header" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="16" bottom="16" left="24" right="24"/></padding>
+        <Label text="📋" style="-fx-font-size:20px;"/>
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+            <Label text="Sélectionner des documents à importer" styleClass="dialog-title"/>
+            <Label fx:id="headerTitle" text=""
+                   style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+        </VBox>
+        <Button text="✕" onAction="#handleAnnuler" styleClass="btn-dialog-close"/>
+    </HBox>
+
+    <!-- Toolbar: select all / deselect -->
+    <HBox alignment="CENTER_LEFT" spacing="10"
+          style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
+        <padding><Insets top="10" bottom="10" left="24" right="24"/></padding>
+        <Label text="Sélection rapide :" style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+        <Button text="Tout sélectionner" onAction="#handleSelectAll"
+                styleClass="btn-ghost" prefHeight="28"/>
+        <Button text="Tout désélectionner" onAction="#handleDeselectAll"
+                styleClass="btn-ghost" prefHeight="28"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="selectionCountLabel" text="0 document(s) sélectionné(s)"
+               style="-fx-font-size: 12px; -fx-text-fill: #475569; -fx-font-weight: bold;"/>
+    </HBox>
+
+    <!-- Documents list -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="dialog-scroll" hbarPolicy="NEVER">
+        <VBox fx:id="documentsContainer" spacing="10">
+            <padding><Insets top="16" bottom="16" left="20" right="20"/></padding>
+
+            <!-- Loading label -->
+            <Label fx:id="loadingLabel" text="Chargement de l'historique..."
+                   style="-fx-font-size: 13px; -fx-text-fill: #64748b; -fx-padding: 30px;"
+                   visible="true" managed="true"/>
+
+            <!-- Empty label -->
+            <Label fx:id="emptyLabel"
+                   text="Aucun document dans l'historique de ce patient."
+                   style="-fx-font-size: 13px; -fx-text-fill: #94a3b8; -fx-padding: 40px;"
+                   visible="false" managed="false"/>
+        </VBox>
+    </ScrollPane>
+
+    <!-- Footer -->
+    <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="12">
+        <padding><Insets top="14" bottom="14" left="24" right="24"/></padding>
+        <Label text="Les documents sélectionnés seront copiés dans les notes de l'admission."
+               style="-fx-font-size: 11px; -fx-text-fill: #94a3b8;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Annuler" onAction="#handleAnnuler" styleClass="btn-secondary"
+                prefWidth="110" prefHeight="38"/>
+        <Button fx:id="importBtn" text="✓ Importer la sélection" onAction="#handleImporter"
+                styleClass="btn-primary" prefWidth="200" prefHeight="38" disable="true"/>
+    </HBox>
+</VBox>

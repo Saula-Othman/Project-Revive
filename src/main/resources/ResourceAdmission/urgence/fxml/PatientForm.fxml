@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="pro.revive.controllers.ControllersAdmission.PatientFormController"
+      styleClass="form-dialog" spacing="0" prefWidth="760" prefHeight="640">
+
+    <HBox styleClass="dialog-header" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="16" bottom="16" left="24" right="24"/></padding>
+        <Label text="&#9877;" style="-fx-font-size:20px;-fx-text-fill:white;"/>
+        <Label fx:id="dialogTitle" text="Nouveau Patient" styleClass="dialog-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="&#x2715;" onAction="#handleCancel" styleClass="btn-dialog-close"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="dialog-scroll" hbarPolicy="NEVER">
+        <VBox spacing="20">
+            <padding><Insets top="20" bottom="20" left="28" right="28"/></padding>
+
+            <!-- Identit&#233; -->
+            <VBox spacing="12" styleClass="form-section">
+                <Label text="Identit&#233; du Patient" styleClass="form-section-title"/>
+                <HBox spacing="14">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Nom *" styleClass="field-label"/>
+                        <TextField fx:id="nomField" promptText="Nom de famille" styleClass="form-field"/>
+                        <Label fx:id="nomError" styleClass="field-error" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Pr&#233;nom *" styleClass="field-label"/>
+                        <TextField fx:id="prenomField" promptText="Pr&#233;nom" styleClass="form-field"/>
+                        <Label fx:id="prenomError" styleClass="field-error" visible="false" managed="false"/>
+                    </VBox>
+                </HBox>
+                <HBox spacing="14">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Date de Naissance" styleClass="field-label"/>
+                        <DatePicker fx:id="dateNaissancePicker" styleClass="form-datepicker" maxWidth="Infinity"
+                                    promptText="jj/mm/aaaa"/>
+                        <Label fx:id="dateNaissanceError" styleClass="field-error" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Sexe *" styleClass="field-label"/>
+                        <ComboBox fx:id="sexeCombo" promptText="S&#233;lectionner" styleClass="form-combo" maxWidth="Infinity"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Nationalit&#233;" styleClass="field-label"/>
+                        <ComboBox fx:id="nationaliteCombo" styleClass="form-combo" maxWidth="Infinity"/>
+                    </VBox>
+                </HBox>
+                <HBox spacing="14">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="N&#176; CIN (8 chiffres)" styleClass="field-label"/>
+                        <TextField fx:id="cinField" promptText="ex: 12345678" styleClass="form-field"/>
+                        <Label fx:id="cinError" styleClass="field-error" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Groupe Sanguin" styleClass="field-label"/>
+                        <ComboBox fx:id="groupeSanguinCombo" styleClass="form-combo" maxWidth="Infinity"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Coordonn&#233;es -->
+            <VBox spacing="12" styleClass="form-section">
+                <Label text="Coordonn&#233;es" styleClass="form-section-title"/>
+                <HBox spacing="14">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="T&#233;l&#233;phone" styleClass="field-label"/>
+                        <TextField fx:id="telephoneField" promptText="ex: 98765432" styleClass="form-field"/>
+                        <Label text="Num. tunisien (2/5/7/9 + 7 chiffres) &#8594; +216 ajout&#233; auto"
+                               style="-fx-font-size:10px;-fx-text-fill:#94a3b8;"/>
+                        <Label fx:id="telError" styleClass="field-error" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="N&#176; S&#233;curit&#233; Sociale" styleClass="field-label"/>
+                        <TextField fx:id="numSecuField" promptText="Num&#233;ro s&#233;curit&#233; sociale" styleClass="form-field"/>
+                        <Label fx:id="secuError" styleClass="field-error" visible="false" managed="false"/>
+                    </VBox>
+                </HBox>
+                <VBox spacing="4">
+                    <Label text="Adresse" styleClass="field-label"/>
+                    <TextArea fx:id="adresseArea" promptText="Adresse compl&#232;te" styleClass="form-textarea"
+                              prefHeight="60" wrapText="true"/>
+                </VBox>
+            </VBox>
+
+            <!-- M&#233;dical -->
+            <VBox spacing="12" styleClass="form-section">
+                <Label text="Informations M&#233;dicales" styleClass="form-section-title"/>
+                <HBox spacing="14">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Allergies connues" styleClass="field-label"/>
+                        <TextArea fx:id="allergiesArea" promptText="P&#233;nicilline, aspirine..." styleClass="form-textarea"
+                                  prefHeight="65" wrapText="true"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Ant&#233;c&#233;dents m&#233;dicaux" styleClass="field-label"/>
+                        <TextArea fx:id="antecedentsArea" promptText="Diab&#232;te, HTA..." styleClass="form-textarea"
+                                  prefHeight="65" wrapText="true"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Contact urgence -->
+            <VBox spacing="12" styleClass="form-section">
+                <Label text="Contact d'Urgence" styleClass="form-section-title"/>
+                <HBox spacing="14">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Nom du contact" styleClass="field-label"/>
+                        <TextField fx:id="contactNomField" promptText="Nom et pr&#233;nom" styleClass="form-field"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="T&#233;l&#233;phone du contact" styleClass="field-label"/>
+                        <TextField fx:id="contactTelField" promptText="ex: 22334455" styleClass="form-field"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+
+    <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="12">
+        <padding><Insets top="14" bottom="14" left="24" right="24"/></padding>
+        <Label fx:id="formError" styleClass="form-footer-error" visible="false" managed="false"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Annuler" onAction="#handleCancel" styleClass="btn-secondary" prefWidth="110" prefHeight="38"/>
+        <Button fx:id="saveBtn" text="Enregistrer" onAction="#handleSave" styleClass="btn-primary" prefWidth="130" prefHeight="38"/>
+    </HBox>
+</VBox>

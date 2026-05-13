@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="pro.revive.controllers.ControllersAdmission.AdmissionController"
+      styleClass="page-container" spacing="20">
+    <padding><Insets top="28" bottom="28" left="28" right="28"/></padding>
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="16">
+        <VBox spacing="3">
+            <Label text="Admissions" styleClass="page-title"/>
+            <Label text="Enregistrement et suivi des admissions aux urgences" styleClass="page-subtitle"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="+ Nouvelle Admission" onAction="#handleAdd" styleClass="btn-primary" prefHeight="38"/>
+    </HBox>
+
+    <!-- Filters -->
+    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="card">
+        <padding><Insets top="14" bottom="14" left="16" right="16"/></padding>
+        <Label text="🔍" style="-fx-font-size: 16px;"/>
+        <TextField fx:id="searchField" promptText="Rechercher par patient, motif..."
+                   prefWidth="280" styleClass="search-field" onKeyReleased="#handleSearch"/>
+        <Separator orientation="VERTICAL"/>
+        <Label text="Statut:" styleClass="field-label"/>
+        <ComboBox fx:id="statutFilter" styleClass="form-combo" prefWidth="160"/>
+        <Button text="Tous" onAction="#handleClearFilters" styleClass="btn-ghost"/>
+    </HBox>
+
+    <!-- Table -->
+    <VBox styleClass="card" VBox.vgrow="ALWAYS">
+        <TableView fx:id="admissionTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+            <columns>
+                <!-- colId masquée - les IDs ne s'affichent pas en UI -->
+                <TableColumn fx:id="colPatient" text="Patient" prefWidth="180"/>
+                <TableColumn fx:id="colMode" text="Mode Arrivée" prefWidth="130"/>
+                <TableColumn fx:id="colMotif" text="Motif" prefWidth="220"/>
+                <TableColumn fx:id="colStatut" text="Statut" prefWidth="150"/>
+                <TableColumn fx:id="colPriorite" text="Priorité" prefWidth="100"/>
+                <TableColumn fx:id="colDate" text="Date / Heure" prefWidth="140"/>
+                <TableColumn fx:id="colActif" text="État" prefWidth="90"/>
+                <TableColumn fx:id="colActions" text="Actions" prefWidth="120"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <HBox styleClass="status-bar" alignment="CENTER_LEFT" spacing="12">
+        <Label fx:id="statusLabel" text="Chargement..." styleClass="status-text"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="countLabel" text="" styleClass="status-count"/>
+    </HBox>
+</VBox>

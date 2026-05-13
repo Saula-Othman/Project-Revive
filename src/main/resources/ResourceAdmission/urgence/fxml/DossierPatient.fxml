@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="pro.revive.controllers.ControllersAdmission.DossierPatientController"
+      styleClass="form-dialog" spacing="0" prefWidth="900" prefHeight="700">
+
+    <!-- Header -->
+    <HBox styleClass="dialog-header" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="16" bottom="16" left="24" right="24"/></padding>
+        <Label text="📁" style="-fx-font-size: 20px;"/>
+        <Label fx:id="dialogTitle" text="Dossier Patient" styleClass="dialog-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="✕" onAction="#handleClose" styleClass="btn-dialog-close"/>
+    </HBox>
+
+    <!-- Patient Info Card -->
+    <VBox styleClass="patient-info-header" spacing="8">
+        <padding><Insets top="20" bottom="20" left="28" right="28"/></padding>
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <Label fx:id="avatarLabel" styleClass="patient-avatar"/>
+            <VBox spacing="4">
+                <Label fx:id="nomLabel" styleClass="patient-name"/>
+                <HBox spacing="16">
+                    <Label fx:id="dnLabel" styleClass="patient-detail"/>
+                    <Label fx:id="sexeLabel" styleClass="patient-detail"/>
+                    <Label fx:id="gsLabel" styleClass="patient-detail"/>
+                    <Label fx:id="telLabel" styleClass="patient-detail"/>
+                </HBox>
+            </VBox>
+        </HBox>
+        <HBox spacing="16">
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Label text="Allergies" style="-fx-font-size: 10px; -fx-text-fill: #94a3b8;"/>
+                <Label fx:id="allergiesLabel" style="-fx-text-fill: #ef4444; -fx-font-weight: bold;"/>
+            </VBox>
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Label text="Antécédents" style="-fx-font-size: 10px; -fx-text-fill: #94a3b8;"/>
+                <Label fx:id="antecedentsLabel" style="-fx-text-fill: #475569;"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- Historique Section -->
+    <VBox spacing="16" VBox.vgrow="ALWAYS">
+        <padding><Insets top="20" bottom="20" left="28" right="28"/></padding>
+        
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <Label text="Historique Médical" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="countLabel" style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+            <Button text="+ Ajouter Note" onAction="#handleAjouterDocument"
+                    styleClass="btn-primary" prefHeight="34"/>
+        </HBox>
+
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="dialog-scroll" hbarPolicy="NEVER">
+            <VBox fx:id="historiqueContainer" spacing="12">
+                <padding><Insets top="4" bottom="4" left="4" right="4"/></padding>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+
+    <!-- Footer -->
+    <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="12">
+        <padding><Insets top="14" bottom="14" left="24" right="24"/></padding>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Fermer" onAction="#handleClose" styleClass="btn-secondary" prefWidth="110" prefHeight="38"/>
+    </HBox>
+</VBox>

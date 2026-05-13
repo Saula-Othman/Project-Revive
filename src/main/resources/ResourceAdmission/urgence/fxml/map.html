@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+  }
+  #map {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Popup personnalisé */
+  .amb-popup { font-family: "Segoe UI", Arial, sans-serif; min-width: 200px; }
+  .amb-popup-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .amb-popup-badge {
+    padding: 2px 10px; border-radius: 10px; font-size: 11px;
+    font-weight: 700; color: white;
+  }
+  .amb-popup-matricule { font-weight: 700; font-size: 14px; color: #1e293b; }
+  .amb-popup-eta { font-size: 22px; font-weight: 700; text-align: center; margin: 6px 0; }
+  .amb-popup-info { font-size: 12px; color: #475569; margin-top: 4px; }
+
+  /* Icône hôpital custom */
+  .hospital-icon {
+    background: #0D629C; color: white; font-weight: 700;
+    font-size: 18px; border-radius: 8px; display: flex;
+    align-items: center; justify-content: center;
+    border: 3px solid rgba(15,76,138,0.3);
+    box-shadow: 0 3px 12px rgba(15,76,138,0.4);
+  }
+
+  /* Icône ambulance custom */
+  .amb-icon {
+    color: white; font-weight: 700; font-size: 12px;
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; border: 3px solid white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  }
+
+  .leaflet-container { font-family: "Segoe UI", Arial, sans-serif; }
+  .amb-tooltip {
+    background: white; border: 1px solid #e2e8f0; border-radius: 6px;
+    font-size: 12px; font-family: "Segoe UI", Arial, sans-serif;
+    padding: 4px 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    white-space: nowrap;
+  }
+  .amb-tooltip::before { display: none; }
+
+  /*
+   * ── JavaFX WebKit Rendering Fixes ──────────────────────────────
+   *
+   * JavaFX's WebKit compositor has a broken translate3d() implementation.
+   * L.Browser.any3d = false (set in JS below) forces Leaflet to use
+   * 2D translate() for panning and CSS left/top for tile positioning.
+   *
+   * We only disable transitions and 3D rendering hints here — we do NOT
+   * override transform on .leaflet-map-pane because Leaflet needs it for panning.
+   */
+
+  /* Disable CSS transitions — they stutter in JavaFX WebKit */
+  .leaflet-tile,
+  .leaflet-tile-container,
+  .leaflet-tile-pane,
+  .leaflet-map-pane,
+  .leaflet-overlay-pane,
+  .leaflet-marker-pane,
+  .leaflet-zoom-animated {
+      -webkit-transition: none !important;
+      transition: none !important;
+  }
+
+  /* Disable 3D rendering hints on tiles — prevents compositing artifacts */
+  .leaflet-tile {
+      -webkit-backface-visibility: hidden;
+      -webkit-perspective: 0;
+      -webkit-transform-style: flat;
+      will-change: auto !important;
+      image-rendering: auto;
+  }
+
+  /* Fix tile blend mode that JavaFX WebKit doesn't support */
+  .leaflet-container img.leaflet-tile {
+      mix-blend-mode: normal !important;
+  }
+
+  /* Ensure zoom-animated class doesn't trigger 3D transforms */
+  .leaflet-zoom-animated {
+      -webkit-transform-origin: 0 0;
+      transform-origin: 0 0;
+      will-change: auto !important;
+  }
+
+  /* Disable fade animations */
+  .leaflet-fade-anim .leaflet-popup {
+      -webkit-transition: none !important;
+      transition: none !important;
+      opacity: 1 !important;
+  }
+
+  /* Remove default white background on div icons */
+  .leaflet-div-icon {
+      background: transparent !important;
+      border: none !important;
+  }
+</style>
+<!-- Leaflet depuis ressources locales -->
+<link rel="stylesheet" href="leaflet.css"/>
+<script src="leaflet.js"></script>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+// ── JavaFX WebKit: Disable 3D transforms BEFORE map init ──────
+// This forces Leaflet to use 2D translate() for panning
+// and plain CSS left/top for tile positioning.
+L.Browser.any3d = false;
+L.Browser.ie3d = false;
+L.Browser.webkit3d = false;
+L.Browser.gecko3d = false;
+
+// Disable CSS transitions entirely
+if (L.DomUtil && L.DomUtil.TRANSITION) {
+    L.DomUtil.TRANSITION = '';
+}
+
+// Coordonnées Hôpital Charles Nicolle, Tunis
+var HOSPITAL = [36.8188, 10.1657];
+
+// Initialiser la carte centrée sur Tunis
+var map = L.map('map', {
+  center: HOSPITAL,
+  zoom: 13,
+  zoomControl: true,
+  attributionControl: true,
+  // JavaFX WebKit fixes
+  fadeAnimation: false,
+  zoomAnimation: false,
+  markerZoomAnimation: false,
+  preferCanvas: false,
+  transform3DLimit: Infinity
+});
+
+// Tuile OpenStreetMap — no crossOrigin for JavaFX WebKit compatibility
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+  maxZoom: 19,
+  keepBuffer: 4,
+  updateWhenIdle: true,
+  updateWhenZooming: false
+}).addTo(map);
+
+// ── invalidateSize at multiple intervals for JavaFX layout settling ──
+function fixSize() {
+    if (typeof map !== 'undefined' && map._container) {
+        map.invalidateSize({ animate: false, pan: false });
+    }
+}
+setTimeout(fixSize, 200);
+setTimeout(fixSize, 500);
+setTimeout(fixSize, 1000);
+setTimeout(fixSize, 2000);
+setTimeout(fixSize, 3500);
+setTimeout(fixSize, 5000);
+
+// Window resize handler
+window.addEventListener('resize', function() {
+    setTimeout(fixSize, 50);
+    setTimeout(fixSize, 300);
+});
+
+// ResizeObserver for container-only resizes
+if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(function() {
+        setTimeout(fixSize, 50);
+    }).observe(document.getElementById('map'));
+}
+
+// ── Marqueur Hôpital ──────────────────────────────────────
+var hospitalIcon = L.divIcon({
+  className: '',
+  html: '<div class="hospital-icon" style="width:46px;height:46px;">H</div>',
+  iconSize: [46, 46],
+  iconAnchor: [23, 23],
+  popupAnchor: [0, -28]
+});
+
+L.marker(HOSPITAL, { icon: hospitalIcon })
+  .addTo(map)
+  .bindPopup('<b>🏥 Hôpital Charles Nicolle</b><br/>Tunis — Centre de référence');
+
+// Cercle de rayon autour de l'hôpital
+L.circle(HOSPITAL, {
+  radius: 800,
+  color: '#0D629C',
+  fillColor: '#0D629C',
+  fillOpacity: 0.05,
+  weight: 1.5,
+  dashArray: '6, 4'
+}).addTo(map);
+
+// ── Stockage des marqueurs ambulances ─────────────────────
+var ambMarkers = [];
+var ambLines   = [];
+
+// ── Couleurs selon urgence ────────────────────────────────
+function urgenceColor(niveau) {
+  switch(niveau) {
+    case 'Critique': return '#dc2626';
+    case 'Urgent':   return '#ea580c';
+    case 'Modéré':   return '#ca8a04';
+    default:         return '#16a34a';
+  }
+}
+
+// ── Ajouter / mettre à jour les ambulances ────────────────
+// Appelé depuis Java via WebEngine.executeScript()
+function updateAmbulances(jsonStr) {
+  // Effacer les anciens marqueurs
+  ambMarkers.forEach(function(m) { map.removeLayer(m); });
+  ambLines.forEach(function(l)   { map.removeLayer(l); });
+  ambMarkers = [];
+  ambLines   = [];
+
+  var ambulances = JSON.parse(jsonStr);
+
+  ambulances.forEach(function(amb) {
+    var lat = parseFloat(amb.lat);
+    var lng = parseFloat(amb.lng);
+    if (!lat || !lng) return;
+
+    var pos   = [lat, lng];
+    var color = urgenceColor(amb.niveau);
+
+    // Ligne pointillée vers hôpital
+    var line = L.polyline([pos, HOSPITAL], {
+      color: color,
+      weight: 2.5,
+      dashArray: '10, 7',
+      opacity: 0.7
+    }).addTo(map);
+    ambLines.push(line);
+
+    // Icône cercle coloré
+    var icon = L.divIcon({
+      className: '',
+      html: '<div class="amb-icon" style="width:44px;height:44px;background:' + color + ';">' +
+              '<span>AMB</span>' +
+            '</div>',
+      iconSize: [44, 44],
+      iconAnchor: [22, 22],
+      popupAnchor: [0, -26]
+    });
+
+    // Badge ETA couleur
+    var etaColor = amb.eta <= 5 ? '#dc2626' : amb.eta <= 10 ? '#ea580c' : '#0D629C';
+
+    // Popup détail
+    var popupHtml =
+      '<div class="amb-popup">' +
+        '<div class="amb-popup-header">' +
+          '<span class="amb-popup-badge" style="background:' + color + ';">' + amb.niveau.toUpperCase() + '</span>' +
+          '<span class="amb-popup-matricule">🚑 ' + amb.matricule + '</span>' +
+        '</div>' +
+        '<div class="amb-popup-eta" style="color:' + etaColor + ';">' + amb.eta + ' min</div>' +
+        '<div style="text-align:center;font-size:11px;color:#94a3b8;margin-bottom:6px;">Temps d\'arrivée estimé</div>' +
+        (amb.patient ? '<div class="amb-popup-info">👤 ' + amb.patient + '</div>' : '') +
+      '</div>';
+
+    var marker = L.marker(pos, { icon: icon })
+      .addTo(map)
+      .bindPopup(popupHtml);
+
+    // Label matricule + ETA sous le cercle via tooltip permanent
+    marker.bindTooltip(
+      '<b>' + amb.matricule + '</b><br/>' +
+      '<span style="color:' + etaColor + ';font-weight:700;">' + amb.eta + ' min</span>',
+      {
+        permanent: true,
+        direction: 'bottom',
+        offset: [0, 20],
+        className: 'amb-tooltip'
+      }
+    ).openTooltip();
+
+    ambMarkers.push(marker);
+  });
+
+  // Ajuster le zoom pour tout voir si on a des ambulances
+  if (ambMarkers.length > 0) {
+    var group = L.featureGroup([...ambMarkers, L.marker(HOSPITAL)]);
+    map.fitBounds(group.getBounds().pad(0.25), { animate: false });
+  }
+
+  // Fix map size after data update
+  setTimeout(fixSize, 200);
+}
+
+// ── Signal prêt pour Java ─────────────────────────────────
+window.mapReady = true;
+</script>
+</body>
+</html>

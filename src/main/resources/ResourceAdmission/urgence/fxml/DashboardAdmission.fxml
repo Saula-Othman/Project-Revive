@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pro.revive.controllers.ControllersAdmission.DashboardController"
+            fitToWidth="true" styleClass="scroll-pane" hbarPolicy="NEVER">
+
+    <VBox spacing="24" styleClass="page-container">
+        <padding><Insets top="28" bottom="28" left="28" right="28"/></padding>
+
+        <!-- Page header -->
+        <VBox spacing="3">
+            <Label text="Tableau de Bord" styleClass="page-title"/>
+            <Label fx:id="dateLabel" text="lundi 11 mai 2026" styleClass="page-subtitle"/>
+        </VBox>
+
+        <!-- Stats cards (4 cartes avec bordures colorées gauche) -->
+        <HBox spacing="16">
+            <!-- Patients Enregistrés — bordure bleue -->
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="0">
+                <padding><Insets top="18" bottom="18" left="18" right="18"/></padding>
+                <HBox alignment="CENTER_LEFT" spacing="0">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Patients Enregistrés" styleClass="stat-card-label"/>
+                        <Label fx:id="cardTotalPatients" text="0" styleClass="stat-card-value"/>
+                    </VBox>
+                    <Label text="👥" style="-fx-font-size:26px; -fx-text-fill:#2E7CA6; -fx-background-color:#e8f3fb; -fx-background-radius:8; -fx-padding:10;"/>
+                </HBox>
+            </VBox>
+
+            <!-- Admissions Aujourd'hui — bordure verte -->
+            <VBox styleClass="stat-card-green" HBox.hgrow="ALWAYS" spacing="0">
+                <padding><Insets top="18" bottom="18" left="18" right="18"/></padding>
+                <HBox alignment="CENTER_LEFT" spacing="0">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Admissions Aujourd'hui" styleClass="stat-card-label"/>
+                        <Label fx:id="cardAdmissions" text="0" styleClass="stat-card-value"/>
+                    </VBox>
+                    <Label text="📋" style="-fx-font-size:26px; -fx-text-fill:#158A6A; -fx-background-color:#DDF7E7; -fx-background-radius:8; -fx-padding:10;"/>
+                </HBox>
+            </VBox>
+
+            <!-- Ambulances en Route — bordure teal -->
+            <VBox styleClass="stat-card-danger" HBox.hgrow="ALWAYS" spacing="0">
+                <padding><Insets top="18" bottom="18" left="18" right="18"/></padding>
+                <HBox alignment="CENTER_LEFT" spacing="0">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Ambulances en Route" styleClass="stat-card-label"/>
+                        <Label fx:id="cardAmbulances" text="0" styleClass="stat-card-value"/>
+                    </VBox>
+                    <Label text="🚑" style="-fx-font-size:26px; -fx-text-fill:#2E7CA6; -fx-background-color:#e8f3fb; -fx-background-radius:8; -fx-padding:10;"/>
+                </HBox>
+            </VBox>
+
+            <!-- Alertes Actives — bordure orange -->
+            <VBox styleClass="stat-card-warn" HBox.hgrow="ALWAYS" spacing="0">
+                <padding><Insets top="18" bottom="18" left="18" right="18"/></padding>
+                <HBox alignment="CENTER_LEFT" spacing="0">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Alertes Actives" styleClass="stat-card-label"/>
+                        <Label fx:id="cardAttente" text="0" styleClass="stat-card-value"/>
+                    </VBox>
+                    <Label text="⚠" style="-fx-font-size:26px; -fx-text-fill:#fbbf24; -fx-background-color:#fffbeb; -fx-background-radius:8; -fx-padding:10;"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <!-- Grille inférieure : Dernières Admissions + Ambulances en Approche -->
+        <HBox spacing="16" VBox.vgrow="ALWAYS">
+
+            <!-- Dernières Admissions — section card bleue -->
+            <VBox styleClass="section-card-blue" HBox.hgrow="ALWAYS" spacing="0">
+                <!-- Header -->
+                <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 16 18 14 18; -fx-border-color: transparent transparent #e2e8f0 transparent; -fx-border-width: 0 0 1 0;">
+                    <Label text="📋" style="-fx-font-size:16px;"/>
+                    <Label text="Dernières Admissions" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Voir tout" onAction="#showAllAdmissions" styleClass="btn-link"/>
+                </HBox>
+                <!-- Liste -->
+                <ScrollPane fitToWidth="true" prefHeight="320" styleClass="scroll-pane" hbarPolicy="NEVER">
+                    <VBox fx:id="admissionCardsBox" spacing="8">
+                        <padding><Insets top="12" bottom="12" left="14" right="14"/></padding>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+
+            <!-- Ambulances en Approche — section card teal -->
+            <VBox styleClass="section-card-teal" HBox.hgrow="ALWAYS" spacing="0">
+                <!-- Header -->
+                <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 16 18 14 18; -fx-border-color: transparent transparent #e2e8f0 transparent; -fx-border-width: 0 0 1 0;">
+                    <Label text="🚑" style="-fx-font-size:16px;"/>
+                    <Label text="Ambulances en Approche" styleClass="section-title"/>
+                </HBox>
+                <!-- Liste -->
+                <ScrollPane fitToWidth="true" prefHeight="320" styleClass="scroll-pane" hbarPolicy="NEVER">
+                    <VBox fx:id="ambulanceCardsBox" spacing="8">
+                        <padding><Insets top="12" bottom="12" left="14" right="14"/></padding>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+        </HBox>
+
+        <!-- Actions Rapides -->
+        <VBox styleClass="card" spacing="14">
+            <padding><Insets top="18" bottom="18" left="18" right="18"/></padding>
+            <Label text="Actions Rapides" styleClass="card-title"/>
+            <HBox spacing="12">
+                <Button text="+ Nouveau Patient" onAction="#quickNewPatient" styleClass="btn-primary" prefHeight="38" prefWidth="170"/>
+                <Button text="+ Nouvelle Admission" onAction="#quickNewAdmission" styleClass="btn-primary" prefHeight="38" prefWidth="170"/>
+                <Button text="🚑 Voir Ambulances" onAction="#quickAmbulances" styleClass="btn-secondary" prefHeight="38" prefWidth="170"/>
+            </HBox>
+        </VBox>
+    </VBox>
+</ScrollPane>
