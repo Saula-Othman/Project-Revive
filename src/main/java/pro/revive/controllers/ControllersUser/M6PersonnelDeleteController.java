@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import pro.revive.entities.EntitiesUser.Personne;
 import pro.revive.services.ServicesUser.AuditService;
+import pro.revive.services.ServicesUser.EmailService;
 import pro.revive.services.ServicesUser.PersonneService;
 import pro.revive.utils.UtilsUser.AnimationUtil;
 
@@ -41,6 +42,8 @@ public class M6PersonnelDeleteController {
                         + " (" + personne.getRole() + ")",
                         currentUser.getIdentifiant(), personne);
             }
+            // Notify the agent by email before deleting
+            EmailService.sendDeletionEmail(personne);
             service.deleteEntity(personne);
             System.out.println("Suppression confirmee pour: " + personne.getNom());
         }

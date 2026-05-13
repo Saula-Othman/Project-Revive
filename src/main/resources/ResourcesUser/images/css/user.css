@@ -527,7 +527,7 @@
     -fx-effect: dropshadow(gaussian, rgba(11,78,162,0.18), 14, 0, 0, 5);
 }
 
-.stripe { -fx-background-radius: 12px 0 0 12px; }
+.stripe { -fx-background-radius: 0; -fx-min-width: 5px; -fx-pref-width: 5px; -fx-max-width: 5px; -fx-min-height: 60px; }
 .s1 { -fx-background-color: #1E40AF; }
 .s2 { -fx-background-color: #059669; }
 .s3 { -fx-background-color: #D97706; }
@@ -544,19 +544,55 @@
 .act-icon {
     -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-background-color: white;
-    -fx-border-color: #CBD5E1;
     -fx-border-width: 1.5px;
     -fx-border-radius: 20px;
     -fx-background-radius: 20px;
-    -fx-padding: 5px 13px;
+    -fx-padding: 5px 14px;
     -fx-cursor: hand;
-    -fx-text-fill: #334155;
 }
 
-.act-icon.act-view:hover { -fx-background-color: #EEF4FB; -fx-border-color: #0B4EA2; -fx-text-fill: #0B4EA2; }
-.act-icon.act-edit:hover { -fx-background-color: #ECFDF5; -fx-border-color: #0E9B8A; -fx-text-fill: #0E9B8A; }
-.act-icon.act-del:hover  { -fx-background-color: #FEF2F2; -fx-border-color: #EF4444; -fx-text-fill: #EF4444; }
+/* Voir — light blue tint */
+.act-icon.act-view {
+    -fx-background-color: #DBEAFE;
+    -fx-border-color: #BFDBFE;
+    -fx-text-fill: #1E40AF;
+}
+.act-icon.act-view:hover {
+    -fx-background-color: #BFDBFE;
+    -fx-border-color: #0B4EA2;
+    -fx-text-fill: #0B4EA2;
+}
+
+/* Modifier — light teal tint */
+.act-icon.act-edit {
+    -fx-background-color: #CFFAFE;
+    -fx-border-color: #A5F3FC;
+    -fx-text-fill: #0E7490;
+}
+.act-icon.act-edit:hover {
+    -fx-background-color: #A5F3FC;
+    -fx-border-color: #0E9B8A;
+    -fx-text-fill: #0E9B8A;
+}
+
+/* Supprimer — light purple tint */
+.act-icon.act-del {
+    -fx-background-color: #EDE9FE;
+    -fx-border-color: #DDD6FE;
+    -fx-text-fill: #5B21B6;
+}
+.act-icon.act-del:hover {
+    -fx-background-color: #DDD6FE;
+    -fx-border-color: #7C3AED;
+    -fx-text-fill: #4C1D95;
+}
+
+/* ── Identifiant / Role line ─────────────────────────────────── */
+.pid {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+    -fx-font-weight: normal;
+}
 
 /* ── Checkboxes ───────────────────────────────────────────────── */
 .check-box .box {

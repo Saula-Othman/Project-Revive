@@ -145,6 +145,101 @@ public class EmailService {
     }
 
     // ══════════════════════════════════════════
+    // Email notification — account modified
+    // ══════════════════════════════════════════
+    public static void sendModificationEmail(Personne personne, String newPassword) {
+        if (personne.getEmail() == null || personne.getEmail().isBlank()) return;
+        try {
+            Session session = buildSession();
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(SENDER_EMAIL, "REVIVE - Gestion du Personnel"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(personne.getEmail()));
+            message.setSubject("Modification de votre compte - REVIVE");
+
+            boolean pwdChanged = newPassword != null && !newPassword.isBlank();
+            String pwdRow = pwdChanged
+                ? "<tr><td style='color:#6B7280;font-size:13px;padding:6px 0;'>Nouveau mot de passe</td>"
+                + "<td style='color:#EF4444;font-weight:bold;font-size:14px;text-align:right;'>" + newPassword + "</td></tr>"
+                : "";
+            String pwdNote = pwdChanged
+                ? "<p style='color:#EF4444;font-size:12px;margin:0 0 16px;'>⚠ Votre mot de passe a ete modifie. Utilisez le nouveau mot de passe ci-dessus pour vous connecter.</p>"
+                : "";
+
+            String body = "<!DOCTYPE html><html><body style='font-family:Segoe UI,Arial,sans-serif;background:#F0F4F8;padding:30px;'>"
+                + "<div style='max-width:520px;margin:auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);'>"
+                + "<div style='background:#0891B2;padding:28px 32px;'>"
+                + "<h1 style='color:#fff;margin:0;font-size:24px;'>REVIVE</h1>"
+                + "<p style='color:rgba(255,255,255,0.75);margin:4px 0 0;font-size:13px;'>Modification de compte</p></div>"
+                + "<div style='padding:32px;'>"
+                + "<h2 style='color:#1A1D23;font-size:18px;margin:0 0 8px;'>Bonjour, " + personne.getPrenom() + " " + personne.getNom() + "</h2>"
+                + "<p style='color:#6B7280;font-size:13px;margin:0 0 20px;'>Votre compte a ete modifie par un administrateur. Voici vos informations mises a jour :</p>"
+                + "<div style='background:#F9FAFB;border:1.5px solid #E5E7EB;border-radius:12px;padding:20px;margin-bottom:20px;'>"
+                + "<table style='width:100%;border-collapse:collapse;'>"
+                + "<tr><td style='color:#6B7280;font-size:13px;padding:6px 0;'>Nom</td>"
+                + "<td style='color:#1A1D23;font-weight:bold;font-size:13px;text-align:right;'>" + personne.getNom() + " " + personne.getPrenom() + "</td></tr>"
+                + "<tr><td style='color:#6B7280;font-size:13px;padding:6px 0;'>Identifiant</td>"
+                + "<td style='color:#0B4EA2;font-weight:bold;font-size:14px;text-align:right;'>" + personne.getIdentifiant() + "</td></tr>"
+                + "<tr><td style='color:#6B7280;font-size:13px;padding:6px 0;'>Role</td>"
+                + "<td style='color:#1A1D23;font-size:13px;text-align:right;'>" + personne.getRole() + "</td></tr>"
+                + pwdRow
+                + "</table></div>"
+                + pwdNote
+                + "<p style='color:#9CA3AF;font-size:11px;'>Si vous n'etes pas a l'origine de cette modification, contactez l'administration immediatement.</p>"
+                + "</div>"
+                + "<div style='background:#F3F4F6;padding:14px 32px;text-align:center;'>"
+                + "<p style='color:#9CA3AF;font-size:11px;margin:0;'>Email automatique - Ne pas repondre</p>"
+                + "</div></div></body></html>";
+
+            message.setContent(body, "text/html; charset=UTF-8");
+            Transport.send(message);
+            System.out.println("Email modification envoye a: " + personne.getEmail());
+        } catch (Exception e) {
+            System.err.println("sendModificationEmail error: " + e.getMessage());
+        }
+    }
+
+    // ══════════════════════════════════════════
+    // Email notification — account deleted
+    // ══════════════════════════════════════════
+    public static void sendDeletionEmail(Personne personne) {
+        if (personne.getEmail() == null || personne.getEmail().isBlank()) return;
+        try {
+            Session session = buildSession();
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(SENDER_EMAIL, "REVIVE - Gestion du Personnel"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(personne.getEmail()));
+            message.setSubject("Suppression de votre compte - REVIVE");
+
+            String body = "<!DOCTYPE html><html><body style='font-family:Segoe UI,Arial,sans-serif;background:#F0F4F8;padding:30px;'>"
+                + "<div style='max-width:520px;margin:auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);'>"
+                + "<div style='background:#475569;padding:28px 32px;'>"
+                + "<h1 style='color:#fff;margin:0;font-size:24px;'>REVIVE</h1>"
+                + "<p style='color:rgba(255,255,255,0.75);margin:4px 0 0;font-size:13px;'>Suppression de compte</p></div>"
+                + "<div style='padding:32px;'>"
+                + "<h2 style='color:#1A1D23;font-size:18px;margin:0 0 8px;'>Bonjour, " + personne.getPrenom() + " " + personne.getNom() + "</h2>"
+                + "<p style='color:#6B7280;font-size:13px;margin:0 0 20px;'>Votre compte REVIVE a ete supprime par un administrateur.</p>"
+                + "<div style='background:#FEF2F2;border:1.5px solid #FECACA;border-radius:12px;padding:20px;margin-bottom:20px;'>"
+                + "<table style='width:100%;border-collapse:collapse;'>"
+                + "<tr><td style='color:#6B7280;font-size:13px;padding:6px 0;'>Identifiant</td>"
+                + "<td style='color:#1A1D23;font-weight:bold;font-size:13px;text-align:right;'>" + personne.getIdentifiant() + "</td></tr>"
+                + "<tr><td style='color:#6B7280;font-size:13px;padding:6px 0;'>Role</td>"
+                + "<td style='color:#1A1D23;font-size:13px;text-align:right;'>" + personne.getRole() + "</td></tr>"
+                + "</table></div>"
+                + "<p style='color:#9CA3AF;font-size:11px;'>Vous n'avez plus acces au systeme REVIVE. Pour toute question, contactez l'administration.</p>"
+                + "</div>"
+                + "<div style='background:#F3F4F6;padding:14px 32px;text-align:center;'>"
+                + "<p style='color:#9CA3AF;font-size:11px;margin:0;'>Email automatique - Ne pas repondre</p>"
+                + "</div></div></body></html>";
+
+            message.setContent(body, "text/html; charset=UTF-8");
+            Transport.send(message);
+            System.out.println("Email suppression envoye a: " + personne.getEmail());
+        } catch (Exception e) {
+            System.err.println("sendDeletionEmail error: " + e.getMessage());
+        }
+    }
+
+    // ══════════════════════════════════════════
     // Email shift notification to agent
     // ══════════════════════════════════════════
     public static void sendShiftNotification(String toEmail, String nom, String prenom,

@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import pro.revive.entities.EntitiesUser.Personne;
 import pro.revive.services.ServicesUser.AuditService;
+import pro.revive.services.ServicesUser.EmailService;
 import pro.revive.services.ServicesUser.PersonneService;
 import pro.revive.utils.UtilsUser.AnimationUtil;
 
@@ -249,6 +250,10 @@ public class M6PersonnelEditController implements Initializable {
         String newPwd = pfNewPassword.getText();
         if (!newPwd.isEmpty()) service.updateEntity2(personne.getIdPersonnel(), newPwd);
 
+        // Notify the agent by email
+        updated.setMotDePasse(personne.getMotDePasse()); // keep old pwd in object for email if not changed
+        EmailService.sendModificationEmail(updated, newPwd.isEmpty() ? null : newPwd);
+
         goPersonnel();
     }
 
@@ -260,6 +265,8 @@ public class M6PersonnelEditController implements Initializable {
                     + " (" + personne.getRole() + ")",
                     currentUser.getIdentifiant(), personne); // personne = full snapshot
         }
+        // Notify the agent by email before deleting
+        EmailService.sendDeletionEmail(personne);
         service.deleteEntity(personne);
         goPersonnel();
     }

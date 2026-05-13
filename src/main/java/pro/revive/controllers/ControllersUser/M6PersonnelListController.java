@@ -188,7 +188,7 @@ public class M6PersonnelListController implements Initializable {
         btnEdit.getStyleClass().addAll("act-icon", "act-edit");
         btnEdit.setOnAction(e -> openEdit(p));
 
-        Button btnDel = new Button("🗑 Suppr.");
+        Button btnDel = new Button("🗑 Supprimer");
         btnDel.getStyleClass().addAll("act-icon", "act-del");
         btnDel.setOnAction(e -> openDelete(p));
 

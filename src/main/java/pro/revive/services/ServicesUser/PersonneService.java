@@ -162,7 +162,7 @@ public class PersonneService implements IService<Personne> {
         try {
             Connection conn = getConn();
             if (conn == null) { System.err.println("addEntity: pas de connexion DB"); return; }
-            PreparedStatement pst = conn.prepareStatement(sql);
+            PreparedStatement pst = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             pst.setString(1, personne.getNom());
             pst.setString(2, personne.getPrenom());
             pst.setString(3, personne.getRole());
@@ -173,6 +173,11 @@ public class PersonneService implements IService<Personne> {
             pst.setString(7, personne.getTelephone() != null ? personne.getTelephone() : "");
             pst.setString(8, personne.getEmail() != null ? personne.getEmail() : "");
             pst.executeUpdate();
+            // Fetch the auto-generated id_personnel so audit log uses the correct ID
+            ResultSet generatedKeys = pst.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                personne.setIdPersonnel(generatedKeys.getInt(1));
+            }
             System.out.println("Personnel ajoute! Identifiant: " + identifiant);
 
             // Envoi email de confirmation

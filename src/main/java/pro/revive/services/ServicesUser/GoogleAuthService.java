@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 
 public class GoogleAuthService {
 
-    private static final String CLIENT_ID     = "Key";
-    private static final String CLIENT_SECRET = "Client";
-    private static final String REDIRECT_URI  = "Url";
+    private static final String CLIENT_ID     = "key";
+    private static final String CLIENT_SECRET = "secret";
+    private static final String REDIRECT_URI  = "url";
     private static final String SCOPE         = "openid email profile";
 
     private static final String AUTH_URL      = "https://accounts.google.com/o/oauth2/v2/auth";
