@@ -1,5 +1,6 @@
 package pro.revive.controllers.ControllersLabo;
 
+import pro.revive.Navigator;
 import pro.revive.entities.EntitiesLabo.ConsultationNotif;
 import pro.revive.entities.EntitiesLabo.Examens_demandes;
 import pro.revive.entities.EntitiesLabo.Resultats;
@@ -49,7 +50,10 @@ public class DashboardController implements Initializable {
         lblDate.setText(sdf.format(new Date()));
         chargerStatistiques();
         chargerNotificationsMedecins();
+        lblUserName.setText(Navigator.currentUserName);
     }
+
+    @FXML private Label lblUserName;
 
     // ─────────────────────────────────────────────────────────────────────────
     // STATISTIQUES
@@ -336,6 +340,12 @@ public class DashboardController implements Initializable {
 
     @FXML private void actualiserNotifs() { chargerNotificationsMedecins(); }
 
+    @FXML
+    private void deconnexion() {
+        System.out.println("Déconnexion...");
+        Navigator.logout();
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // EFFETS HOVER BOUTONS ICÔNES
     // ─────────────────────────────────────────────────────────────────────────
@@ -391,18 +401,7 @@ public class DashboardController implements Initializable {
     @FXML private void showResultats() { naviguerVers("/ResourcesLabo/GestionResultats.fxml"); }
     @FXML private void showRapport()   { naviguerVers("/ResourcesLabo/RapportBiologiste.fxml"); }
 
-    @FXML private void deconnexion() {
-        pro.revive.SessionManager.logout();
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/ResourcesUser/images/fxml/Login.fxml"));
-            Stage stage = (Stage) lblDate.getScene().getWindow();
-            java.net.URL cssUrl = getClass().getResource("/ResourcesUser/images/css/user.css");
-            Scene scene = new Scene(root);
-            if (cssUrl != null) scene.getStylesheets().add(cssUrl.toExternalForm());
-            stage.setScene(scene);
-            stage.setTitle("REVIVE — Connexion");
-        } catch (Exception e) { e.printStackTrace(); }
-    }
+
 
     private void naviguerVers(String fxml) {
         try {

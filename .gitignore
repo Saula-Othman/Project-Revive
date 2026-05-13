@@ -13,6 +13,8 @@ Thumbs.db
 
 # Large AI/speech models — too big for GitHub (>100 MB hard limit)
 src/main/resources/ResourcesMed/vosk-model-small-ar-tn-0.1-linto/
+src/main/resources/ResourcesMed/vosk-model-small-ar-tn-0.1-linto/am/final.mdl
+src/main/resources/ResourcesMed/vosk-model-small-fr-0.22/am/final.mdl
 
 # Local config — never commit real credentials
 config.properties
