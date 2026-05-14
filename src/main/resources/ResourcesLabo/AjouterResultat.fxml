@@ -180,12 +180,7 @@
                                        preserveRatio="true" smooth="true"/>
                         </StackPane>
 
-                        <!-- Serveur local fixe — pas de ngrok -->
                         <HBox spacing="8" alignment="CENTER_LEFT">
-                            <Label text="�" style="-fx-font-size: 13px;"/>
-                            <Label text="Serveur IA local : localhost:5000"
-                                   style="-fx-text-fill: #7C3AED; -fx-font-size: 11px; -fx-font-style: italic;"
-                                   HBox.hgrow="ALWAYS"/>
                             <VBox alignment="CENTER" spacing="2">
                                 <Button fx:id="btnAnalyserIA" onAction="#handleAnalyserIA" text="🔍"
                                         style="-fx-background-color: linear-gradient(to bottom right, #5B21B6, #7C3AED);

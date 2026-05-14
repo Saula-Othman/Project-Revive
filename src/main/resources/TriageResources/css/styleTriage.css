@@ -648,6 +648,65 @@
 .tl-dot.pending { -fx-background-color: #CBD5E1; }
 
 /* ══════════════════════════════════════════════════════════════
+   PATIENT ROWS — Salle_View.fxml
+   ══════════════════════════════════════════════════════════════ */
+.patient-row {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 10px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-cursor: hand;
+}
+
+.patient-row:hover {
+    -fx-background-color: #EEF4FB;
+    -fx-border-color: #BFDBFE;
+}
+
+.pr-stripe {
+    -fx-background-radius: 10px 0 0 10px;
+    -fx-min-height: 60px;
+}
+
+.pr-info {
+    -fx-padding: 10px 12px;
+}
+
+.pr-name {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.pr-vitals {
+    -fx-font-size: 11px;
+    -fx-text-fill: #64748B;
+}
+
+.pr-right {
+    -fx-padding: 10px 12px;
+}
+
+/* State tags */
+.state-tag {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 3px 10px;
+    -fx-background-radius: 20px;
+}
+
+.state-in {
+    -fx-background-color: #DCFCE7;
+    -fx-text-fill: #15803D;
+}
+
+.state-consult {
+    -fx-background-color: #DBEAFE;
+    -fx-text-fill: #1E40AF;
+}
+
+/* ══════════════════════════════════════════════════════════════
    SALLE CARDS (Salle List)
    ══════════════════════════════════════════════════════════════ */
 .scard {

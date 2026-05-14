@@ -25,7 +25,7 @@ public class VoiceCommandService {
 
     private static final String GROQ_URL     = "https://api.groq.com/openai/v1/chat/completions";
     private static final String GROQ_MODEL   = "llama-3.3-70b-versatile";
-    private static final String GROQ_API_KEY = "key";
+    private static final String GROQ_API_KEY = "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";
     private static final int    TIMEOUT      = 15;
 
     // Prompt système — force une réponse JSON stricte

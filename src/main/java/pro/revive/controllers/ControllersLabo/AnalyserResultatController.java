@@ -48,8 +48,7 @@ public class AnalyserResultatController {
             contextePatient = construireContexte();
 
             lblInfoResultat.setText("Patient : " + patient +
-                    "  |  État : " + (resultat.getEtat() != null ? resultat.getEtat() : "—") +
-                    "  |  ID : #" + resultat.getIdResultat());
+                    "  |  État : " + (resultat.getEtat() != null ? resultat.getEtat() : "—"));
         } else {
             lblInfoResultat.setText("Aucun résultat sélectionné");
         }

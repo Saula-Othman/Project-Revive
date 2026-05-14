@@ -116,7 +116,7 @@ public class SalleService implements IService<Salle> {
             "SELECT s.id_salle, s.nom_salle, s.type_salle, s.capacite_max, " +
             "s.statut, s.niveau_gravite_cible, s.priorite, s.patients_en_attente, " +
             "(SELECT COUNT(*) FROM triage t WHERE t.id_salle = s.id_salle " +
-            " AND t.patient_state NOT IN ('Discharged','Cancelled','LeftWithoutSeen')) AS nombre_actuel " +
+            " AND t.patient_state IN ('InRoom','InConsultation','Quarantine')) AS nombre_actuel " +
             "FROM salles s ORDER BY s.priorite ASC";
         try (Connection c = getCnx();
              Statement st = c.createStatement();
@@ -153,7 +153,7 @@ public class SalleService implements IService<Salle> {
             "SELECT s.id_salle, s.nom_salle, s.type_salle, s.capacite_max, " +
             "s.statut, s.niveau_gravite_cible, s.priorite, s.patients_en_attente, " +
             "(SELECT COUNT(*) FROM triage t WHERE t.id_salle = s.id_salle " +
-            " AND t.patient_state NOT IN ('Discharged','Cancelled','LeftWithoutSeen')) AS nombre_actuel " +
+            " AND t.patient_state IN ('InRoom','InConsultation','Quarantine')) AS nombre_actuel " +
             "FROM salles s WHERE s.id_salle = ?";
         try (Connection c = getCnx(); PreparedStatement pst = c.prepareStatement(requete)) {
             pst.setInt(1, id);
@@ -170,7 +170,7 @@ public class SalleService implements IService<Salle> {
     public void resyncNombreActuel(int idSalle) {
         String syncCount = "UPDATE salles SET nombre_actuel = (" +
             "SELECT COUNT(*) FROM triage WHERE id_salle = ? " +
-            "AND patient_state NOT IN ('Discharged','Cancelled','LeftWithoutSeen')" +
+            "AND patient_state IN ('InRoom','InConsultation','Quarantine')" +
             ") WHERE id_salle = ?";
         try (Connection c = getCnx(); PreparedStatement pst = c.prepareStatement(syncCount)) {
             pst.setInt(1, idSalle);
@@ -195,7 +195,7 @@ public class SalleService implements IService<Salle> {
                 "JOIN admissions a ON t.id_admission = a.id_admission " +
                 "JOIN patients p ON a.id_patient = p.id_patient " +
                 "LEFT JOIN salles s ON t.id_salle = s.id_salle " +
-                "WHERE t.id_salle = ? AND t.patient_state NOT IN ('Discharged','Cancelled','LeftWithoutSeen')";
+                "WHERE t.id_salle = ? AND t.patient_state IN ('InRoom','InConsultation','Quarantine')";
         try (Connection c = getCnx(); PreparedStatement pst = c.prepareStatement(requete)) {
             pst.setInt(1, idSalle);
             try (ResultSet rs = pst.executeQuery()) {
