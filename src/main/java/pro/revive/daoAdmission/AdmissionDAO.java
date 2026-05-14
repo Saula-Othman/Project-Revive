@@ -10,6 +10,9 @@ import java.util.List;
 
 public class AdmissionDAO {
 
+    private static final String MODULE_1_FILTER = "a.agent_accueil_id IS NOT NULL";
+    private static final String ACTIVE_PATIENT_FILTER = "(p.actif = 1 OR p.actif IS NULL)";
+
     // Colonnes EXACTES de la table `admissions` dans la BDD :
     //   id_admission, id_patient, date_admission, mode_arrivee,
     //   motif_admission, statut, priorite_initiale, agent_accueil_id,
@@ -83,7 +86,7 @@ public class AdmissionDAO {
         List<Admission> list = new ArrayList<>();
         String sql = "SELECT a.*, p.nom, p.prenom FROM admissions a " +
                 "JOIN patients p ON a.id_patient = p.id_patient " +
-                "WHERE a.id_patient = ? ORDER BY a.date_admission DESC";
+                "WHERE a.id_patient = ? AND " + ACTIVE_PATIENT_FILTER + " ORDER BY a.date_admission DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, patientId);
@@ -98,7 +101,9 @@ public class AdmissionDAO {
         List<Admission> list = new ArrayList<>();
         String sql = "SELECT a.*, p.nom, p.prenom FROM admissions a " +
                 "JOIN patients p ON a.id_patient = p.id_patient " +
-                "WHERE DATE(a.date_admission) = CURDATE() ORDER BY a.date_admission DESC";
+                "WHERE DATE(a.date_admission) = CURDATE() AND " + MODULE_1_FILTER +
+                " AND " + ACTIVE_PATIENT_FILTER +
+                " ORDER BY a.date_admission DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -111,6 +116,7 @@ public class AdmissionDAO {
         List<Admission> list = new ArrayList<>();
         String sql = "SELECT a.*, p.nom, p.prenom FROM admissions a " +
                 "JOIN patients p ON a.id_patient = p.id_patient " +
+                "WHERE " + MODULE_1_FILTER + " AND " + ACTIVE_PATIENT_FILTER + " " +
                 "ORDER BY a.date_admission DESC LIMIT 100";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -121,7 +127,10 @@ public class AdmissionDAO {
     }
 
     public int countToday() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM admissions WHERE DATE(date_admission) = CURDATE()";
+        String sql = "SELECT COUNT(*) FROM admissions a " +
+                "JOIN patients p ON a.id_patient = p.id_patient " +
+                "WHERE DATE(a.date_admission) = CURDATE() AND " + MODULE_1_FILTER +
+                " AND " + ACTIVE_PATIENT_FILTER;
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -131,7 +140,10 @@ public class AdmissionDAO {
     }
 
     public int countWaiting() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM admissions WHERE statut = 'En attente triage'";
+        String sql = "SELECT COUNT(*) FROM admissions a " +
+                "JOIN patients p ON a.id_patient = p.id_patient " +
+                "WHERE a.statut = 'En attente triage' AND " + MODULE_1_FILTER +
+                " AND " + ACTIVE_PATIENT_FILTER;
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {

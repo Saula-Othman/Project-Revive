@@ -111,7 +111,7 @@
                   visible="false" managed="false">
                 <Label text="Historique du Patient" styleClass="form-section-title"/>
                 <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="Ce patient a des visites ant&#233;rieures. Consultez et importez des informations depuis son dossier m&#233;dical."
+                    <Label text="Ce patient a des visites ant&#233;rieures. Consultez et joignez des documents dans le dossier de cette admission."
                            style="-fx-font-size: 11px; -fx-text-fill: #475569; -fx-wrap-text: true;"
                            HBox.hgrow="ALWAYS"/>
                     <Button fx:id="openHistoriqueBtn" text="&#128203; Voir Historique"
@@ -121,7 +121,7 @@
                 <VBox fx:id="importedInfoBox" spacing="6" visible="false" managed="false"
                       style="-fx-background-color: #f0fdf4; -fx-background-radius: 6px;
                              -fx-border-color: #86efac; -fx-border-radius: 6px; -fx-padding: 10px;">
-                    <Label text="&#10003; Informations import&#233;es depuis l'historique :"
+                    <Label text="&#10003; Documents pr&#234;ts pour cette admission :"
                            style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #16a34a;"/>
                     <Label fx:id="importedInfoLabel" wrapText="true"
                            style="-fx-font-size: 11px; -fx-text-fill: #475569;"/>

@@ -32,6 +32,7 @@ public class HistoriqueSelectController implements Initializable {
     private String patientNom = "";
     private String importedText = null;
     private boolean hasImported = false;
+    private final List<HistoriquePatient> importedDocuments = new ArrayList<>();
 
     // List of CheckBox + HistoriquePatient pairs
     private final List<CheckBox> checkBoxes = new ArrayList<>();
@@ -62,6 +63,7 @@ public class HistoriqueSelectController implements Initializable {
 
         try {
             List<HistoriquePatient> historique = historiqueDAO.findAllByPatient(patientId);
+            historique.removeIf(this::isImportedAdmissionDuplicate);
 
             if (loadingLabel != null) {
                 loadingLabel.setVisible(false);
@@ -132,7 +134,7 @@ public class HistoriqueSelectController implements Initializable {
 
         Label typeBadge = createTypeBadge(h.getTypeDocument());
 
-        Label titreLabel = new Label(h.getTitre() != null ? h.getTitre() : "(Sans titre)");
+        Label titreLabel = new Label(cleanDisplayTitle(h.getTitre()));
         titreLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
         HBox.setHgrow(titreLabel, Priority.ALWAYS);
 
@@ -198,6 +200,16 @@ public class HistoriqueSelectController implements Initializable {
         return badge;
     }
 
+    private String cleanDisplayTitle(String title) {
+        if (title == null || title.trim().isEmpty()) return "(Sans titre)";
+        return title.replaceFirst("^Importe -\\s*", "").replaceAll("\\s*#\\d+", "");
+    }
+
+    private boolean isImportedAdmissionDuplicate(HistoriquePatient h) {
+        String title = h.getTitre();
+        return title != null && title.startsWith("Importe - Admission aux urgences");
+    }
+
     private void updateSelectionCount() {
         long count = checkBoxes.stream().filter(CheckBox::isSelected).count();
         selectionCountLabel.setText(count + " document(s) sélectionné(s)");
@@ -218,10 +230,12 @@ public class HistoriqueSelectController implements Initializable {
     private void handleImporter() {
         StringBuilder sb = new StringBuilder();
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        importedDocuments.clear();
 
         for (int i = 0; i < checkBoxes.size(); i++) {
             if (checkBoxes.get(i).isSelected()) {
                 HistoriquePatient h = documents.get(i);
+                importedDocuments.add(h);
                 sb.append("=== ")
                   .append(h.getTypeDocument() != null ? h.getTypeDocument() : "Document")
                   .append(" — ")
@@ -255,4 +269,5 @@ public class HistoriqueSelectController implements Initializable {
 
     public String getImportedText() { return importedText; }
     public boolean hasImported() { return hasImported; }
+    public List<HistoriquePatient> getImportedDocuments() { return new ArrayList<>(importedDocuments); }
 }

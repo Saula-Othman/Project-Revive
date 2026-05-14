@@ -54,7 +54,7 @@
     <!-- Footer -->
     <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="12">
         <padding><Insets top="14" bottom="14" left="24" right="24"/></padding>
-        <Label text="Les documents sélectionnés seront copiés dans les notes de l'admission."
+        <Label text="Les documents sélectionnés seront copiés dans le dossier de la nouvelle admission."
                style="-fx-font-size: 11px; -fx-text-fill: #94a3b8;"/>
         <Region HBox.hgrow="ALWAYS"/>
         <Button text="Annuler" onAction="#handleAnnuler" styleClass="btn-secondary"

@@ -15,7 +15,6 @@ import java.util.List;
  *   - consultations    (Module 3 - Medecin)
  *   - ordonnances      (Module 3 - Medecin)
  *   - examens_demandes + resultats  (Module 4 - Biologiste)
- *   - historique_patient (tous modules)
  */
 public class MdiaService {
 
@@ -23,10 +22,10 @@ public class MdiaService {
         List<HistoriquePatient> dossier = new ArrayList<>();
 
         try (Connection conn = DatabaseConnection.getConnection()) {
+            dossier.addAll(readAdmissionsPrecedentes(conn, patientId));
             dossier.addAll(readConsultations(conn, patientId));
             dossier.addAll(readOrdonnances(conn, patientId));
             dossier.addAll(readResultatsExamens(conn, patientId));
-            dossier.addAll(readHistoriqueExistant(conn, patientId));
         } catch (SQLException e) {
             throw new Exception("Erreur acces base de donnees MDIA: " + e.getMessage(), e);
         }
@@ -35,10 +34,53 @@ public class MdiaService {
         return dossier;
     }
 
+    private List<HistoriquePatient> readAdmissionsPrecedentes(Connection conn, int patientId) {
+        List<HistoriquePatient> list = new ArrayList<>();
+        String sql = "SELECT id_admission, date_admission, mode_arrivee, motif_admission, " +
+                     "statut, priorite_initiale, notes " +
+                     "FROM admissions " +
+                     "WHERE id_patient = ? " +
+                     "ORDER BY date_admission DESC";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, patientId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                HistoriquePatient h = new HistoriquePatient();
+                h.setPatientId(patientId);
+                h.setAdmissionId(rs.getInt("id_admission"));
+                h.setTypeDocument("Compte-rendu");
+                h.setTitre("Admission aux urgences");
+
+                StringBuilder contenu = new StringBuilder();
+                appendLine(contenu, "Mode d'arrivee", rs.getString("mode_arrivee"));
+                appendLine(contenu, "Motif", rs.getString("motif_admission"));
+                appendLine(contenu, "Priorite", rs.getString("priorite_initiale"));
+                appendLine(contenu, "Statut", rs.getString("statut"));
+                appendLine(contenu, "Notes", rs.getString("notes"));
+                h.setContenu(contenu.length() > 0 ? contenu.toString().trim() : "Admission precedente");
+                h.setEtablissement("Service des Urgences");
+                h.setSource("LOCAL");
+
+                Timestamp ts = rs.getTimestamp("date_admission");
+                h.setDateConsultation(ts != null ? ts.toLocalDateTime().toLocalDate() : LocalDate.now());
+                list.add(h);
+            }
+        } catch (SQLException e) {
+            // Ancienne structure de base ou table indisponible : historique vide.
+        }
+        return list;
+    }
+
+    private void appendLine(StringBuilder sb, String label, String value) {
+        if (value != null && !value.trim().isEmpty()) {
+            sb.append(label).append(": ").append(value.trim()).append("\n");
+        }
+    }
+
     private List<HistoriquePatient> readConsultations(Connection conn, int patientId) {
         List<HistoriquePatient> list = new ArrayList<>();
         String sql = "SELECT c.id_consultation, c.date_heure_debut, c.diagnostic, " +
-                     "c.orientation, a.date_heure_arrivee, p.nom, p.prenom " +
+                     "c.orientation, p.nom, p.prenom " +
                      "FROM consultations c " +
                      "JOIN admissions a ON c.id_admission = a.id_admission " +
                      "JOIN patients p ON a.id_patient = p.id_patient " +
@@ -139,33 +181,6 @@ public class MdiaService {
             }
         } catch (SQLException e) {
             // Tables examens non disponibles - ignorer
-        }
-        return list;
-    }
-
-    private List<HistoriquePatient> readHistoriqueExistant(Connection conn, int patientId) {
-        List<HistoriquePatient> list = new ArrayList<>();
-        String sql = "SELECT * FROM historique_patient WHERE patient_id = ? " +
-                     "AND source != 'LOCAL' ORDER BY date_consultation DESC";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, patientId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                HistoriquePatient h = new HistoriquePatient();
-                h.setId(rs.getInt("id"));
-                h.setPatientId(patientId);
-                h.setTypeDocument(rs.getString("type_document"));
-                h.setTitre(rs.getString("titre"));
-                h.setContenu(rs.getString("contenu"));
-                h.setMedecinNom(rs.getString("medecin_nom"));
-                h.setEtablissement(rs.getString("etablissement"));
-                h.setSource(rs.getString("source"));
-                Date d = rs.getDate("date_consultation");
-                if (d != null) h.setDateConsultation(d.toLocalDate());
-                list.add(h);
-            }
-        } catch (SQLException e) {
-            // ignore
         }
         return list;
     }

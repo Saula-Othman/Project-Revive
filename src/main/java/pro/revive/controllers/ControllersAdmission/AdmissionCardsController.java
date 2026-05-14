@@ -55,7 +55,7 @@ public class AdmissionCardsController implements Initializable {
             for (Admission a : admissions) {
                 try {
                     Patient p = patientDAO.findById(a.getPatientId());
-                    a.setPatient(p);
+                    if (p != null) a.setPatient(p);
                 } catch (Exception e) { e.printStackTrace(); }
             }
             allAdmissions = FXCollections.observableArrayList(admissions);
@@ -203,12 +203,7 @@ public class AdmissionCardsController implements Initializable {
         Button delBtn = new Button("🗑 Supprimer");
         delBtn.getStyleClass().add("btn-ghost");
         delBtn.setStyle("-fx-text-fill: #dc2626;");
-        if (raisonBlocage != null) {
-            delBtn.setDisable(true);
-            delBtn.setTooltip(new Tooltip("Complétez d'abord le dossier avant de supprimer"));
-        } else {
-            delBtn.setOnAction(e -> handleDelete(a));
-        }
+        delBtn.setOnAction(e -> handleDelete(a));
 
         actionsRow.getChildren().addAll(viewBtn, editBtn, delBtn);
 

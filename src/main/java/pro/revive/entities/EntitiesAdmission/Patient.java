@@ -12,6 +12,7 @@ public class Patient {
     private String groupeSanguin;
     private String numSecuriteSociale;
     private String telephone;
+    private String email;
     private String adresse;
     private String allergies;
     private String antecedents;
@@ -51,6 +52,9 @@ public class Patient {
 
     public String getTelephone() { return telephone; }
     public void setTelephone(String telephone) { this.telephone = telephone; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
     public String getAdresse() { return adresse; }
     public void setAdresse(String adresse) { this.adresse = adresse; }

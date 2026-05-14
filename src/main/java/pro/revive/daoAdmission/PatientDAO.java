@@ -11,7 +11,7 @@ public class PatientDAO {
 
     // Noms EXACTS des colonnes dans la BDD (revive__4_.sql) :
     //   id_patient, nom, prenom, date_naissance, sexe, groupe_sanguin,
-    //   num_securite_sociale, telephone, adresse, allergies, antecedents,
+    //   num_securite_sociale, telephone, email, adresse, allergies, antecedents,
     //   nationalite, num_cin, contact_urgence_nom, contact_urgence_tel,
     //   date_creation, actif
 
@@ -44,12 +44,13 @@ public class PatientDAO {
         List<Patient> patients = new ArrayList<>();
         // ✅ CORRECTION : exclure les patients supprimés (actif = 0) de la recherche
         String sql = "SELECT * FROM patients WHERE actif = 1 AND " +
-                "(nom LIKE ? OR prenom LIKE ?) ORDER BY nom, prenom";
+                "(nom LIKE ? OR prenom LIKE ? OR num_cin LIKE ?) ORDER BY nom, prenom";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             String q = "%" + query + "%";
             stmt.setString(1, q);
             stmt.setString(2, q);
+            stmt.setString(3, q);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) patients.add(mapResultSet(rs));
             }
@@ -60,9 +61,9 @@ public class PatientDAO {
     public int save(Patient p) throws SQLException {
         String sql = "INSERT INTO patients " +
                 "(nom, prenom, date_naissance, sexe, groupe_sanguin, num_securite_sociale, " +
-                "telephone, adresse, allergies, antecedents, nationalite, " +
+                "telephone, email, adresse, allergies, antecedents, nationalite, " +
                 "num_cin, contact_urgence_nom, contact_urgence_tel) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1,  p.getNom());
@@ -72,13 +73,14 @@ public class PatientDAO {
             stmt.setString(5,  p.getGroupeSanguin());
             stmt.setString(6,  p.getNumSecuriteSociale());
             stmt.setString(7,  p.getTelephone());
-            stmt.setString(8,  p.getAdresse());
-            stmt.setString(9,  p.getAllergies());
-            stmt.setString(10, p.getAntecedents());
-            stmt.setString(11, p.getNationalite());
-            stmt.setString(12, p.getNumCin());
-            stmt.setString(13, p.getContactUrgenceNom());
-            stmt.setString(14, p.getContactUrgenceTel());
+            stmt.setString(8,  p.getEmail());
+            stmt.setString(9,  p.getAdresse());
+            stmt.setString(10, p.getAllergies());
+            stmt.setString(11, p.getAntecedents());
+            stmt.setString(12, p.getNationalite());
+            stmt.setString(13, p.getNumCin());
+            stmt.setString(14, p.getContactUrgenceNom());
+            stmt.setString(15, p.getContactUrgenceTel());
             stmt.executeUpdate();
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) return generatedKeys.getInt(1);
@@ -90,7 +92,7 @@ public class PatientDAO {
     public void update(Patient p) throws SQLException {
         String sql = "UPDATE patients SET " +
                 "nom=?, prenom=?, date_naissance=?, sexe=?, groupe_sanguin=?, " +
-                "num_securite_sociale=?, telephone=?, adresse=?, allergies=?, " +
+                "num_securite_sociale=?, telephone=?, email=?, adresse=?, allergies=?, " +
                 "antecedents=?, nationalite=?, num_cin=?, " +
                 "contact_urgence_nom=?, contact_urgence_tel=? " +
                 "WHERE id_patient=?";
@@ -103,26 +105,53 @@ public class PatientDAO {
             stmt.setString(5,  p.getGroupeSanguin());
             stmt.setString(6,  p.getNumSecuriteSociale());
             stmt.setString(7,  p.getTelephone());
-            stmt.setString(8,  p.getAdresse());
-            stmt.setString(9,  p.getAllergies());
-            stmt.setString(10, p.getAntecedents());
-            stmt.setString(11, p.getNationalite());
-            stmt.setString(12, p.getNumCin());
-            stmt.setString(13, p.getContactUrgenceNom());
-            stmt.setString(14, p.getContactUrgenceTel());
-            stmt.setInt(15,    p.getId());
+            stmt.setString(8,  p.getEmail());
+            stmt.setString(9,  p.getAdresse());
+            stmt.setString(10, p.getAllergies());
+            stmt.setString(11, p.getAntecedents());
+            stmt.setString(12, p.getNationalite());
+            stmt.setString(13, p.getNumCin());
+            stmt.setString(14, p.getContactUrgenceNom());
+            stmt.setString(15, p.getContactUrgenceTel());
+            stmt.setInt(16,    p.getId());
             stmt.executeUpdate();
         }
     }
 
     public void delete(int id) throws SQLException {
-        // Soft-delete : mettre actif = 0 au lieu de supprimer la ligne
-        String sql = "UPDATE patients SET actif = 0 WHERE id_patient = ?";
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement deleteAdmissions = conn.prepareStatement(
+                    "DELETE FROM admissions WHERE id_patient = ?");
+                 PreparedStatement deletePatient = conn.prepareStatement(
+                    "UPDATE patients SET actif = 0 WHERE id_patient = ?")) {
+                deleteAdmissions.setInt(1, id);
+                deleteAdmissions.executeUpdate();
+
+                deletePatient.setInt(1, id);
+                deletePatient.executeUpdate();
+
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }
+    }
+
+    public List<Integer> findAdmissionIds(int patientId) throws SQLException {
+        List<Integer> ids = new ArrayList<>();
+        String sql = "SELECT id_admission FROM admissions WHERE id_patient = ? ORDER BY date_admission DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
+            stmt.setInt(1, patientId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) ids.add(rs.getInt("id_admission"));
+            }
         }
+        return ids;
     }
 
     public int countAdmissions(int patientId) throws SQLException {
@@ -148,6 +177,7 @@ public class PatientDAO {
         p.setGroupeSanguin(rs.getString("groupe_sanguin"));
         p.setNumSecuriteSociale(rs.getString("num_securite_sociale"));
         p.setTelephone(rs.getString("telephone"));
+        try { p.setEmail(rs.getString("email")); } catch (SQLException ignored) {}
         p.setAdresse(rs.getString("adresse"));
         p.setAllergies(rs.getString("allergies"));
         p.setAntecedents(rs.getString("antecedents"));

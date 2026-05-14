@@ -67,6 +67,7 @@ public class DossierPatientController {
             // historique_patient (LOCAL/MODULE_3/MODULE_4) + consultations + ordonnances + examens
             // Les triggers MySQL assurent la copie automatique depuis les autres modules.
             List<HistoriquePatient> historique = historiqueDAO.findAllByPatient(patient.getId());
+            historique.removeIf(this::isImportedAdmissionDuplicate);
 
             countLabel.setText(historique.size() + " document(s)");
 
@@ -102,7 +103,7 @@ public class DossierPatientController {
 
         Label typeLabel = createTypeBadge(h.getTypeDocument());
         
-        Label titreLabel = new Label(h.getTitre());
+        Label titreLabel = new Label(cleanDisplayTitle(h.getTitre()));
         titreLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
         HBox.setHgrow(titreLabel, Priority.ALWAYS);
 
@@ -169,6 +170,16 @@ public class DossierPatientController {
                 badge.setStyle(badge.getStyle() + "-fx-background-color: #f1f5f9; -fx-text-fill: #475569;");
         }
         return badge;
+    }
+
+    private String cleanDisplayTitle(String title) {
+        if (title == null || title.trim().isEmpty()) return "Dossier patient";
+        return title.replaceFirst("^Importe -\\s*", "").replaceAll("\\s*#\\d+", "");
+    }
+
+    private boolean isImportedAdmissionDuplicate(HistoriquePatient h) {
+        String title = h.getTitre();
+        return title != null && title.startsWith("Importe - Admission aux urgences");
     }
 
     private Label createSourceBadge(String source) {

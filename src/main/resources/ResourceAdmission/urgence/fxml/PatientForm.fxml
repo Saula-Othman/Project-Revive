@@ -36,7 +36,7 @@
                 </HBox>
                 <HBox spacing="14">
                     <VBox spacing="4" HBox.hgrow="ALWAYS">
-                        <Label text="Date de Naissance" styleClass="field-label"/>
+                        <Label text="Date de Naissance *" styleClass="field-label"/>
                         <DatePicker fx:id="dateNaissancePicker" styleClass="form-datepicker" maxWidth="Infinity"
                                     promptText="jj/mm/aaaa"/>
                         <Label fx:id="dateNaissanceError" styleClass="field-error" visible="false" managed="false"/>
@@ -52,7 +52,7 @@
                 </HBox>
                 <HBox spacing="14">
                     <VBox spacing="4" HBox.hgrow="ALWAYS">
-                        <Label text="N&#176; CIN (8 chiffres)" styleClass="field-label"/>
+                        <Label text="N&#176; CIN (8 chiffres) *" styleClass="field-label"/>
                         <TextField fx:id="cinField" promptText="ex: 12345678" styleClass="form-field"/>
                         <Label fx:id="cinError" styleClass="field-error" visible="false" managed="false"/>
                     </VBox>
@@ -68,40 +68,30 @@
                 <Label text="Coordonn&#233;es" styleClass="form-section-title"/>
                 <HBox spacing="14">
                     <VBox spacing="4" HBox.hgrow="ALWAYS">
-                        <Label text="T&#233;l&#233;phone" styleClass="field-label"/>
+                        <Label text="T&#233;l&#233;phone *" styleClass="field-label"/>
                         <TextField fx:id="telephoneField" promptText="ex: 98765432" styleClass="form-field"/>
                         <Label text="Num. tunisien (2/5/7/9 + 7 chiffres) &#8594; +216 ajout&#233; auto"
                                style="-fx-font-size:10px;-fx-text-fill:#94a3b8;"/>
                         <Label fx:id="telError" styleClass="field-error" visible="false" managed="false"/>
                     </VBox>
                     <VBox spacing="4" HBox.hgrow="ALWAYS">
-                        <Label text="N&#176; S&#233;curit&#233; Sociale" styleClass="field-label"/>
+                        <Label text="N&#176; S&#233;curit&#233; Sociale *" styleClass="field-label"/>
                         <TextField fx:id="numSecuField" promptText="Num&#233;ro s&#233;curit&#233; sociale" styleClass="form-field"/>
                         <Label fx:id="secuError" styleClass="field-error" visible="false" managed="false"/>
                     </VBox>
                 </HBox>
+                <HBox spacing="14">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Email" styleClass="field-label"/>
+                        <TextField fx:id="emailField" promptText="patient@example.com" styleClass="form-field"/>
+                        <Label fx:id="emailError" styleClass="field-error" visible="false" managed="false"/>
+                    </VBox>
+                </HBox>
                 <VBox spacing="4">
-                    <Label text="Adresse" styleClass="field-label"/>
+                    <Label text="Adresse *" styleClass="field-label"/>
                     <TextArea fx:id="adresseArea" promptText="Adresse compl&#232;te" styleClass="form-textarea"
                               prefHeight="60" wrapText="true"/>
                 </VBox>
-            </VBox>
-
-            <!-- M&#233;dical -->
-            <VBox spacing="12" styleClass="form-section">
-                <Label text="Informations M&#233;dicales" styleClass="form-section-title"/>
-                <HBox spacing="14">
-                    <VBox spacing="4" HBox.hgrow="ALWAYS">
-                        <Label text="Allergies connues" styleClass="field-label"/>
-                        <TextArea fx:id="allergiesArea" promptText="P&#233;nicilline, aspirine..." styleClass="form-textarea"
-                                  prefHeight="65" wrapText="true"/>
-                    </VBox>
-                    <VBox spacing="4" HBox.hgrow="ALWAYS">
-                        <Label text="Ant&#233;c&#233;dents m&#233;dicaux" styleClass="field-label"/>
-                        <TextArea fx:id="antecedentsArea" promptText="Diab&#232;te, HTA..." styleClass="form-textarea"
-                                  prefHeight="65" wrapText="true"/>
-                    </VBox>
-                </HBox>
             </VBox>
 
             <!-- Contact urgence -->

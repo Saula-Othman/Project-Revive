@@ -15,6 +15,7 @@ USE revive;
 
 ALTER TABLE patients
     ADD COLUMN IF NOT EXISTS sexe                VARCHAR(10)  DEFAULT NULL,
+    ADD COLUMN IF NOT EXISTS email               VARCHAR(150) DEFAULT NULL,
     ADD COLUMN IF NOT EXISTS adresse             TEXT         DEFAULT NULL,
     ADD COLUMN IF NOT EXISTS allergies           TEXT         DEFAULT NULL,
     ADD COLUMN IF NOT EXISTS antecedents         TEXT         DEFAULT NULL,

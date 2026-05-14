@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AdmissionController implements Initializable {
@@ -120,14 +121,20 @@ public class AdmissionController implements Initializable {
 
         colActions.setCellFactory(col -> new TableCell<>() {
             private final Button editBtn = new Button("Modifier");
-            private final HBox box = new HBox(6, editBtn);
+            private final Button delBtn = new Button("Supprimer");
+            private final HBox box = new HBox(6, editBtn, delBtn);
 
             {
                 box.setAlignment(Pos.CENTER_LEFT);
                 editBtn.getStyleClass().add("btn-table-action");
+                delBtn.getStyleClass().add("btn-table-action-danger");
                 editBtn.setOnAction(e -> {
                     Admission a = getTableView().getItems().get(getIndex());
                     handleEdit(a);
+                });
+                delBtn.setOnAction(e -> {
+                    Admission a = getTableView().getItems().get(getIndex());
+                    handleDelete(a);
                 });
             }
 
@@ -181,6 +188,32 @@ public class AdmissionController implements Initializable {
 
     private void handleEdit(Admission a) {
         openAdmissionForm(a);
+    }
+
+    private void handleDelete(Admission a) {
+        String patientNom = a.getPatient() != null ? a.getPatient().getNomComplet() : "patient inconnu";
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmer la suppression");
+        confirm.setHeaderText("Supprimer cette admission ?");
+        confirm.setContentText("Supprimer l'admission pour " + patientNom + " ?\nCette action est irreversible.");
+        confirm.initModality(Modality.APPLICATION_MODAL);
+        try {
+            confirm.getDialogPane().getStylesheets().add(
+                    getClass().getResource("/ResourceAdmission/urgence/css/theme.css").toExternalForm());
+        } catch (Exception ignored) {}
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                dao.delete(a.getId());
+                loadAdmissions();
+                ToastNotification.show(root, "Admission supprimee avec succes.", ToastNotification.ToastType.SUCCESS);
+                if (MainController.getInstance() != null) MainController.getInstance().refreshStatsNow();
+            } catch (Exception e) {
+                ToastNotification.show(root, "Erreur lors de la suppression: " + e.getMessage(), ToastNotification.ToastType.ERROR);
+                e.printStackTrace();
+            }
+        }
     }
 
     private void openAdmissionForm(Admission admission) {

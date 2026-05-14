@@ -8,6 +8,7 @@ import pro.revive.entities.EntitiesAdmission.Admission;
 import pro.revive.entities.EntitiesAdmission.HistoriquePatient;
 import pro.revive.entities.EntitiesAdmission.Patient;
 import pro.revive.services.ServicesAdmission.MdiaService;
+import pro.revive.utils.UtilesAdmission.ValidationUtil;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -21,6 +22,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -69,10 +72,10 @@ public class AdmissionFormController implements Initializable {
     private final HistoriqueDAO historiqueDAO = new HistoriqueDAO();
     private final NotificationDAO notifDAO = new NotificationDAO();
     private final MdiaService mdiaService = new MdiaService();
-
     private Admission editAdmission;
     private boolean saved = false;
     private Patient preSelectedPatient;
+    private final List<HistoriquePatient> documentsAImporter = new ArrayList<>();
     private Integer linkedAmbulanceId; // ambulance liée à cette admission (lecture seule)
 
     @Override
@@ -160,8 +163,13 @@ public class AdmissionFormController implements Initializable {
             patientInfoBox.setManaged(false);
             mdiaBox.setVisible(false);
             mdiaBox.setManaged(false);
+            documentsAImporter.clear();
+            showImportedSummary();
             return;
         }
+
+        documentsAImporter.clear();
+        showImportedSummary();
 
         infoNom.setText(p.getNomComplet());
         infoDN.setText(p.getDateNaissance() != null ? p.getDateNaissance().toString() : "\u2014");
@@ -217,13 +225,19 @@ public class AdmissionFormController implements Initializable {
                 List<HistoriquePatient> historique = mdiaService.importerDossierMdia(
                     p.getNumSecuriteSociale(), p.getNumCin(), p.getId()
                 );
-                for (HistoriquePatient h : historique) {
-                    historiqueDAO.save(h);
-                }
                 Platform.runLater(() -> {
-                    mdiaStatus.setText("\u2713 " + historique.size() + " document(s) import\u00e9(s) depuis MDIA.");
+                    if (historique.isEmpty()) {
+                        mdiaStatus.setText("Aucun document MDIA disponible pour ce patient.");
+                        mdiaStatus.setStyle("-fx-text-fill: #64748b;");
+                        mdiaImportBtn.setDisable(false);
+                        mdiaImportBtn.setText("R\u00e9essayer");
+                        return;
+                    }
+                    documentsAImporter.addAll(historique);
+                    mdiaStatus.setText("\u2713 " + historique.size() + " document(s) disponible(s) dans le dossier patient.");
                     mdiaStatus.setStyle("-fx-text-fill: #16a34a; -fx-font-weight: bold;");
-                    mdiaImportBtn.setText("\u2713 Import\u00e9");
+                    mdiaImportBtn.setText("\u2713 Dossier pr\u00eat");
+                    showImportedSummary();
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
@@ -254,23 +268,9 @@ public class AdmissionFormController implements Initializable {
             dialog.setScene(scene);
             dialog.showAndWait();
 
-            if (ctrl.hasImported() && ctrl.getImportedText() != null && !ctrl.getImportedText().isEmpty()) {
-                // Append imported text to notesArea
-                String current = notesArea.getText() != null ? notesArea.getText().trim() : "";
-                String separator = current.isEmpty() ? "" : "\n\n--- Importé depuis historique ---\n";
-                notesArea.setText(current + separator + ctrl.getImportedText());
-
-                // Show confirmation box
-                if (importedInfoBox != null) {
-                    importedInfoBox.setVisible(true);
-                    importedInfoBox.setManaged(true);
-                }
-                if (importedInfoLabel != null) {
-                    // Count "===" occurrences = number of documents
-                    long docCount = ctrl.getImportedText().lines()
-                        .filter(l -> l.startsWith("===")).count();
-                    importedInfoLabel.setText(docCount + " document(s) importé(s) dans les notes.");
-                }
+            if (ctrl.hasImported() && !ctrl.getImportedDocuments().isEmpty()) {
+                documentsAImporter.addAll(ctrl.getImportedDocuments());
+                showImportedSummary();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -279,10 +279,14 @@ public class AdmissionFormController implements Initializable {
 
     @FXML
     private void handleEffacerImport() {
-        if (notesArea != null) notesArea.clear();
+        documentsAImporter.clear();
         if (importedInfoBox != null) {
             importedInfoBox.setVisible(false);
             importedInfoBox.setManaged(false);
+        }
+        if (mdiaImportBtn != null) {
+            mdiaImportBtn.setDisable(false);
+            mdiaImportBtn.setText("Importer MDIA");
         }
     }
 
@@ -341,7 +345,7 @@ public class AdmissionFormController implements Initializable {
                     } catch (Exception ignored) {}
                     a.setPatientId(editAdmission.getPatientId());
                 } else {
-                    // MODE CRÉATION : créer nouveau patient inconnu
+                    // MODE CREATION : creer nouveau patient inconnu
                     Patient inconnu = new Patient();
                     inconnu.setNom(nom);
                     inconnu.setPrenom(prenom);
@@ -384,6 +388,14 @@ public class AdmissionFormController implements Initializable {
                 catch (Exception ignored) {}
             }
 
+            try {
+                enregistrerDocumentsImportes(a.getPatientId(), admId);
+            } catch (Exception e) {
+                showFormError("Admission enregistr\u00e9e, mais import dossier impossible: " + e.getMessage());
+                e.printStackTrace();
+                return;
+            }
+
             // Notifications to Module 2
             try {
                 if (patientInconnuCheck.isSelected() && alertTriageCheck != null && alertTriageCheck.isSelected()) {
@@ -418,7 +430,6 @@ public class AdmissionFormController implements Initializable {
             showFormError("Veuillez s\u00e9lectionner un patient ou cocher 'Patient inconnu'.");
             valid = false;
         }
-
         // Mode d'arrivée obligatoire
         if (modeArriveeCombo.getValue() == null || modeArriveeCombo.getValue().trim().isEmpty()) {
             showFormError("Le mode d'arrivée est obligatoire.");
@@ -476,7 +487,7 @@ public class AdmissionFormController implements Initializable {
             String age = inconnu_ageField.getText().trim().replaceAll("\\D", "");
             if (age.isEmpty() || Integer.parseInt(age) < 0 || Integer.parseInt(age) > 130) {
                 inconnu_ageField.setStyle("-fx-border-color: #dc2626;");
-                if (!ok || true) showFormError("Âge invalide (entier entre 0 et 130).");
+                if (!ok || true) showFormError("Age invalide (entier entre 0 et 130).");
                 ok = false;
             } else {
                 inconnu_ageField.setStyle("");
@@ -489,16 +500,75 @@ public class AdmissionFormController implements Initializable {
             ok = false;
         }
 
+        if (inconnu_nomField != null && !inconnu_nomField.getText().trim().isEmpty()
+                && !ValidationUtil.isValidName(inconnu_nomField.getText().trim())) {
+            if (inconnu_nomError != null) {
+                inconnu_nomError.setText("Lettres uniquement");
+                inconnu_nomError.setVisible(true); inconnu_nomError.setManaged(true);
+            }
+            ok = false;
+        }
+        if (inconnu_prenomField != null && !inconnu_prenomField.getText().trim().isEmpty()
+                && !ValidationUtil.isValidName(inconnu_prenomField.getText().trim())) {
+            if (inconnu_prenomError != null) {
+                inconnu_prenomError.setText("Lettres uniquement");
+                inconnu_prenomError.setVisible(true); inconnu_prenomError.setManaged(true);
+            }
+            ok = false;
+        }
+
         return ok;
     }
 
     @FXML private void handleCancel() { closeDialog(); }
 
+    private void showImportedSummary() {
+        boolean hasDocuments = !documentsAImporter.isEmpty();
+        if (importedInfoBox != null) {
+            importedInfoBox.setVisible(hasDocuments);
+            importedInfoBox.setManaged(hasDocuments);
+        }
+        if (importedInfoLabel != null) {
+            long copyCount = documentsAImporter.stream().filter(this::shouldCopyImportedDocument).count();
+            if (copyCount == 0 && hasDocuments) {
+                importedInfoLabel.setText("Admissions pr\u00e9c\u00e9dentes d\u00e9j\u00e0 disponibles dans l'historique. Aucune copie en double ne sera cr\u00e9\u00e9e.");
+            } else {
+                importedInfoLabel.setText(copyCount
+                    + " document(s) seront copi\u00e9s dans le dossier de cette admission.");
+            }
+        }
+    }
+
+    private boolean shouldCopyImportedDocument(HistoriquePatient source) {
+        return !("Compte-rendu".equals(source.getTypeDocument()) && source.getAdmissionId() != null);
+    }
+
+    private void enregistrerDocumentsImportes(int patientId, int admissionId) throws Exception {
+        if (documentsAImporter.isEmpty()) return;
+
+        for (HistoriquePatient source : documentsAImporter) {
+            if (!shouldCopyImportedDocument(source)) {
+                continue;
+            }
+            HistoriquePatient copie = new HistoriquePatient();
+            copie.setPatientId(patientId);
+            copie.setAdmissionId(admissionId);
+            copie.setDateConsultation(source.getDateConsultation() != null ? source.getDateConsultation() : LocalDate.now());
+            copie.setTypeDocument(source.getTypeDocument() != null ? source.getTypeDocument() : "Document importe");
+            copie.setTitre(source.getTitre() != null ? source.getTitre() : "Dossier patient");
+            copie.setContenu(source.getContenu());
+            copie.setMedecinNom(source.getMedecinNom());
+            copie.setEtablissement(source.getEtablissement());
+            copie.setSource("LOCAL");
+            historiqueDAO.save(copie);
+        }
+    }
+
     public void setPreSelectedPatient(Patient p) { this.preSelectedPatient = p; }
 
     public void setAdmission(Admission a) {
         this.editAdmission = a;
-        dialogTitle.setText("Modifier Admission #" + a.getId());
+        dialogTitle.setText("Modifier Admission");
         saveBtn.setText("Mettre \u00e0 jour");
         if (a.getModeArrivee() != null) modeArriveeCombo.setValue(a.getModeArrivee());
         if (a.getMotifAdmission() != null) motifArea.setText(a.getMotifAdmission());
@@ -553,7 +623,7 @@ public class AdmissionFormController implements Initializable {
                     && ((javafx.scene.control.Label) node).getId().equals("ambLinkLabel"));
             if (!labelExists) {
                 javafx.scene.control.Label ambLabel = new javafx.scene.control.Label(
-                    "\uD83D\uDE91 Li\u00e9 Ambulance #" + ambulanceId + " \u2014 informations ci-dessous (lecture seule)");
+                    "Li\u00e9 \u00e0 une ambulance - informations ci-dessous (lecture seule)");
                 ambLabel.setId("ambLinkLabel");
                 ambLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #0D629C; " +
                     "-fx-background-color: #DDF7E7; -fx-padding: 6 10 6 10; -fx-background-radius: 4px;");

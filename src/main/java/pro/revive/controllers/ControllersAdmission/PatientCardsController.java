@@ -183,26 +183,32 @@ public class PatientCardsController implements Initializable {
     }
 
     private void handleDelete(Patient p) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmer la suppression");
-        confirm.setHeaderText("Supprimer le patient ?");
-        confirm.setContentText("Êtes-vous sûr de vouloir supprimer " + p.getNomComplet() + " ?\nCette action est irréversible.");
-        confirm.initModality(Modality.APPLICATION_MODAL);
-        confirm.getDialogPane().getStylesheets().add(getClass().getResource("/ResourceAdmission/urgence/css/theme.css").toExternalForm());
+        try {
+            List<Integer> admissionIds = dao.findAdmissionIds(p.getId());
+            String admissionsText = admissionIds.isEmpty()
+                    ? "Aucune admission associee."
+                    : admissionIds.size() + " admission(s) seront supprimees.";
 
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            try {
+            Alert confirm = new Alert(Alert.AlertType.WARNING);
+            confirm.setTitle("Confirmer la suppression");
+            confirm.setHeaderText("Supprimer le patient et ses admissions ?");
+            confirm.setContentText("Patient: " + p.getNomComplet() + "\n\n"
+                    + admissionsText + "\n\nCette action est irreversible.");
+            confirm.getButtonTypes().setAll(ButtonType.CANCEL, ButtonType.OK);
+            confirm.initModality(Modality.APPLICATION_MODAL);
+            confirm.getDialogPane().getStylesheets().add(getClass().getResource("/ResourceAdmission/urgence/css/theme.css").toExternalForm());
+
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
                 dao.delete(p.getId());
                 loadPatients();
-                showToast("Patient " + p.getNomComplet() + " supprimé avec succès.", ToastNotification.ToastType.SUCCESS);
+                showToast("Patient supprime avec " + admissionIds.size() + " admission(s).", ToastNotification.ToastType.SUCCESS);
                 if (MainController.getInstance() != null) MainController.getInstance().refreshStatsNow();
-            } catch (Exception e) {
-                showToast("Erreur lors de la suppression: " + e.getMessage(), ToastNotification.ToastType.ERROR);
             }
+        } catch (Exception e) {
+            showToast("Erreur lors de la suppression: " + e.getMessage(), ToastNotification.ToastType.ERROR);
         }
     }
-
     private void handleNewAdmission(Patient p) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ResourceAdmission/urgence/fxml/AdmissionForm.fxml"));

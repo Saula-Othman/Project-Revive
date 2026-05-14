@@ -44,7 +44,7 @@
                 <TableColumn fx:id="colPriorite" text="Priorité" prefWidth="100"/>
                 <TableColumn fx:id="colDate" text="Date / Heure" prefWidth="140"/>
                 <TableColumn fx:id="colActif" text="État" prefWidth="90"/>
-                <TableColumn fx:id="colActions" text="Actions" prefWidth="120"/>
+                <TableColumn fx:id="colActions" text="Actions" prefWidth="190"/>
             </columns>
         </TableView>
     </VBox>
