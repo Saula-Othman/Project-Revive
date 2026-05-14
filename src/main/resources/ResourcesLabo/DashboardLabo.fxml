@@ -110,30 +110,36 @@
 
                     <VBox spacing="0">
 
+                        <!-- ══════════════════════════════════════════════
+                             CARTES STATISTIQUES — données du jour
+                             ══════════════════════════════════════════════ -->
                         <HBox styleClass="stats-row" spacing="16">
 
+                            <!-- Examens du jour -->
                             <VBox styleClass="stat-card, blue"
                                   HBox.hgrow="ALWAYS">
                                 <Label styleClass="stat-lbl"
-                                       text="Total Examens"/>
+                                       text="Examens du Jour"/>
                                 <Label fx:id="lblExamensJour"
                                        styleClass="stat-val, blue"
                                        text="0"/>
                                 <Label styleClass="stat-hint"
-                                       text="examens enregistrés"/>
+                                       text="examens ajoutés aujourd'hui"/>
                             </VBox>
 
+                            <!-- Résultats du jour -->
                             <VBox styleClass="stat-card, green"
                                   HBox.hgrow="ALWAYS">
                                 <Label styleClass="stat-lbl"
-                                       text="Total Résultats"/>
+                                       text="Résultats du Jour"/>
                                 <Label fx:id="lblResultatsTotal"
                                        styleClass="stat-val, green"
                                        text="0"/>
                                 <Label styleClass="stat-hint"
-                                       text="résultats disponibles"/>
+                                       text="résultats enregistrés aujourd'hui"/>
                             </VBox>
 
+                            <!-- Cas urgents en attente ajoutés aujourd'hui -->
                             <VBox styleClass="stat-card, orange"
                                   HBox.hgrow="ALWAYS">
                                 <Label styleClass="stat-lbl"
@@ -142,9 +148,10 @@
                                        styleClass="stat-val, orange"
                                        text="0"/>
                                 <Label styleClass="stat-hint"
-                                       text="examens urgents non réalisés"/>
+                                       text="cas urgents non traités aujourd'hui"/>
                             </VBox>
 
+                            <!-- Résultats graves du jour -->
                             <VBox styleClass="stat-card, red"
                                   HBox.hgrow="ALWAYS">
                                 <Label styleClass="stat-lbl"
@@ -153,13 +160,14 @@
                                        styleClass="stat-val, red"
                                        text="0"/>
                                 <Label styleClass="stat-hint"
-                                       text="nécessitent attention urgente"/>
+                                       text="résultats graves d'aujourd'hui"/>
                             </VBox>
 
                         </HBox>
 
                         <HBox styleClass="content-row" spacing="18">
 
+                            <!-- ══ NOTIFICATIONS MÉDECINS ══ -->
                             <VBox styleClass="patients-panel"
                                   HBox.hgrow="ALWAYS"
                                   minHeight="420">
@@ -200,6 +208,7 @@
 
                             </VBox>
 
+                            <!-- ══ GRAPHE RÉSULTATS DU JOUR ══ -->
                             <VBox styleClass="rooms-panel"
                                   spacing="14"
                                   prefWidth="295"
@@ -209,7 +218,7 @@
                                       spacing="12"
                                       alignment="CENTER_LEFT">
                                     <Label styleClass="section-title"
-                                           text="📊  Répartition des Résultats"/>
+                                           text="📊  Répartition des Résultats du Jour"/>
                                 </HBox>
 
                                 <PieChart fx:id="pieResultats"
@@ -222,6 +231,7 @@
                                 <VBox spacing="10"
                                       style="-fx-padding: 4 16 16 16;">
 
+                                    <!-- Propre -->
                                     <HBox spacing="12"
                                           alignment="CENTER_LEFT"
                                           style="-fx-background-color: #F0FDF4;
@@ -249,6 +259,7 @@
                                                       -fx-font-weight: bold;"/>
                                     </HBox>
 
+                                    <!-- Critique -->
                                     <HBox spacing="12"
                                           alignment="CENTER_LEFT"
                                           style="-fx-background-color: #FEF2F2;

@@ -16,8 +16,8 @@ import java.util.Properties;
 
 public class EmailService {
 
-    private static final String EXPEDITEUR_EMAIL = "yourmail_mailm";      // TODO: set via config
-    private static final String EXPEDITEUR_MDP   = "xxxxxxxxxxx";    // TODO: Gmail App Password — NEVER commit real value
+    private static final String EXPEDITEUR_EMAIL = "yomnaferjani01@gmail.com";      // TODO: set via config
+    private static final String EXPEDITEUR_MDP   = "ierqriljicidsjaw";    // TODO: Gmail App Password — NEVER commit real value
     private static final String LOGO_PATH        = "src/main/resources/images/logo_revive.png";
 
     private final Connection cnx;

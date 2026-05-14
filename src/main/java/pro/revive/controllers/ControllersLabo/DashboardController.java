@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class DashboardController implements Initializable {
 
@@ -40,6 +41,7 @@ public class DashboardController implements Initializable {
     @FXML private Label    lblPctCritique;
     @FXML private VBox     containerNotifsMedecins;
     @FXML private Label    lblBadgeNotifs;
+    @FXML private Label    lblUserName;
 
     private final Examens_demandesService examenService  = new Examens_demandesService();
     private final ResultatService         resultatService = new ResultatService();
@@ -53,10 +55,8 @@ public class DashboardController implements Initializable {
         lblUserName.setText(Navigator.currentUserName);
     }
 
-    @FXML private Label lblUserName;
-
     // ─────────────────────────────────────────────────────────────────────────
-    // STATISTIQUES
+    // STATISTIQUES — uniquement les données du jour
     // ─────────────────────────────────────────────────────────────────────────
 
     private void chargerStatistiques() {
@@ -65,39 +65,39 @@ public class DashboardController implements Initializable {
 
         String aujourdhui = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
-        // Examens du jour — si aucun aujourd'hui, afficher le total global
+        // ✅ Examens ajoutés aujourd'hui uniquement
         long examensJour = tousExamens.stream()
                 .filter(e -> e.getDateDemande() != null &&
                         new SimpleDateFormat("yyyy-MM-dd").format(e.getDateDemande()).equals(aujourdhui))
                 .count();
-        long examensAffiche = examensJour > 0 ? examensJour : tousExamens.size();
 
-        // Résultats du jour — si aucun aujourd'hui, utiliser tous les résultats
+        // ✅ Résultats ajoutés aujourd'hui uniquement
         List<Resultats> resultatsJour = tousResultats.stream()
                 .filter(r -> r.getDateResultat() != null &&
                         new SimpleDateFormat("yyyy-MM-dd").format(r.getDateResultat()).equals(aujourdhui))
-                .collect(java.util.stream.Collectors.toList());
-        List<Resultats> resultatsAffichage = resultatsJour.isEmpty() ? tousResultats : resultatsJour;
-        long totalResultats = resultatsAffichage.size();
+                .collect(Collectors.toList());
 
-        // Urgents en attente (toujours all-time)
+        // ✅ Cas urgents en attente ajoutés aujourd'hui uniquement
         long urgentsAttente = tousExamens.stream()
-                .filter(e -> e.isUrgent() && "En attente".equalsIgnoreCase(e.getStatut()))
+                .filter(e -> e.getDateDemande() != null &&
+                        new SimpleDateFormat("yyyy-MM-dd").format(e.getDateDemande()).equals(aujourdhui) &&
+                        e.isUrgent() &&
+                        "En attente".equalsIgnoreCase(e.getStatut()))
                 .count();
 
-        // Résultats graves
-        long critiques = resultatsAffichage.stream()
+        // ✅ Résultats graves d'aujourd'hui uniquement
+        long critiques = resultatsJour.stream()
                 .filter(r -> "Grave".equalsIgnoreCase(r.getEtat()))
                 .count();
 
         // Animations de comptage
-        animerCompteur(lblExamensJour,        (int) examensAffiche, 800);
-        animerCompteur(lblResultatsTotal,     (int) totalResultats,  1000);
-        animerCompteur(lblUrgentsAttente,     (int) urgentsAttente,  900);
-        animerCompteur(lblResultatsCritiques, (int) critiques,       1100);
+        animerCompteur(lblExamensJour,        (int) examensJour,           800);
+        animerCompteur(lblResultatsTotal,     (int) resultatsJour.size(),  1000);
+        animerCompteur(lblUrgentsAttente,     (int) urgentsAttente,        900);
+        animerCompteur(lblResultatsCritiques, (int) critiques,             1100);
 
-        // Graphe basé sur les résultats disponibles
-        chargerGraphe(resultatsAffichage);
+        // ✅ Graphe basé sur les résultats du jour uniquement
+        chargerGraphe(resultatsJour);
     }
 
     /**
@@ -108,8 +108,8 @@ public class DashboardController implements Initializable {
             label.setText("0");
             return;
         }
-        int steps = Math.min(targetValue, 40); // max 40 frames
-        int stepValue = Math.max(1, targetValue / steps);
+        int steps      = Math.min(targetValue, 40);
+        int stepValue  = Math.max(1, targetValue / steps);
         int intervalMs = durationMs / steps;
 
         final int[] current = {0};
@@ -131,7 +131,7 @@ public class DashboardController implements Initializable {
         long total  = propre + grave;
 
         if (total == 0) {
-            pieResultats.getData().add(new PieChart.Data("Aucun résultat", 1));
+            pieResultats.getData().add(new PieChart.Data("Aucun résultat aujourd'hui", 1));
             lblPctPropre.setText("0%");
             lblPctCritique.setText("0%");
             return;
@@ -156,8 +156,8 @@ public class DashboardController implements Initializable {
         // Animation fade-in du graphe
         pieResultats.setOpacity(0);
         Timeline fadeIn = new Timeline(
-            new KeyFrame(Duration.ZERO,       e2 -> pieResultats.setOpacity(0)),
-            new KeyFrame(Duration.millis(800), e2 -> pieResultats.setOpacity(1))
+                new KeyFrame(Duration.ZERO,        e2 -> pieResultats.setOpacity(0)),
+                new KeyFrame(Duration.millis(800), e2 -> pieResultats.setOpacity(1))
         );
         fadeIn.play();
 
@@ -167,7 +167,7 @@ public class DashboardController implements Initializable {
     }
 
     private void animerPourcentage(Label label, double targetPct, int durationMs) {
-        int steps = 30;
+        int steps      = 30;
         int intervalMs = durationMs / steps;
         final double[] current = {0};
         Timeline tl = new Timeline();
@@ -189,10 +189,8 @@ public class DashboardController implements Initializable {
 
         List<ConsultationNotif> notifs = examenService.getConsultationsEnvoyees();
 
-        // Mettre à jour le badge compteur
         if (lblBadgeNotifs != null) {
             lblBadgeNotifs.setText(String.valueOf(notifs.size()));
-            // Masquer le badge si 0
             lblBadgeNotifs.setVisible(!notifs.isEmpty());
         }
 
@@ -215,16 +213,15 @@ public class DashboardController implements Initializable {
         }
     }
 
-    // ── Crée une carte de notification avec bouton "Marquer comme reçu"
     private VBox creerCarteNotif(ConsultationNotif notif) {
         VBox card = new VBox(8);
         card.setStyle(
                 "-fx-background-color: #F0F7FF;" +
-                "-fx-background-radius: 12;" +
-                "-fx-padding: 12 14;" +
-                "-fx-border-color: #BFDBFE;" +
-                "-fx-border-radius: 12;" +
-                "-fx-border-width: 1;"
+                        "-fx-background-radius: 12;" +
+                        "-fx-padding: 12 14;" +
+                        "-fx-border-color: #BFDBFE;" +
+                        "-fx-border-radius: 12;" +
+                        "-fx-border-width: 1;"
         );
 
         // ── Ligne 1 : icône + nom patient
@@ -274,33 +271,28 @@ public class DashboardController implements Initializable {
         Button btnCheck = new Button("✔  Reçu");
         btnCheck.setStyle(
                 "-fx-background-color: #0B4EA2; -fx-text-fill: white;" +
-                "-fx-font-weight: bold; -fx-background-radius: 8;" +
-                "-fx-padding: 5 14; -fx-font-size: 11px; -fx-cursor: hand;"
+                        "-fx-font-weight: bold; -fx-background-radius: 8;" +
+                        "-fx-padding: 5 14; -fx-font-size: 11px; -fx-cursor: hand;"
         );
 
-        // Action : marquer comme reçu → disparaît de la liste
         btnCheck.setOnAction(e -> {
             examenService.marquerConsultationRecue(notif.getIdConsultation());
-            // Animation : griser la carte puis la retirer
             card.setStyle(
                     "-fx-background-color: #F1F5F9; -fx-background-radius: 12; -fx-padding: 12 14;" +
-                    "-fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-border-width: 1; -fx-opacity: 0.5;"
+                            "-fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-border-width: 1; -fx-opacity: 0.5;"
             );
             btnCheck.setDisable(true);
             btnCheck.setText("✔  Reçu");
 
-            // Retirer après un court délai visuel
             javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(
                     javafx.util.Duration.millis(600));
             pause.setOnFinished(ev -> {
                 containerNotifsMedecins.getChildren().remove(card);
-                // Mettre à jour le badge
                 int restant = containerNotifsMedecins.getChildren().size();
                 if (lblBadgeNotifs != null) {
                     lblBadgeNotifs.setText(String.valueOf(restant));
                     lblBadgeNotifs.setVisible(restant > 0);
                 }
-                // Si plus rien, afficher le message vide
                 if (restant == 0) {
                     chargerNotificationsMedecins();
                 }
@@ -308,23 +300,20 @@ public class DashboardController implements Initializable {
             pause.play();
         });
 
-        // Hover sur le bouton
         btnCheck.setOnMouseEntered(e -> btnCheck.setStyle(
                 "-fx-background-color: #0E9B8A; -fx-text-fill: white;" +
-                "-fx-font-weight: bold; -fx-background-radius: 8;" +
-                "-fx-padding: 5 14; -fx-font-size: 11px; -fx-cursor: hand;"
+                        "-fx-font-weight: bold; -fx-background-radius: 8;" +
+                        "-fx-padding: 5 14; -fx-font-size: 11px; -fx-cursor: hand;"
         ));
         btnCheck.setOnMouseExited(e -> btnCheck.setStyle(
                 "-fx-background-color: #0B4EA2; -fx-text-fill: white;" +
-                "-fx-font-weight: bold; -fx-background-radius: 8;" +
-                "-fx-padding: 5 14; -fx-font-size: 11px; -fx-cursor: hand;"
+                        "-fx-font-weight: bold; -fx-background-radius: 8;" +
+                        "-fx-padding: 5 14; -fx-font-size: 11px; -fx-cursor: hand;"
         ));
 
         ligne4.getChildren().addAll(dateLbl, spacer, btnCheck);
-
         card.getChildren().addAll(ligne1, ligneAnalyses, ligneImageries, ligne4);
 
-        // Séparateur entre cartes
         VBox wrapper = new VBox(0);
         wrapper.getChildren().add(card);
         Region sep = new Region();
@@ -347,7 +336,7 @@ public class DashboardController implements Initializable {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // EFFETS HOVER BOUTONS ICÔNES
+    // EFFETS HOVER
     // ─────────────────────────────────────────────────────────────────────────
 
     public void onBtnHoverEnter(javafx.scene.input.MouseEvent e) {
@@ -364,14 +353,13 @@ public class DashboardController implements Initializable {
         }
     }
 
-    // ── Effets hover sur les boutons du sidebar
     public void onSidebarHoverEnter(javafx.scene.input.MouseEvent e) {
         if (e.getSource() instanceof javafx.scene.control.Button btn) {
             btn.setStyle(
-                "-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white;" +
-                "-fx-font-size: 13px; -fx-padding: 13 30; -fx-alignment: CENTER_LEFT;" +
-                "-fx-cursor: hand; -fx-background-radius: 10;" +
-                "-fx-border-color: rgba(255,255,255,0.25); -fx-border-radius: 10; -fx-border-width: 1;"
+                    "-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white;" +
+                            "-fx-font-size: 13px; -fx-padding: 13 30; -fx-alignment: CENTER_LEFT;" +
+                            "-fx-cursor: hand; -fx-background-radius: 10;" +
+                            "-fx-border-color: rgba(255,255,255,0.25); -fx-border-radius: 10; -fx-border-width: 1;"
             );
             btn.setTranslateX(4);
         }
@@ -380,9 +368,9 @@ public class DashboardController implements Initializable {
     public void onSidebarHoverExit(javafx.scene.input.MouseEvent e) {
         if (e.getSource() instanceof javafx.scene.control.Button btn) {
             btn.setStyle(
-                "-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.72);" +
-                "-fx-font-size: 13px; -fx-padding: 13 30; -fx-alignment: CENTER_LEFT;" +
-                "-fx-cursor: hand; -fx-background-radius: 10;"
+                    "-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.72);" +
+                            "-fx-font-size: 13px; -fx-padding: 13 30; -fx-alignment: CENTER_LEFT;" +
+                            "-fx-cursor: hand; -fx-background-radius: 10;"
             );
             btn.setTranslateX(0);
         }
@@ -400,8 +388,6 @@ public class DashboardController implements Initializable {
     @FXML private void showExamens()   { naviguerVers("/ResourcesLabo/GestionExamens.fxml"); }
     @FXML private void showResultats() { naviguerVers("/ResourcesLabo/GestionResultats.fxml"); }
     @FXML private void showRapport()   { naviguerVers("/ResourcesLabo/RapportBiologiste.fxml"); }
-
-
 
     private void naviguerVers(String fxml) {
         try {

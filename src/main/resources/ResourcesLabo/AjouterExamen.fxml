@@ -118,7 +118,7 @@
                                      -fx-padding: 14 16;
                                      -fx-border-color: rgba(14,155,138,0.35); -fx-border-radius: 12; -fx-border-width: 1;">
                             <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Label text="🩻" style="-fx-font-size: 18px;"/>
+                                <Label text="" style="-fx-font-size: 18px;"/>
                                 <Label text="Imagerie Médicale"
                                        style="-fx-text-fill: #065F46; -fx-font-size: 13px; -fx-font-weight: bold;"/>
                                 <Region HBox.hgrow="ALWAYS"/>
