@@ -416,6 +416,24 @@
     -fx-background-color: transparent;
 }
 
+/* Login left panel — remove all ScrollPane chrome */
+.scroll-pane {
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .corner {
+    -fx-background-color: transparent;
+}
+
+
 /* ══════════════════════════════════════════════════════════════
    FILTER BUTTONS
    ══════════════════════════════════════════════════════════════ */

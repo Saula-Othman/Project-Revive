@@ -19,18 +19,23 @@
 <!-- Fix 4: Google button moved below login form -->
 <!-- Fix 5: S'inscrire as a proper styled button box -->
 
-<HBox prefHeight="750.0" prefWidth="1100.0"
+<HBox prefHeight="750.0" prefWidth="1100.0" spacing="0"
+      style="-fx-background-color: transparent;"
       stylesheets="@../css/user.css"
       xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="pro.revive.controllers.ControllersUser.LoginController">
 
    <!-- ═══ LEFT PANEL — Form ═══ -->
-   <ScrollPane fitToWidth="true" prefWidth="580" minWidth="520"
-               style="-fx-background-color: #ffffff; -fx-background: #ffffff; -fx-border-width: 0;">
+   <ScrollPane fitToWidth="true" fitToHeight="true" prefWidth="580" minWidth="520"
+               style="-fx-background-color: linear-gradient(to bottom, #0B4EA2, #0E9B8A);
+                      -fx-background: linear-gradient(to bottom, #0B4EA2, #0E9B8A);
+                      -fx-border-width: 0; -fx-border-color: transparent;
+                      -fx-padding: 0; -fx-focus-color: transparent;
+                      -fx-faint-focus-color: transparent;">
       <content>
-         <VBox alignment="TOP_CENTER" prefWidth="580"
-               style="-fx-background-color: #ffffff; -fx-padding: 32px 60px 32px 60px; -fx-spacing: 0;">
+         <VBox alignment="TOP_CENTER" prefWidth="580" minHeight="750"
+               style="-fx-background-color: linear-gradient(to bottom, #0B4EA2, #0E9B8A); -fx-padding: 32px 60px 32px 60px; -fx-spacing: 0;">
 
             <!-- Logo -->
             <ImageView fitWidth="140" fitHeight="62" preserveRatio="true" style="-fx-padding: 0 0 8px 0;">
@@ -39,25 +44,25 @@
 
             <!-- Welcome -->
             <VBox spacing="3" style="-fx-padding: 10px 0 18px 0;">
-               <Label text="Bienvenue !" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1A1D23;" />
-               <Label text="Connectez-vous a votre espace de gestion" style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" />
+               <Label text="Bienvenue !" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #ffffff;" />
+               <Label text="Connectez-vous a votre espace de gestion" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.75);" />
             </VBox>
 
             <!-- Identifiant -->
             <VBox spacing="4" style="-fx-padding: 0 0 10px 0;">
-               <Label text="Identifiant" styleClass="label" />
+               <Label text="Identifiant" style="-fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-font-weight: bold;" />
                <TextField fx:id="tfIdentifiant" promptText="Ex: ADXXX001" styleClass="text-input" />
             </VBox>
 
             <!-- Mot de passe -->
             <VBox spacing="4" style="-fx-padding: 0 0 10px 0;">
-               <Label text="Mot de passe" styleClass="label" />
+               <Label text="Mot de passe" style="-fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-font-weight: bold;" />
                <PasswordField fx:id="pfMotDePasse" promptText="••••••••" styleClass="text-input" />
             </VBox>
 
             <!-- CAPTCHA -->
             <VBox spacing="4" style="-fx-padding: 0 0 10px 0;">
-               <Label text="Code de verification" styleClass="label" />
+               <Label text="Code de verification" style="-fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-font-weight: bold;" />
                <HBox spacing="8" alignment="CENTER_LEFT">
                   <Canvas fx:id="captchaCanvas" width="185" height="46"
                           style="-fx-border-color: #E5E7EB; -fx-border-radius: 8px;" />
@@ -84,7 +89,7 @@
             <!-- Forgot password link -->
             <Button text="J'ai oublie mon mot de passe" maxWidth="Infinity"
                     mnemonicParsing="false" onAction="#handleForgotPassword"
-                    style="-fx-background-color: transparent; -fx-text-fill: #0B4EA2;
+                    style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.85);
                            -fx-border-width: 0; -fx-font-size: 12px; -fx-cursor: hand;
                            -fx-underline: true; -fx-padding: 6px 0 10px 0;" />
 
@@ -92,7 +97,7 @@
             <HBox alignment="CENTER" spacing="8" style="-fx-padding: 0 0 10px 0;">
                <Region HBox.hgrow="ALWAYS"
                        style="-fx-border-color: #E5E7EB; -fx-border-width: 0 0 1 0; -fx-pref-height: 1px;" />
-               <Label text="ou" style="-fx-text-fill: #9CA3AF; -fx-font-size: 11px;" />
+               <Label text="ou" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 11px;" />
                <Region HBox.hgrow="ALWAYS"
                        style="-fx-border-color: #E5E7EB; -fx-border-width: 0 0 1 0; -fx-pref-height: 1px;" />
             </HBox>
@@ -119,50 +124,7 @@
       </content>
    </ScrollPane>
 
-   <!-- ═══ RIGHT PANEL — Decorative ═══ -->
-   <StackPane fx:id="rightPanel" HBox.hgrow="ALWAYS" styleClass="login-right-panel"
-              style="-fx-background-image: url('../images/hospital.png');
-                     -fx-background-size: 150% auto;
-                     -fx-background-position: center center;
-                     -fx-background-repeat: no-repeat;">
-
-      <!-- Light overlay for text readability -->
-      <StackPane style="-fx-background-color: rgba(11,78,162,0.45);" />
-
-      <!-- Content over photo -->
-      <VBox alignment="CENTER" spacing="18" style="-fx-padding: 40px;">
-
-         <ImageView fitWidth="220" fitHeight="96" preserveRatio="true">
-            <image><Image url="@../images/logo_revive.png"/></image>
-         </ImageView>
-
-         <VBox alignment="CENTER" spacing="6">
-            <Label text="REVIVE"
-                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #ffffff;" />
-            <Label text="Systeme de Gestion des Urgences Medicales"
-                   style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.85);
-                          -fx-alignment: center;" wrapText="true" />
-         </VBox>
-
-         <VBox spacing="12" alignment="CENTER" style="-fx-padding: 16px 0 0 0;">
-            <HBox spacing="10" alignment="CENTER">
-               <Label text="✅" style="-fx-font-size: 14px;" />
-               <Label text="Gestion complete du personnel hospitalier"
-                      style="-fx-text-fill: #ffffff; -fx-font-size: 13px;" />
-            </HBox>
-            <HBox spacing="10" alignment="CENTER">
-               <Label text="✅" style="-fx-font-size: 14px;" />
-               <Label text="Authentification securisee multi-roles"
-                      style="-fx-text-fill: #ffffff; -fx-font-size: 13px;" />
-            </HBox>
-            <HBox spacing="10" alignment="CENTER">
-               <Label text="✅" style="-fx-font-size: 14px;" />
-               <Label text="Notifications email automatiques"
-                      style="-fx-text-fill: #ffffff; -fx-font-size: 13px;" />
-            </HBox>
-         </VBox>
-
-      </VBox>
-   </StackPane>
+   <!-- ═══ RIGHT PANEL — Video loop (MED.mp4 injected by LoginController) ═══ -->
+   <StackPane fx:id="rightPanel" HBox.hgrow="ALWAYS" />
 
 </HBox>

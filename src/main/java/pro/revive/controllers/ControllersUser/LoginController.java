@@ -11,6 +11,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import pro.revive.App;
 import pro.revive.SessionManager;
@@ -41,11 +44,61 @@ public class LoginController implements Initializable {
     private final LoginAttemptService attemptSvc = new LoginAttemptService();
     private final AuditService        auditSvc   = new AuditService();
 
+    private MediaPlayer mediaPlayer;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         captcha.generate(captchaCanvas);
+        // Defer video injection until the panel is fully laid out and has real dimensions
+        Platform.runLater(this::startVideoLoop);
         if (rightPanel != null) {
             AnimationUtil.popupIn(rightPanel, 600);
+        }
+    }
+
+    /** Loads MED.mp4 into the right panel as a muted infinite loop. */
+    private void startVideoLoop() {
+        if (rightPanel == null) { System.err.println("[LoginController] rightPanel is null — skipping video."); return; }
+        try {
+            java.net.URL res = getClass().getResource("/ResourcesUser/images/MED.mp4");
+            if (res == null) { System.err.println("[LoginController] MED.mp4 not found in resources."); return; }
+
+            Media media = new Media(res.toExternalForm());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            mediaPlayer.setMute(true);
+            mediaPlayer.setAutoPlay(true);
+
+            // Fallback: if the cycle somehow ends, seek back to start and replay
+            mediaPlayer.setOnEndOfMedia(() -> {
+                mediaPlayer.seek(mediaPlayer.getStartTime());
+                mediaPlayer.play();
+            });
+
+            // Fallback: if a media error occurs, log it silently (don't crash the UI)
+            mediaPlayer.setOnError(() ->
+                System.err.println("[LoginController] Video error: " + mediaPlayer.getError())
+            );
+
+            MediaView mediaView = new MediaView(mediaPlayer);
+            mediaView.setPreserveRatio(true);
+
+            mediaView.fitWidthProperty().bind(rightPanel.widthProperty());
+            mediaView.fitHeightProperty().bind(rightPanel.heightProperty());
+
+            // Insert at index 0 so any future overlay content stays on top
+            rightPanel.getChildren().add(0, mediaView);
+        } catch (Exception e) {
+            System.err.println("[LoginController] Could not load video: " + e.getMessage());
+        }
+    }
+
+    /** Stops the video before navigating away to free the media thread. */
+    private void stopVideo() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
+            mediaPlayer = null;
         }
     }
 
@@ -127,6 +180,7 @@ public class LoginController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ResourcesUser/images/fxml/ForgotPassword.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) tfIdentifiant.getScene().getWindow();
+            stopVideo();
             AnimationUtil.navigateWithFade(stage, root, () -> {});
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -136,6 +190,7 @@ public class LoginController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ResourcesUser/images/fxml/SignUp.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) tfIdentifiant.getScene().getWindow();
+            stopVideo();
             AnimationUtil.navigateWithFade(stage, root, () -> {});
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -246,6 +301,7 @@ public class LoginController implements Initializable {
      * Swaps the scene on the primary stage with a fade transition.
      */
     private void navigateTo(Parent root, String title) {
+        stopVideo();
         Stage stage = (Stage) tfIdentifiant.getScene().getWindow();
         AnimationUtil.navigateWithFade(stage, root, () -> stage.setTitle(title));
     }
