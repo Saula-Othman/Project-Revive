@@ -10,8 +10,11 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -59,6 +62,18 @@ public class ConsultationFormController implements Initializable {
     @FXML private RadioButton radioHospitalisation;
     @FXML private RadioButton radioTransfert;
 
+    // ── Labels d'erreur inline ────────────────────────────────────────────
+    @FXML private Label errAdmission;
+    @FXML private Label errMedecin;
+    @FXML private Label errDateDebut;
+    @FXML private Label errHeureDebut;
+    @FXML private Label errDateFin;
+    @FXML private Label errHeureFin;
+    @FXML private Label errSymptomes;
+    @FXML private Label errDiagnostic;
+    @FXML private Label errOrientation;
+    @FXML private Label lblDiagCount;
+
     // ── Dictée vocale ─────────────────────────────────────────────────────
     @FXML private Button          btnMicro;
     @FXML private ComboBox<String> cbLanguage;
@@ -90,15 +105,245 @@ public class ConsultationFormController implements Initializable {
         presaisirDateHeure();
         configurerDatePickers();
         initialiserMicro();
+        brancherValidationTempsReel();
 
         comboAdmission.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 int idAdmission = AdmissionService.parseIdFromLabel(newVal);
-                if (idAdmission > 0) afficherInfosPatient(idAdmission);
+                if (idAdmission > 0) {
+                    afficherInfosPatient(idAdmission);
+                } else {
+                    viderInfosPatient();
+                }
             } else {
                 viderInfosPatient();
             }
         });
+    }
+
+    // ── Validation en temps réel ──────────────────────────────────────────
+
+    /**
+     * Branche un listener sur chaque champ pour valider immédiatement
+     * pendant la saisie, sans attendre le clic sur Enregistrer.
+     */
+    private void brancherValidationTempsReel() {
+
+        // Admission — obligatoire
+        comboAdmission.valueProperty().addListener((obs, o, n) -> {
+            if (n == null || n.isBlank()) {
+                showError(comboAdmission, errAdmission, "Veuillez sélectionner une admission.");
+            } else {
+                showOk(comboAdmission, errAdmission);
+            }
+        });
+
+        // Médecin — obligatoire
+        comboMedecin.valueProperty().addListener((obs, o, n) -> {
+            if (n == null || n.isBlank()) {
+                showError(comboMedecin, errMedecin, "Veuillez sélectionner un médecin.");
+            } else {
+                showOk(comboMedecin, errMedecin);
+            }
+        });
+
+        // Date début — obligatoire
+        dateDebut.valueProperty().addListener((obs, o, n) -> {
+            if (n == null) {
+                showError(dateDebut, errDateDebut, "La date de début est obligatoire.");
+            } else if (n.isAfter(LocalDate.now())) {
+                showError(dateDebut, errDateDebut, "La date ne peut pas être dans le futur.");
+            } else {
+                showOk(dateDebut, errDateDebut);
+                // Revérifier cohérence date fin si elle est déjà renseignée
+                validerCoherenceDates();
+            }
+        });
+
+        // Heure début — format HH:mm obligatoire
+        heureDebut.textProperty().addListener((obs, o, n) -> {
+            if (n == null || n.isBlank()) {
+                showError(heureDebut, errHeureDebut, "L'heure de début est obligatoire.");
+            } else if (!n.matches("\\d{2}:\\d{2}")) {
+                showError(heureDebut, errHeureDebut, "Format requis : HH:mm (ex: 08:30).");
+            } else {
+                int h = Integer.parseInt(n.split(":")[0]);
+                int m = Integer.parseInt(n.split(":")[1]);
+                if (h > 23 || m > 59) {
+                    showError(heureDebut, errHeureDebut, "Heure invalide (00:00 – 23:59).");
+                } else {
+                    showOk(heureDebut, errHeureDebut);
+                }
+            }
+        });
+
+        // Date fin — optionnelle mais si renseignée doit être >= date début
+        dateFin.valueProperty().addListener((obs, o, n) -> {
+            if (n != null) {
+                validerCoherenceDates();
+                // Si date fin renseignée, heure fin devient obligatoire
+                validerHeureFin();
+            } else {
+                clearField(dateFin, errDateFin);
+                clearField(heureFin, errHeureFin);
+            }
+        });
+
+        // Heure fin — obligatoire seulement si date fin renseignée
+        heureFin.textProperty().addListener((obs, o, n) -> {
+            if (dateFin.getValue() != null) {
+                validerHeureFin();
+            } else if (n != null && !n.isBlank()) {
+                // Heure fin saisie sans date fin
+                showWarn(heureFin, errHeureFin, "Renseignez aussi la date de fin.");
+            } else {
+                clearField(heureFin, errHeureFin);
+            }
+        });
+
+        // Symptômes — non obligatoire mais avertissement si vide (pour l'IA)
+        fieldSymptomes.textProperty().addListener((obs, o, n) -> {
+            if (n != null && !n.isBlank() && n.trim().length() < 5) {
+                showWarn(fieldSymptomes, errSymptomes, "Décrivez les symptômes plus précisément.");
+            } else {
+                clearField(fieldSymptomes, errSymptomes);
+            }
+        });
+
+        // Diagnostic — obligatoire, min 10 caractères, max 500
+        textDiagnostic.textProperty().addListener((obs, o, n) -> {
+            int len = n == null ? 0 : n.trim().length();
+            // Compteur de caractères
+            if (lblDiagCount != null) {
+                lblDiagCount.setText(len + " / 500");
+                if (len > 450) {
+                    lblDiagCount.getStyleClass().setAll("char-counter-warn");
+                } else if (len >= 500) {
+                    lblDiagCount.getStyleClass().setAll("char-counter-max");
+                } else {
+                    lblDiagCount.getStyleClass().setAll("char-counter");
+                }
+            }
+            // Validation
+            if (len == 0) {
+                showError(textDiagnostic, errDiagnostic, "Le diagnostic est obligatoire.");
+            } else if (len < 10) {
+                showError(textDiagnostic, errDiagnostic, "Minimum 10 caractères requis (" + len + "/10).");
+            } else if (len > 500) {
+                showError(textDiagnostic, errDiagnostic, "Maximum 500 caractères atteint.");
+                // Tronquer automatiquement
+                textDiagnostic.setText(n.substring(0, 500));
+            } else {
+                showOk(textDiagnostic, errDiagnostic);
+            }
+        });
+
+        // Orientation — obligatoire, vérifiée au changement de sélection
+        toggleOrientation.selectedToggleProperty().addListener((obs, o, n) -> {
+            if (n == null) {
+                showErrorRadio(errOrientation, "Veuillez choisir une orientation.");
+            } else {
+                hideLabel(errOrientation);
+                radioSortie.setStyle("");
+                radioHospitalisation.setStyle("");
+                radioTransfert.setStyle("");
+            }
+        });
+    }
+
+    /** Vérifie que date fin >= date début. */
+    private void validerCoherenceDates() {
+        LocalDate debut = dateDebut.getValue();
+        LocalDate fin   = dateFin.getValue();
+        if (debut != null && fin != null) {
+            if (fin.isBefore(debut)) {
+                showError(dateFin, errDateFin, "La date de fin doit être après la date de début.");
+            } else if (fin.isAfter(LocalDate.now())) {
+                showError(dateFin, errDateFin, "La date de fin ne peut pas être dans le futur.");
+            } else {
+                showOk(dateFin, errDateFin);
+            }
+        }
+    }
+
+    /** Vérifie le format de l'heure de fin si date fin est renseignée. */
+    private void validerHeureFin() {
+        String val = heureFin.getText();
+        if (val == null || val.isBlank()) {
+            showError(heureFin, errHeureFin, "L'heure de fin est requise si une date de fin est saisie.");
+        } else if (!val.matches("\\d{2}:\\d{2}")) {
+            showError(heureFin, errHeureFin, "Format requis : HH:mm (ex: 14:30).");
+        } else {
+            int h = Integer.parseInt(val.split(":")[0]);
+            int m = Integer.parseInt(val.split(":")[1]);
+            if (h > 23 || m > 59) {
+                showError(heureFin, errHeureFin, "Heure invalide (00:00 – 23:59).");
+            } else {
+                showOk(heureFin, errHeureFin);
+            }
+        }
+    }
+
+    // ── Helpers visuels ───────────────────────────────────────────────────
+
+    /** Affiche un message d'erreur rouge sous le champ et colore sa bordure. */
+    private void showError(Control field, Label errLabel, String message) {
+        field.getStyleClass().removeAll("field-valid", "field-neutral", "field-invalid");
+        field.getStyleClass().add("field-invalid");
+        if (errLabel != null) {
+            errLabel.setText("  " + message);
+            errLabel.setVisible(true);
+            errLabel.setManaged(true);
+            errLabel.getStyleClass().setAll("validation-error");
+        }
+    }
+
+    /** Affiche un avertissement orange (non bloquant). */
+    private void showWarn(Control field, Label errLabel, String message) {
+        field.getStyleClass().removeAll("field-valid", "field-neutral", "field-invalid");
+        if (errLabel != null) {
+            errLabel.setText("  " + message);
+            errLabel.setVisible(true);
+            errLabel.setManaged(true);
+            errLabel.getStyleClass().setAll("validation-warning");
+        }
+    }
+
+    /** Affiche une bordure verte — champ valide. */
+    private void showOk(Control field, Label errLabel) {
+        field.getStyleClass().removeAll("field-valid", "field-neutral", "field-invalid");
+        field.getStyleClass().add("field-valid");
+        hideLabel(errLabel);
+    }
+
+    /** Efface l'état de validation d'un champ. */
+    private void clearField(Control field, Label errLabel) {
+        field.getStyleClass().removeAll("field-valid", "field-neutral", "field-invalid");
+        hideLabel(errLabel);
+    }
+
+    /** Erreur sur les radio buttons (pas de Control à colorer). */
+    private void showErrorRadio(Label errLabel, String message) {
+        String style = "-fx-border-color: #EF4444; -fx-border-width: 1.5px; " +
+                       "-fx-border-radius: 6px; -fx-padding: 3px 8px;";
+        radioSortie.setStyle(style);
+        radioHospitalisation.setStyle(style);
+        radioTransfert.setStyle(style);
+        if (errLabel != null) {
+            errLabel.setText("  " + message);
+            errLabel.setVisible(true);
+            errLabel.setManaged(true);
+            errLabel.getStyleClass().setAll("validation-error");
+        }
+    }
+
+    /** Cache un label d'erreur. */
+    private void hideLabel(Label lbl) {
+        if (lbl != null) {
+            lbl.setText("");
+            lbl.setVisible(false);
+            lbl.setManaged(false);
+        }
     }
 
     /** Initialise le ComboBox de langue et l'état du bouton micro. */
@@ -180,6 +425,7 @@ public class ConsultationFormController implements Initializable {
                 viderInfosPatient();
                 return;
             }
+            
             labelNomPatient.setText(str(details.get("nom")));
             labelPrenomPatient.setText(str(details.get("prenom")));
             Object dn = details.get("dateNaissance");
@@ -447,86 +693,105 @@ public class ConsultationFormController implements Initializable {
         fermer();
     }
 
-    // ── Validation visuelle inline ────────────────────────────────────────
+    // ── Validation au clic Enregistrer ───────────────────────────────────
 
     private boolean validerSaisie() {
         boolean valid = true;
 
-        // Reset tous les styles
-        resetFieldStyle(comboAdmission);
-        resetFieldStyle(comboMedecin);
-        resetFieldStyle(dateDebut);
-        resetFieldStyle(heureDebut);
-        resetFieldStyle(textDiagnostic);
-
         // Admission
         if (comboAdmission.getValue() == null || comboAdmission.getValue().isBlank()) {
-            setFieldError(comboAdmission, "Admission obligatoire");
+            showError(comboAdmission, errAdmission, "Veuillez sélectionner une admission.");
             valid = false;
         }
 
         // Médecin
         if (comboMedecin.getValue() == null || comboMedecin.getValue().isBlank()) {
-            setFieldError(comboMedecin, "Médecin obligatoire");
+            showError(comboMedecin, errMedecin, "Veuillez sélectionner un médecin.");
             valid = false;
         }
 
         // Date début
         if (dateDebut.getValue() == null) {
-            setFieldError(dateDebut, "Date obligatoire");
+            showError(dateDebut, errDateDebut, "La date de début est obligatoire.");
+            valid = false;
+        } else if (dateDebut.getValue().isAfter(LocalDate.now())) {
+            showError(dateDebut, errDateDebut, "La date ne peut pas être dans le futur.");
             valid = false;
         }
 
         // Heure début
-        if (heureDebut.getText() == null || !heureDebut.getText().matches("\\d{2}:\\d{2}")) {
-            setFieldError(heureDebut, "Format HH:mm requis");
+        String hd = heureDebut.getText();
+        if (hd == null || hd.isBlank()) {
+            showError(heureDebut, errHeureDebut, "L'heure de début est obligatoire.");
             valid = false;
+        } else if (!hd.matches("\\d{2}:\\d{2}")) {
+            showError(heureDebut, errHeureDebut, "Format requis : HH:mm (ex: 08:30).");
+            valid = false;
+        } else {
+            int h = Integer.parseInt(hd.split(":")[0]);
+            int m = Integer.parseInt(hd.split(":")[1]);
+            if (h > 23 || m > 59) {
+                showError(heureDebut, errHeureDebut, "Heure invalide (00:00 – 23:59).");
+                valid = false;
+            }
+        }
+
+        // Date fin + heure fin (optionnelles mais cohérentes)
+        if (dateFin.getValue() != null || (heureFin.getText() != null && !heureFin.getText().isBlank())) {
+            if (dateFin.getValue() == null) {
+                showError(dateFin, errDateFin, "Renseignez la date de fin.");
+                valid = false;
+            } else if (dateDebut.getValue() != null && dateFin.getValue().isBefore(dateDebut.getValue())) {
+                showError(dateFin, errDateFin, "La date de fin doit être après la date de début.");
+                valid = false;
+            } else if (dateFin.getValue().isAfter(LocalDate.now())) {
+                showError(dateFin, errDateFin, "La date de fin ne peut pas être dans le futur.");
+                valid = false;
+            }
+            String hf = heureFin.getText();
+            if (hf == null || hf.isBlank()) {
+                showError(heureFin, errHeureFin, "L'heure de fin est requise.");
+                valid = false;
+            } else if (!hf.matches("\\d{2}:\\d{2}")) {
+                showError(heureFin, errHeureFin, "Format requis : HH:mm (ex: 14:30).");
+                valid = false;
+            } else {
+                int h = Integer.parseInt(hf.split(":")[0]);
+                int m = Integer.parseInt(hf.split(":")[1]);
+                if (h > 23 || m > 59) {
+                    showError(heureFin, errHeureFin, "Heure invalide (00:00 – 23:59).");
+                    valid = false;
+                }
+            }
         }
 
         // Diagnostic
-        if (textDiagnostic.getText() == null || textDiagnostic.getText().trim().isEmpty()) {
-            setFieldError(textDiagnostic, "Diagnostic obligatoire");
+        String diag = textDiagnostic.getText() == null ? "" : textDiagnostic.getText().trim();
+        if (diag.isEmpty()) {
+            showError(textDiagnostic, errDiagnostic, "Le diagnostic est obligatoire.");
+            valid = false;
+        } else if (diag.length() < 10) {
+            showError(textDiagnostic, errDiagnostic, "Minimum 10 caractères requis (" + diag.length() + "/10).");
+            valid = false;
+        } else if (diag.length() > 500) {
+            showError(textDiagnostic, errDiagnostic, "Maximum 500 caractères atteint.");
             valid = false;
         }
 
         // Orientation
         if (toggleOrientation.getSelectedToggle() == null) {
-            radioSortie.setStyle("-fx-border-color: #EF4444; -fx-border-width: 2px; -fx-border-radius: 6px; -fx-padding: 4px 8px;");
-            radioHospitalisation.setStyle("-fx-border-color: #EF4444; -fx-border-width: 2px; -fx-border-radius: 6px; -fx-padding: 4px 8px;");
-            radioTransfert.setStyle("-fx-border-color: #EF4444; -fx-border-width: 2px; -fx-border-radius: 6px; -fx-padding: 4px 8px;");
+            showErrorRadio(errOrientation, "Veuillez choisir une orientation.");
             valid = false;
-        } else {
-            radioSortie.setStyle("");
-            radioHospitalisation.setStyle("");
-            radioTransfert.setStyle("");
-        }
-
-        // Heure fin si date fin renseignée
-        if (dateFin.getValue() != null || (heureFin.getText() != null && !heureFin.getText().isBlank())) {
-            if (dateFin.getValue() == null) {
-                setFieldError(dateFin, "Date fin obligatoire");
-                valid = false;
-            }
-            if (heureFin.getText() == null || !heureFin.getText().matches("\\d{2}:\\d{2}")) {
-                setFieldError(heureFin, "Format HH:mm requis");
-                valid = false;
-            }
         }
 
         return valid;
     }
 
     private void setFieldError(Control field, String tooltip) {
-        field.setStyle(
-            "-fx-border-color: #EF4444; -fx-border-width: 2px; " +
-            "-fx-border-radius: 8px; -fx-background-radius: 8px; " +
-            "-fx-background-color: #FFF5F5;"
-        );
-        Tooltip t = new Tooltip("⚠ " + tooltip);
+        showError(field, null, tooltip);
+        Tooltip t = new Tooltip("  " + tooltip);
         t.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-size: 11px;");
         Tooltip.install(field, t);
-
-        // Retirer l'erreur dès que l'utilisateur interagit
         field.setOnMouseClicked(e -> resetFieldStyle(field));
         if (field instanceof TextField tf)
             tf.textProperty().addListener((obs, o, n) -> resetFieldStyle(field));
@@ -539,7 +804,7 @@ public class ConsultationFormController implements Initializable {
     }
 
     private void resetFieldStyle(Control field) {
-        field.setStyle("");
+        clearField(field, null);
         Tooltip.install(field, null);
     }
 
@@ -618,6 +883,30 @@ public class ConsultationFormController implements Initializable {
         alert.setTitle(titre);
         alert.setHeaderText(null);
         alert.setContentText(message);
+        
+        // Amélioration du style
+        alert.getDialogPane().setPrefWidth(450);
+        alert.getDialogPane().setPrefHeight(200);
+        
+        // Ajouter une icône personnalisée
+        Label contentLabel = new Label(message);
+        contentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #1e293b; -fx-wrap-text: true;");
+        contentLabel.setWrapText(true);
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        content.setStyle("-fx-background-color: #f0fdf4; -fx-border-color: #22c55e; -fx-border-width: 2; -fx-border-radius: 8;");
+        
+        Label icon = new Label("✅");
+        icon.setStyle("-fx-font-size: 32px;");
+        
+        Label titleLabel = new Label(titre);
+        titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #16a34a;");
+        
+        content.getChildren().addAll(icon, titleLabel, contentLabel);
+        content.setAlignment(Pos.TOP_CENTER);
+        
+        alert.getDialogPane().setContent(content);
         styleAlert(alert);
         alert.showAndWait();
     }
@@ -626,7 +915,7 @@ public class ConsultationFormController implements Initializable {
         try {
             alert.getDialogPane().getStylesheets().add(
                 getClass().getResource("/ResourcesMed/module3/css/revive-dark.css").toExternalForm());
-            alert.getDialogPane().setStyle("-fx-background-color: #1e293b;");
+            alert.getDialogPane().setStyle("-fx-background-color: #ffffff; -fx-padding: 0;");
         } catch (Exception ignored) {}
     }
 }

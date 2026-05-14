@@ -30,7 +30,7 @@ public class DiagnosticSuggestionService {
       + "Reponds uniquement en francais. Sois concis et clinique.";
 
     // ── Clé Groq ──────────────────────────────────────────────────────────
-    private static final String GROQ_API_KEY = "Key";
+    private static final String GROQ_API_KEY = "key";
 
     // ── Membres ───────────────────────────────────────────────────────────
     private final OkHttpClient client;

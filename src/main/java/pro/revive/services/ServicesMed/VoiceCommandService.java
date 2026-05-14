@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class VoiceCommandService {
 
-    private static final String GROQ_URL     = "URL";
-    private static final String GROQ_MODEL   = "Model";
-    private static final String GROQ_API_KEY = "KEY";
+    private static final String GROQ_URL     = "https://api.groq.com/openai/v1/chat/completions";
+    private static final String GROQ_MODEL   = "llama-3.3-70b-versatile";
+    private static final String GROQ_API_KEY = "key";
     private static final int    TIMEOUT      = 15;
 
     // Prompt système — force une réponse JSON stricte

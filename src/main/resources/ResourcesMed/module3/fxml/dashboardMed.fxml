@@ -44,15 +44,26 @@
 
             <Region VBox.vgrow="ALWAYS"/>
 
-            <VBox spacing="4" style="-fx-padding: 0 10 16 10;">
+            <!-- Chip utilisateur -->
+            <VBox styleClass="user-chip-sidebar" style="-fx-margin: 0 10 8 10;">
+                <padding><javafx.geometry.Insets top="0" right="10" bottom="0" left="10"/></padding>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Dr" styleClass="user-chip-avatar"/>
+                    <VBox spacing="1">
+                        <Label fx:id="lblUserName" text="Médecin" styleClass="user-chip-name"/>
+                        <Label text="Médecin Urgentiste" styleClass="user-chip-role"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <VBox spacing="4" style="-fx-padding: 6 10 16 10;">
                 <Label text="Module actif" styleClass="sidebar-module-label"/>
                 <Label text="Tableau de Bord" styleClass="sidebar-module-value"/>
                 <Label fx:id="lblSideTotal"  text="—" styleClass="sidebar-module-label"/>
                 <Label fx:id="lblSideOrdos"  text="—" styleClass="sidebar-module-label"/>
-                <Button text="Deconnexion" maxWidth="Infinity"
-                        styleClass="btn-primary"
-                        onAction="#handleDeconnexion"
-                        style="-fx-background-radius: 8; -fx-font-size: 12px; -fx-padding: 8 0;"/>
+                <Button text="Déconnexion" maxWidth="Infinity"
+                        styleClass="btn-deconnexion"
+                        onAction="#handleDeconnexion"/>
             </VBox>
         </VBox>
     </left>
@@ -79,48 +90,36 @@
                         <padding><Insets top="14" bottom="14" left="24" right="24"/></padding>
 
                         <!-- CRITIQUE -->
-                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4"
-                              style="-fx-border-color: transparent transparent transparent #C0392B;
-                                     -fx-border-width: 0 0 0 4; -fx-background-color: #FDECEA;
-                                     -fx-background-radius: 12; -fx-border-radius: 12;">
+                        <VBox styleClass="stat-card kpi-critique" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
                             <Label text="CRITIQUE" styleClass="stat-card-label"
-                                   style="-fx-text-fill: #C0392B; -fx-font-weight: bold; -fx-font-size: 11px;"/>
+                                   style="-fx-text-fill: #C0392B; -fx-font-weight: bold; -fx-font-size: 11px; -fx-letter-spacing: 1px;"/>
                             <Label fx:id="lblKpiCritique" text="—" styleClass="stat-card-number"
                                    style="-fx-text-fill: #C0392B; -fx-font-size: 36px;"/>
                             <Label text="patients" styleClass="stat-card-label"/>
                         </VBox>
 
                         <!-- URGENT -->
-                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4"
-                              style="-fx-border-color: transparent transparent transparent #D35400;
-                                     -fx-border-width: 0 0 0 4; -fx-background-color: #FDF0E8;
-                                     -fx-background-radius: 12; -fx-border-radius: 12;">
+                        <VBox styleClass="stat-card kpi-urgent" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
                             <Label text="URGENT" styleClass="stat-card-label"
-                                   style="-fx-text-fill: #D35400; -fx-font-weight: bold; -fx-font-size: 11px;"/>
+                                   style="-fx-text-fill: #D35400; -fx-font-weight: bold; -fx-font-size: 11px; -fx-letter-spacing: 1px;"/>
                             <Label fx:id="lblKpiUrgent" text="—" styleClass="stat-card-number"
                                    style="-fx-text-fill: #D35400; -fx-font-size: 36px;"/>
                             <Label text="patients" styleClass="stat-card-label"/>
                         </VBox>
 
                         <!-- MODÉRÉ -->
-                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4"
-                              style="-fx-border-color: transparent transparent transparent #B7950B;
-                                     -fx-border-width: 0 0 0 4; -fx-background-color: #FDF8E1;
-                                     -fx-background-radius: 12; -fx-border-radius: 12;">
+                        <VBox styleClass="stat-card kpi-modere" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
                             <Label text="MODERE" styleClass="stat-card-label"
-                                   style="-fx-text-fill: #B7950B; -fx-font-weight: bold; -fx-font-size: 11px;"/>
+                                   style="-fx-text-fill: #B7950B; -fx-font-weight: bold; -fx-font-size: 11px; -fx-letter-spacing: 1px;"/>
                             <Label fx:id="lblKpiModere" text="—" styleClass="stat-card-number"
                                    style="-fx-text-fill: #B7950B; -fx-font-size: 36px;"/>
                             <Label text="patients" styleClass="stat-card-label"/>
                         </VBox>
 
                         <!-- STABLE -->
-                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4"
-                              style="-fx-border-color: transparent transparent transparent #1E8449;
-                                     -fx-border-width: 0 0 0 4; -fx-background-color: #EAF7EE;
-                                     -fx-background-radius: 12; -fx-border-radius: 12;">
+                        <VBox styleClass="stat-card kpi-stable" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
                             <Label text="STABLE" styleClass="stat-card-label"
-                                   style="-fx-text-fill: #1E8449; -fx-font-weight: bold; -fx-font-size: 11px;"/>
+                                   style="-fx-text-fill: #1E8449; -fx-font-weight: bold; -fx-font-size: 11px; -fx-letter-spacing: 1px;"/>
                             <Label fx:id="lblKpiStable" text="—" styleClass="stat-card-number"
                                    style="-fx-text-fill: #1E8449; -fx-font-size: 36px;"/>
                             <Label text="patients" styleClass="stat-card-label"/>
@@ -152,8 +151,8 @@
 
                             <!-- Titre + compteurs -->
                             <HBox alignment="CENTER_LEFT" spacing="12">
-                                <Label text="🚨  Dossiers Patients — Triage"
-                                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2;"/>
+                                <Label text="Dossiers Patients — Triage"
+                                       styleClass="section-title-accent"/>
                                 <Region HBox.hgrow="ALWAYS"/>
                                 <HBox spacing="8" alignment="CENTER">
                                     <Label fx:id="lblTriageCritique"
@@ -219,9 +218,9 @@
                         <!-- ── Top médecins + Activité récente ──────────── -->
                         <HBox spacing="16">
 
-                            <VBox styleClass="card" spacing="12" prefWidth="380" minWidth="300">
+                        <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
                                 <HBox alignment="CENTER_LEFT">
-                                    <Label text="Top Medecins" styleClass="section-title"/>
+                                    <Label text="Top Medecins" styleClass="section-title-accent"/>
                                     <Region HBox.hgrow="ALWAYS"/>
                                     <Label text="par consultations" styleClass="info-label"/>
                                 </HBox>
@@ -230,7 +229,7 @@
 
                             <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
                                 <HBox alignment="CENTER_LEFT">
-                                    <Label text="Activite Recente" styleClass="section-title"/>
+                                    <Label text="Activite Recente" styleClass="section-title-accent"/>
                                     <Region HBox.hgrow="ALWAYS"/>
                                     <Label text="5 dernieres consultations" styleClass="info-label"/>
                                 </HBox>

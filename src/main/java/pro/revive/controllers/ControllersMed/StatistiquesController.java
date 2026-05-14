@@ -55,12 +55,18 @@ public class StatistiquesController implements Initializable {
     @FXML private VBox vboxDiagnostics;
     @FXML private VBox vboxTopMedecins;
     @FXML private VBox vboxTriageStats;
+    @FXML private Label lblStatsUserName;
 
     private final StatistiquesService stats   = new StatistiquesService();
     private final TriageDataService       triageSvc = new TriageDataService();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Afficher le nom de l'utilisateur connecté dans le chip sidebar
+        if (lblStatsUserName != null) {
+            String nom = pro.revive.SessionManager.getFullName();
+            lblStatsUserName.setText(nom != null && !nom.isBlank() ? nom : "Médecin");
+        }
         javafx.application.Platform.runLater(this::chargerTout);
 
         // Injecter l'assistant vocal dès que la scène est attachée
@@ -352,6 +358,10 @@ public class StatistiquesController implements Initializable {
 
     @FXML private void onConsultations() {
         naviguer("ConsultationList.fxml");
+    }
+
+    @FXML private void onDeconnexion() {
+        pro.revive.Navigator.logout();
     }
 
     @FXML private void onExportPdf() {

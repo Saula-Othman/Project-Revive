@@ -1895,3 +1895,293 @@
 #barTriage .default-color1.chart-bar { -fx-bar-fill: #D35400; }
 #barTriage .default-color2.chart-bar { -fx-bar-fill: #B7950B; }
 #barTriage .default-color3.chart-bar { -fx-bar-fill: #1E8449; }
+
+
+/* ══════════════════════════════════════════════════════════════
+   AMÉLIORATIONS UI — Ajouts ciblés
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Chip utilisateur dans la sidebar ───────────────────────── */
+.user-chip-sidebar {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-background-radius: 12px;
+    -fx-border-color: rgba(255,255,255,0.22);
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 10px 14px;
+    -fx-spacing: 8px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.user-chip-avatar {
+    -fx-background-color: rgba(255,255,255,0.25);
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 50%;
+    -fx-padding: 6px 9px;
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-alignment: center;
+}
+
+.user-chip-name {
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
+
+.user-chip-role {
+    -fx-text-fill: rgba(255,255,255,0.60);
+    -fx-font-size: 10px;
+}
+
+/* ── Stat cards avec icône ───────────────────────────────────── */
+.stat-card-icon-label {
+    -fx-font-size: 22px;
+    -fx-padding: 0 0 4px 0;
+}
+
+/* ── Hover plus doux sur les cards ──────────────────────────── */
+.card {
+    -fx-transition: -fx-effect 0.15s;
+}
+
+/* ── Séparateur de niveau triage amélioré ───────────────────── */
+.triage-level-sep {
+    -fx-padding: 8px 0 4px 0;
+}
+
+/* ── Badge niveau triage dans les stat cards ────────────────── */
+.kpi-critique {
+    -fx-border-color: transparent transparent transparent #C0392B;
+    -fx-border-width: 0 0 0 4px;
+    -fx-background-color: #FDECEA;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+}
+.kpi-urgent {
+    -fx-border-color: transparent transparent transparent #D35400;
+    -fx-border-width: 0 0 0 4px;
+    -fx-background-color: #FDF0E8;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+}
+.kpi-modere {
+    -fx-border-color: transparent transparent transparent #B7950B;
+    -fx-border-width: 0 0 0 4px;
+    -fx-background-color: #FDF8E1;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+}
+.kpi-stable {
+    -fx-border-color: transparent transparent transparent #1E8449;
+    -fx-border-width: 0 0 0 4px;
+    -fx-background-color: #EAF7EE;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+}
+
+/* ── Bouton teal (suggestion IA) ─────────────────────────────── */
+.btn-teal {
+    -fx-background-color: #0E9B8A;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(14,155,138,0.35), 8, 0, 0, 2);
+}
+.btn-teal:hover {
+    -fx-background-color: #0B7A6C;
+    -fx-effect: dropshadow(gaussian, rgba(14,155,138,0.50), 12, 0, 0, 3);
+    -fx-translate-y: -1;
+}
+.btn-teal:pressed {
+    -fx-translate-y: 0;
+    -fx-effect: dropshadow(gaussian, rgba(14,155,138,0.20), 4, 0, 0, 1);
+}
+.btn-teal:disabled {
+    -fx-opacity: 0.45;
+    -fx-cursor: default;
+    -fx-effect: none;
+}
+
+/* ── Barre de recherche améliorée ────────────────────────────── */
+.search-field:focused {
+    -fx-border-color: #0B4EA2;
+    -fx-effect: dropshadow(gaussian, rgba(11,78,162,0.18), 8, 0, 0, 0);
+}
+
+/* ── Sidebar déconnexion bouton ──────────────────────────────── */
+.btn-deconnexion {
+    -fx-background-color: rgba(239,68,68,0.15);
+    -fx-text-fill: #FCA5A5;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: rgba(239,68,68,0.30);
+    -fx-border-width: 1px;
+    -fx-padding: 8px 0;
+    -fx-cursor: hand;
+}
+.btn-deconnexion:hover {
+    -fx-background-color: rgba(239,68,68,0.28);
+    -fx-text-fill: white;
+    -fx-border-color: rgba(239,68,68,0.55);
+}
+
+/* ── Section title avec accent ───────────────────────────────── */
+.section-title-accent {
+    -fx-text-fill: #0B4EA2;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent transparent transparent #0E9B8A;
+    -fx-border-width: 0 0 0 3px;
+    -fx-padding: 0 0 0 10px;
+}
+
+/* ── Formulaire — card section header ────────────────────────── */
+.form-section-header {
+    -fx-background-color: #F0F6FF;
+    -fx-background-radius: 8px 8px 0 0;
+    -fx-border-color: transparent transparent #DBEAFE transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 10px 16px;
+}
+
+/* ── Indicateur IA actif ─────────────────────────────────────── */
+.ia-status-ok    { -fx-text-fill: #16A34A; -fx-font-size: 11px; }
+.ia-status-error { -fx-text-fill: #DC2626; -fx-font-size: 11px; }
+.ia-status-info  { -fx-text-fill: #0E9B8A; -fx-font-size: 11px; }
+
+/* ── Micro button states ─────────────────────────────────────── */
+.btn-micro-idle {
+    -fx-background-color: white;
+    -fx-text-fill: #0B4EA2;
+    -fx-border-color: #0B4EA2;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 6px 16px;
+    -fx-cursor: hand;
+}
+.btn-micro-idle:hover {
+    -fx-background-color: #EFF6FF;
+}
+.btn-micro-active {
+    -fx-background-color: #DC2626;
+    -fx-text-fill: white;
+    -fx-border-color: #DC2626;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 6px 16px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.40), 10, 0, 0, 2);
+}
+
+/* ── Statistiques — AreaChart ────────────────────────────────── */
+.default-color0.chart-area-symbol { -fx-background-color: #0E9B8A, white; }
+.default-color0.chart-series-area-line { -fx-stroke: #0E9B8A; -fx-stroke-width: 2px; }
+.default-color0.chart-series-area-fill { -fx-fill: rgba(14,155,138,0.12); }
+
+/* ── Compteur badge dans header ──────────────────────────────── */
+.count-badge {
+    -fx-background-color: #EEF4FB;
+    -fx-text-fill: #0B4EA2;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20px;
+    -fx-padding: 3px 10px;
+    -fx-border-color: #BFDBFE;
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+}
+
+/* ── Sidebar item avec icône ─────────────────────────────────── */
+.sidebar-item-icon {
+    -fx-font-size: 14px;
+    -fx-padding: 0 8px 0 0;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   VALIDATION EN TEMPS RÉEL
+   ══════════════════════════════════════════════════════════════ */
+
+/* Label d'erreur sous un champ */
+.validation-error {
+    -fx-text-fill: #DC2626;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 2px 4px 0 2px;
+}
+
+/* Label d'avertissement (non bloquant) */
+.validation-warning {
+    -fx-text-fill: #D97706;
+    -fx-font-size: 11px;
+    -fx-padding: 2px 4px 0 2px;
+}
+
+/* Label de succès sous un champ */
+.validation-ok {
+    -fx-text-fill: #16A34A;
+    -fx-font-size: 11px;
+    -fx-padding: 2px 4px 0 2px;
+}
+
+/* Compteur de caractères */
+.char-counter {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 11px;
+}
+
+.char-counter-warn {
+    -fx-text-fill: #D97706;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.char-counter-max {
+    -fx-text-fill: #DC2626;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* Champ en erreur */
+.field-invalid {
+    -fx-border-color: #EF4444 !important;
+    -fx-border-width: 2px !important;
+    -fx-border-radius: 8px !important;
+    -fx-background-radius: 8px !important;
+    -fx-background-color: #FFF5F5 !important;
+}
+
+/* Champ valide */
+.field-valid {
+    -fx-border-color: #22C55E !important;
+    -fx-border-width: 1.5px !important;
+    -fx-border-radius: 8px !important;
+    -fx-background-radius: 8px !important;
+    -fx-background-color: #F0FDF4 !important;
+}
+
+/* Champ neutre (focus) */
+.field-neutral {
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-background-color: white;
+}

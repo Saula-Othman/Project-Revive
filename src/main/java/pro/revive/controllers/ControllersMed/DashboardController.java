@@ -63,6 +63,7 @@ public class DashboardController implements Initializable {
     // ── Sidebar stats ─────────────────────────────────────────────────────
     @FXML private Label lblSideTotal;
     @FXML private Label lblSideOrdos;
+    @FXML private Label lblUserName;
 
     // ── Triage ────────────────────────────────────────────────────────────
     @FXML private VBox  vboxTriage;
@@ -76,6 +77,11 @@ public class DashboardController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Afficher le nom de l'utilisateur connecté dans le chip sidebar
+        if (lblUserName != null) {
+            String nom = pro.revive.SessionManager.getFullName();
+            lblUserName.setText(nom != null && !nom.isBlank() ? nom : "Médecin");
+        }
         javafx.application.Platform.runLater(this::chargerDonnees);
 
         // Injecter l'assistant vocal quand la scène est disponible
@@ -411,14 +417,23 @@ public class DashboardController implements Initializable {
         ScrollPane scroll = new ScrollPane(buildDossierContent(t));
         scroll.setFitToWidth(true);
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scroll.setStyle(
             "-fx-background-color: white; -fx-background-radius: 20px;" +
             "-fx-border-radius: 20px; -fx-padding: 0;" +
             "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 48, 0, 0, 12);"
         );
-        scroll.setMaxWidth(860);
-        scroll.setMaxHeight(620);
-        scroll.setPrefWidth(860);
+
+        // Taille adaptée à l'écran disponible
+        double screenH = javafx.stage.Screen.getPrimary().getVisualBounds().getHeight();
+        double screenW = javafx.stage.Screen.getPrimary().getVisualBounds().getWidth();
+        double popupW  = Math.min(720, screenW  * 0.68);
+        double popupH  = Math.min(screenH * 0.90, 820);
+
+        scroll.setMaxWidth(popupW);
+        scroll.setMaxHeight(popupH);
+        scroll.setPrefWidth(popupW);
+        scroll.setPrefHeight(popupH);
 
         overlay.getChildren().add(scroll);
 
@@ -459,200 +474,211 @@ public class DashboardController implements Initializable {
         root.setStyle("-fx-background-color: white; -fx-background-radius: 20px;");
 
         // ── Header ────────────────────────────────────────────────────────
-        HBox header = new HBox(16);
+        HBox header = new HBox(14);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setStyle(
             "-fx-background-color: linear-gradient(to right, #0B4EA2, #0E9B8A);" +
-            "-fx-background-radius: 20px 20px 0 0; -fx-padding: 20px 28px;"
+            "-fx-background-radius: 20px 20px 0 0; -fx-padding: 16px 24px;"
         );
 
-        // Avatar
-        String initiale = t.getNomComplet().trim().isEmpty() ? "?" :
-            String.valueOf(t.getNomComplet().trim().charAt(0)).toUpperCase();
+        String initiale = t.getNomComplet().trim().isEmpty() ? "?"
+            : String.valueOf(t.getNomComplet().trim().charAt(0)).toUpperCase();
         Label avatar = new Label(initiale);
         avatar.setStyle(
-            "-fx-background-color: rgba(255,255,255,0.20); -fx-text-fill: white;" +
-            "-fx-font-size: 22px; -fx-font-weight: bold;" +
-            "-fx-background-radius: 50%; -fx-padding: 14px 18px;" +
-            "-fx-border-color: rgba(255,255,255,0.40); -fx-border-radius: 50%; -fx-border-width: 2px;"
+            "-fx-background-color: rgba(255,255,255,0.25); -fx-text-fill: white;" +
+            "-fx-font-size: 18px; -fx-font-weight: bold;" +
+            "-fx-background-radius: 50%; -fx-min-width: 46px; -fx-min-height: 46px;" +
+            "-fx-max-width: 46px; -fx-max-height: 46px; -fx-alignment: center;" +
+            "-fx-border-color: rgba(255,255,255,0.45); -fx-border-radius: 50%; -fx-border-width: 2px;"
         );
 
-        VBox titleBox = new VBox(4);
+        VBox titleBox = new VBox(3);
         HBox.setHgrow(titleBox, Priority.ALWAYS);
-        Label lblNom = new Label(t.getNomComplet().trim().isEmpty() ? "Patient #" + t.getIdAdmission() : t.getNomComplet());
-        lblNom.setStyle("-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;");
-        Label lblSub = new Label("Admission #" + t.getIdAdmission() + "  •  Triage #" + t.getIdTriage());
-        lblSub.setStyle("-fx-text-fill: rgba(255,255,255,0.70); -fx-font-size: 12px;");
+        Label lblNom = new Label(t.getNomComplet().trim().isEmpty()
+            ? "Patient #" + t.getIdAdmission() : t.getNomComplet());
+        lblNom.setStyle("-fx-text-fill: white; -fx-font-size: 17px; -fx-font-weight: bold;");
+        Label lblSub = new Label("Admission #" + t.getIdAdmission() + "   Triage #" + t.getIdTriage());
+        lblSub.setStyle("-fx-text-fill: rgba(255,255,255,0.65); -fx-font-size: 11px;");
         titleBox.getChildren().addAll(lblNom, lblSub);
 
-        // Badge niveau
-        Label badgeNiveau = new Label(niveau);
+        Label badgeNiveau = new Label("  " + niveau + "  ");
         badgeNiveau.setStyle(
             "-fx-background-color: " + bgColor + "; -fx-text-fill: " + color + ";" +
-            "-fx-font-weight: bold; -fx-font-size: 13px;" +
-            "-fx-background-radius: 20px; -fx-padding: 8px 20px;" +
+            "-fx-font-weight: bold; -fx-font-size: 12px;" +
+            "-fx-background-radius: 20px; -fx-padding: 6px 18px;" +
             "-fx-border-color: " + color + "; -fx-border-radius: 20px; -fx-border-width: 2px;"
         );
 
-        // Bouton fermer
-        Button btnClose = new Button("✕");
+        Button btnClose = new Button("X");
         btnClose.setStyle(
-            "-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white;" +
-            "-fx-font-size: 16px; -fx-background-radius: 50%; -fx-padding: 6px 10px;" +
+            "-fx-background-color: rgba(255,255,255,0.18); -fx-text-fill: white;" +
+            "-fx-font-size: 13px; -fx-font-weight: bold;" +
+            "-fx-background-radius: 50%; -fx-min-width: 32px; -fx-min-height: 32px;" +
+            "-fx-max-width: 32px; -fx-max-height: 32px; -fx-alignment: center;" +
             "-fx-cursor: hand; -fx-border-width: 0;"
         );
 
         header.getChildren().addAll(avatar, titleBox, badgeNiveau, btnClose);
 
-        // ── Corps ─────────────────────────────────────────────────────────
-        HBox body = new HBox(20);
-        body.setStyle("-fx-padding: 24px 28px;");
+        // ── Corps — layout vertical ────────────────────────────────────────
+        VBox body = new VBox(10);
+        body.setStyle("-fx-padding: 14px 22px 10px 22px;");
 
-        // Colonne gauche — constantes + score
-        VBox left = new VBox(16);
-        HBox.setHgrow(left, Priority.ALWAYS);
-
-        // Titre constantes
+        // ── Titre section constantes ──────────────────────────────────────
         Label titreVitaux = new Label("Constantes Vitales");
-        titreVitaux.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2;");
+        titreVitaux.setStyle(
+            "-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2;" +
+            "-fx-border-color: transparent transparent transparent #0E9B8A;" +
+            "-fx-border-width: 0 0 0 3px; -fx-padding: 0 0 0 8px;"
+        );
 
-        // Grid 2x4 de cards vitales
         javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
-        grid.setHgap(12);
-        grid.setVgap(12);
+        grid.setHgap(6);
+        grid.setVgap(6);
 
-        grid.add(vitalCard("❤️", "Pouls",          String.format("%.0f", t.getPoids()),    "bpm",   "#DC2626", "#FEF2F2", evalPouls(t.getPoids())),       0, 0);
-        grid.add(vitalCard("↑",  "Tension Sys.",    String.format("%.1f", t.getTaSys()),    "mmHg",  "#7C3AED", "#FAF5FF", evalTaSys(t.getTaSys())),        1, 0);
-        grid.add(vitalCard("🌡️", "Température",     String.format("%.1f", t.getTemperature()), "°C", "#EA580C", "#FFF7ED", evalTemp(t.getTemperature())),  2, 0);
-        grid.add(vitalCard("O₂", "SpO2",            String.format("%.0f", t.getSpo2()),     "%",     "#0891B2", "#F0F9FF", evalSpo2(t.getSpo2())),          3, 0);
-        grid.add(vitalCard("↓",  "Tension Dia.",    String.format("%.1f", t.getTaDia()),    "mmHg",  "#7C3AED", "#FAF5FF", evalTaDia(t.getTaDia())),        0, 1);
-        grid.add(vitalCard("◆",  "Glycémie",        String.format("%.1f", t.getGlycemie()), "g/L",  "#D97706", "#FFFBEB", evalGlycemie(t.getGlycemie())), 1, 1);
-        grid.add(vitalCard("★",  "GCS Score",       String.valueOf(t.getGcsScore()),        "/15",   "#059669", "#F0FDF4", evalGcs(t.getGcsScore())),       2, 1);
-        grid.add(vitalCard("≈",  "Fréq. Resp.",     String.valueOf(t.getFrequenceRespiratoire()), "/min", "#0B4EA2", "#EFF6FF", evalFreqResp(t.getFrequenceRespiratoire())), 3, 1);
+        grid.add(vitalCard("\u2665", "Pouls",        String.format("%.0f", t.getPoids()),              "bpm",  "#DC2626", "#FEF2F2", evalPouls(t.getPoids())),                    0, 0);
+        grid.add(vitalCard("\u2191", "Tension Sys.", String.format("%.1f", t.getTaSys()),              "mmHg", "#7C3AED", "#FAF5FF", evalTaSys(t.getTaSys())),                    1, 0);
+        grid.add(vitalCard("\u00B0", "Temperature",  String.format("%.1f", t.getTemperature()),        "C",    "#EA580C", "#FFF7ED", evalTemp(t.getTemperature())),               2, 0);
+        grid.add(vitalCard("O\u2082","SpO2",          String.format("%.0f", t.getSpo2()),              "%",    "#0891B2", "#F0F9FF", evalSpo2(t.getSpo2())),                      3, 0);
+        grid.add(vitalCard("\u2193", "Tension Dia.", String.format("%.1f", t.getTaDia()),              "mmHg", "#7C3AED", "#FAF5FF", evalTaDia(t.getTaDia())),                    0, 1);
+        grid.add(vitalCard("\u25C6", "Glycemie",     String.format("%.1f", t.getGlycemie()),           "g/L",  "#D97706", "#FFFBEB", evalGlycemie(t.getGlycemie())),             1, 1);
+        grid.add(vitalCard("\u2605", "GCS Score",    String.valueOf(t.getGcsScore()),                  "/15",  "#059669", "#F0FDF4", evalGcs(t.getGcsScore())),                   2, 1);
+        grid.add(vitalCard("\u2248", "Freq. Resp.",  String.valueOf(t.getFrequenceRespiratoire()),     "/min", "#0B4EA2", "#EFF6FF", evalFreqResp(t.getFrequenceRespiratoire())), 3, 1);
 
-        // Score et analyse
+        // ── Ligne 2 : Score + Analyse ─────────────────────────────────────
         HBox scoreSection = new HBox(16);
         scoreSection.setAlignment(Pos.CENTER_LEFT);
         scoreSection.setStyle(
-            "-fx-background-color: " + bgColor + "; -fx-background-radius: 12px;" +
-            "-fx-border-color: " + color + "; -fx-border-radius: 12px; -fx-border-width: 1.5px;" +
-            "-fx-padding: 16px 20px;"
+            "-fx-background-color: " + bgColor + "; -fx-background-radius: 10px;" +
+            "-fx-border-color: " + color + "88; -fx-border-radius: 10px; -fx-border-width: 1.5px;" +
+            "-fx-padding: 10px 16px;"
         );
 
-        VBox scoreBox = new VBox(2);
+        VBox scoreBox = new VBox(0);
         scoreBox.setAlignment(Pos.CENTER);
+        scoreBox.setStyle("-fx-min-width: 64px; -fx-max-width: 64px;");
         Label scoreVal = new Label(String.valueOf(t.getScoreCalcule()));
-        scoreVal.setStyle("-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
+        scoreVal.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
         Label scoreLbl = new Label("points");
-        scoreLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #94A3B8;");
+        scoreLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #94A3B8;");
         scoreBox.getChildren().addAll(scoreVal, scoreLbl);
 
-        VBox analyseBox = new VBox(6);
+        Region sepV = new Region();
+        sepV.setStyle("-fx-background-color: " + color + "44;");
+        sepV.setPrefWidth(1.5);
+        sepV.setPrefHeight(50);
+
+        VBox analyseBox = new VBox(5);
         HBox.setHgrow(analyseBox, Priority.ALWAYS);
         Label niveauLbl = new Label(niveau);
-        niveauLbl.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
+        niveauLbl.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
         String analyseText = t.getAnalyseAuto() != null && !t.getAnalyseAuto().isEmpty()
-            ? t.getAnalyseAuto()
-            : genererAnalyse(t);
+            ? t.getAnalyseAuto() : genererAnalyse(t);
         Label analyseTxt = new Label(analyseText);
-        analyseTxt.setStyle("-fx-text-fill: #475569; -fx-font-size: 12px;");
+        analyseTxt.setStyle("-fx-text-fill: #475569; -fx-font-size: 11px;");
         analyseTxt.setWrapText(true);
         analyseBox.getChildren().addAll(niveauLbl, analyseTxt);
 
-        scoreSection.getChildren().addAll(scoreBox, analyseBox);
+        scoreSection.getChildren().addAll(scoreBox, sepV, analyseBox);
 
-        // Symptômes
+        // ── Ligne 3 : Symptômes + Infos côte à côte ───────────────────────
+        HBox ligne3 = new HBox(12);
+
+        // Symptômes — carte avec titre intégré
         VBox sympBox = new VBox(6);
-        Label sympTitre = new Label("Symptômes");
-        sympTitre.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748B;");
-        Label sympTxt = new Label(t.getSymptomes() != null ? t.getSymptomes() : "Non renseigné");
-        sympTxt.setStyle(
-            "-fx-text-fill: #1E293B; -fx-font-size: 13px;" +
-            "-fx-background-color: #F8FAFF; -fx-background-radius: 8px;" +
-            "-fx-border-color: #E8F0FB; -fx-border-radius: 8px; -fx-border-width: 1px;" +
-            "-fx-padding: 10px 14px;"
+        HBox.setHgrow(sympBox, Priority.ALWAYS);
+        sympBox.setStyle(
+            "-fx-background-color: #F8FAFF; -fx-background-radius: 10px;" +
+            "-fx-border-color: #E2EAF8; -fx-border-radius: 10px; -fx-border-width: 1px;" +
+            "-fx-padding: 10px 14px; -fx-min-height: 80px; -fx-max-height: 100px;"
         );
+        Label sympTitre = new Label("SYMPTOMES");
+        sympTitre.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #94A3B8; -fx-letter-spacing: 0.5px;");
+        Label sympTxt = new Label(t.getSymptomes() != null && !t.getSymptomes().isBlank()
+            ? t.getSymptomes() : "Non renseigne");
+        sympTxt.setStyle("-fx-text-fill: #1E293B; -fx-font-size: 13px; -fx-font-weight: bold;");
         sympTxt.setWrapText(true);
         sympBox.getChildren().addAll(sympTitre, sympTxt);
 
-        left.getChildren().addAll(titreVitaux, grid, scoreSection, sympBox);
+        // Infos rapides — carte structurée
+        VBox infosRapides = new VBox(0);
+        infosRapides.setStyle(
+            "-fx-background-color: #F8FAFF; -fx-background-radius: 10px;" +
+            "-fx-border-color: #E2EAF8; -fx-border-radius: 10px; -fx-border-width: 1px;" +
+            "-fx-min-width: 175px; -fx-max-width: 175px;"
+        );
+        Label titreInfosLbl = new Label("INFORMATIONS");
+        titreInfosLbl.setStyle(
+            "-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #94A3B8;" +
+            "-fx-padding: 10px 14px 6px 14px; -fx-letter-spacing: 0.5px;"
+        );
+        Region sepInfos = new Region();
+        sepInfos.setPrefHeight(1);
+        sepInfos.setStyle("-fx-background-color: #E2EAF8;");
+        VBox infosContent = new VBox(0);
+        infosContent.setStyle("-fx-padding: 4px 0;");
+        if (t.getDateHeureTriage() != null) {
+            infosContent.getChildren().add(infoRowStyled("Date triage", t.getDateHeureTriage()));
+        }
+        infosContent.getChildren().add(infoRowStyled("ID Triage",    "#" + t.getIdTriage()));
+        infosContent.getChildren().add(infoRowStyled("Admission",    "#" + t.getIdAdmission()));
+        infosContent.getChildren().add(infoRowStyled("Score douleur", String.format("%.0f / 10", t.getScoreDouleur())));
+        infosRapides.getChildren().addAll(titreInfosLbl, sepInfos, infosContent);
 
-        // Colonne droite — parcours patient
-        VBox right = new VBox(12);
-        right.setStyle("-fx-min-width: 220px; -fx-max-width: 220px;");
+        ligne3.getChildren().addAll(sympBox, infosRapides);
 
+        // ── Ligne 4 : Parcours Patient (horizontal) ───────────────────────
         Label titreParcours = new Label("Parcours Patient");
-        titreParcours.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2;");
+        titreParcours.setStyle(
+            "-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2;" +
+            "-fx-border-color: transparent transparent transparent #0E9B8A;" +
+            "-fx-border-width: 0 0 0 3px; -fx-padding: 0 0 0 8px;"
+        );
 
-        VBox parcours = new VBox(0);
+        HBox parcours = new HBox(0);
         parcours.setStyle(
             "-fx-background-color: white; -fx-background-radius: 12px;" +
-            "-fx-border-color: #E8EDF5; -fx-border-radius: 12px; -fx-border-width: 1px;" +
-            "-fx-padding: 8px;"
+            "-fx-border-color: #E2EAF8; -fx-border-radius: 12px; -fx-border-width: 1px;"
         );
         parcours.getChildren().addAll(
-            parcoursItem("✓", "Admission",       "Enregistré", true),
-            parcoursItem("✓", "Triage effectué", "Niveau " + niveau, true),
-            parcoursItem("✓", "Salle assignée",  "Salle Urgence", true),
-            parcoursItem("○", "Sortie / Fin",    "En cours de prise en charge", false)
+            parcoursItemH("Admission",       "Enregistre",                  true,  color),
+            parcoursItemH("Triage effectue", "Niveau " + niveau,            true,  color),
+            parcoursItemH("Salle assignee",  "Salle Urgence",               true,  color),
+            parcoursItemH("Sortie / Fin",    "En cours de prise en charge", false, color)
         );
 
-        // Infos complémentaires
-        Label titreInfos = new Label("Informations");
-        titreInfos.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0B4EA2; -fx-padding: 8 0 0 0;");
-
-        VBox infos = new VBox(8);
-        infos.setStyle(
-            "-fx-background-color: #F8FAFF; -fx-background-radius: 12px;" +
-            "-fx-border-color: #E8F0FB; -fx-border-radius: 12px; -fx-border-width: 1px;" +
-            "-fx-padding: 14px;"
-        );
-        if (t.getDateHeureTriage() != null) {
-            infos.getChildren().add(infoRow("🕐 Date triage", t.getDateHeureTriage()));
-        }
-        infos.getChildren().add(infoRow("🆔 ID Triage",    "#" + t.getIdTriage()));
-        infos.getChildren().add(infoRow("🏥 Admission",    "#" + t.getIdAdmission()));
-        infos.getChildren().add(infoRow("📊 Score douleur", String.format("%.0f/10", t.getScoreDouleur())));
-
-        right.getChildren().addAll(titreParcours, parcours, titreInfos, infos);
-
-        body.getChildren().addAll(left, right);
+        body.getChildren().addAll(titreVitaux, grid, scoreSection, ligne3, titreParcours, parcours);
         root.getChildren().addAll(header, body);
 
-        // ── Footer — Bouton Lancer Consultation ───────────────────────────
+        // ── Footer ────────────────────────────────────────────────────────
         HBox footer = new HBox(12);
         footer.setAlignment(Pos.CENTER_RIGHT);
         footer.setStyle(
-            "-fx-background-color: #F8FAFF; -fx-background-radius: 0 0 20px 20px;" +
-            "-fx-border-color: #E8F0FB transparent transparent transparent;" +
-            "-fx-border-width: 1px 0 0 0; -fx-padding: 16px 28px;"
+            "-fx-background-color: #F0F6FF; -fx-background-radius: 0 0 20px 20px;" +
+            "-fx-border-color: #DBEAFE transparent transparent transparent;" +
+            "-fx-border-width: 1px 0 0 0; -fx-padding: 10px 22px;"
         );
 
-        Label infoLbl = new Label("Admission #" + t.getIdAdmission() + "  •  " + t.getNomComplet().trim());
-        infoLbl.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 12px;");
+        Label infoLbl = new Label("Admission #" + t.getIdAdmission() + "   " + t.getNomComplet().trim());
+        infoLbl.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 11px;");
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Button btnLancer = new Button("🩺  Lancer la Consultation");
-        btnLancer.setStyle(
+        String btnStyle =
             "-fx-background-color: linear-gradient(to right, #0B4EA2, #0E9B8A);" +
-            "-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;" +
-            "-fx-background-radius: 10px; -fx-padding: 12px 28px; -fx-cursor: hand;" +
-            "-fx-effect: dropshadow(gaussian, rgba(11,78,162,0.35), 10, 0, 0, 3);"
-        );
-        btnLancer.setOnMouseEntered(e -> btnLancer.setStyle(
+            "-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px;" +
+            "-fx-background-radius: 10px; -fx-padding: 10px 26px; -fx-cursor: hand;" +
+            "-fx-effect: dropshadow(gaussian, rgba(11,78,162,0.35), 10, 0, 0, 3);";
+        String btnHoverStyle =
             "-fx-background-color: linear-gradient(to right, #093D82, #0B7A6C);" +
-            "-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;" +
-            "-fx-background-radius: 10px; -fx-padding: 12px 28px; -fx-cursor: hand;" +
-            "-fx-effect: dropshadow(gaussian, rgba(11,78,162,0.50), 14, 0, 0, 4);" +
-            "-fx-translate-y: -1;"
-        ));
-        btnLancer.setOnMouseExited(e -> btnLancer.setStyle(
-            "-fx-background-color: linear-gradient(to right, #0B4EA2, #0E9B8A);" +
-            "-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;" +
-            "-fx-background-radius: 10px; -fx-padding: 12px 28px; -fx-cursor: hand;" +
-            "-fx-effect: dropshadow(gaussian, rgba(11,78,162,0.35), 10, 0, 0, 3);"
-        ));
+            "-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px;" +
+            "-fx-background-radius: 10px; -fx-padding: 10px 26px; -fx-cursor: hand;" +
+            "-fx-effect: dropshadow(gaussian, rgba(11,78,162,0.55), 14, 0, 0, 4);";
+
+        Button btnLancer = new Button("Lancer la Consultation");
+        btnLancer.setStyle(btnStyle);
+        btnLancer.setOnMouseEntered(e -> btnLancer.setStyle(btnHoverStyle));
+        btnLancer.setOnMouseExited(e  -> btnLancer.setStyle(btnStyle));
 
         footer.getChildren().addAll(infoLbl, spacer, btnLancer);
         root.getChildren().add(footer);
@@ -696,35 +722,48 @@ public class DashboardController implements Initializable {
 
     // ── Cards vitales ─────────────────────────────────────────────────────
 
-    private VBox vitalCard(String icon, String label, String value, String unit,
+    private VBox vitalCard(String symbol, String label, String value, String unit,
                            String color, String bg, String etat) {
-        VBox card = new VBox(4);
+        VBox card = new VBox(2);
         card.setAlignment(Pos.CENTER);
-        card.setPrefWidth(160);
+        card.setPrefWidth(110);
         card.setStyle(
-            "-fx-background-color: " + bg + "; -fx-background-radius: 12px;" +
-            "-fx-border-color: " + color + "33; -fx-border-radius: 12px; -fx-border-width: 1px;" +
-            "-fx-padding: 14px 10px;"
+            "-fx-background-color: " + bg + "; -fx-background-radius: 10px;" +
+            "-fx-border-color: " + color + "44; -fx-border-radius: 10px; -fx-border-width: 1px;" +
+            "-fx-padding: 8px 6px;"
         );
 
-        Label ico = new Label(icon);
-        ico.setStyle("-fx-font-size: 18px; -fx-text-fill: " + color + ";");
+        // Symbole médical
+        Label symLbl = new Label(symbol);
+        symLbl.setStyle(
+            "-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: " + color + ";" +
+            "-fx-background-color: " + color + "18; -fx-background-radius: 50%;" +
+            "-fx-min-width: 22px; -fx-min-height: 22px; -fx-max-width: 22px; -fx-max-height: 22px;" +
+            "-fx-alignment: center;"
+        );
 
+        // Label texte
         Label lbl = new Label(label);
-        lbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #94A3B8; -fx-font-weight: bold;");
+        lbl.setStyle("-fx-font-size: 8px; -fx-text-fill: #94A3B8; -fx-font-weight: bold; -fx-letter-spacing: 0.3px;");
 
-        HBox valBox = new HBox(3);
+        // Valeur + unité
+        HBox valBox = new HBox(2);
         valBox.setAlignment(Pos.CENTER);
         Label val = new Label(value);
-        val.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
+        val.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
         Label unitLbl = new Label(unit);
-        unitLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #94A3B8;");
+        unitLbl.setStyle("-fx-font-size: 9px; -fx-text-fill: #94A3B8; -fx-padding: 3 0 0 1;");
         valBox.getChildren().addAll(val, unitLbl);
 
+        // Badge état
         Label etatLbl = new Label(etat);
-        etatLbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
+        etatLbl.setStyle(
+            "-fx-font-size: 8px; -fx-font-weight: bold; -fx-text-fill: " + color + ";" +
+            "-fx-background-color: " + color + "18; -fx-background-radius: 5px;" +
+            "-fx-padding: 2px 5px;"
+        );
 
-        card.getChildren().addAll(ico, lbl, valBox, etatLbl);
+        card.getChildren().addAll(symLbl, lbl, valBox, etatLbl);
         return card;
     }
 
@@ -752,27 +791,26 @@ public class DashboardController implements Initializable {
     // ── Parcours patient ──────────────────────────────────────────────────
 
     private HBox parcoursItem(String check, String titre, String detail, boolean done) {
-        HBox row = new HBox(12);
+        HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
-        row.setStyle("-fx-padding: 10px 12px;");
+        row.setStyle("-fx-padding: 7px 10px;");
 
         Label ico = new Label(check);
         ico.setStyle(done
-            ? "-fx-text-fill: #16A34A; -fx-font-size: 14px; -fx-font-weight: bold;"
-            : "-fx-text-fill: #CBD5E1; -fx-font-size: 14px;");
+            ? "-fx-text-fill: #16A34A; -fx-font-size: 13px; -fx-font-weight: bold;"
+            : "-fx-text-fill: #CBD5E1; -fx-font-size: 13px;");
 
-        VBox txt = new VBox(2);
+        VBox txt = new VBox(1);
         Label t1 = new Label(titre);
         t1.setStyle(done
-            ? "-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"
-            : "-fx-font-size: 12px; -fx-text-fill: #94A3B8;");
+            ? "-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"
+            : "-fx-font-size: 11px; -fx-text-fill: #94A3B8;");
         Label t2 = new Label(detail);
         t2.setStyle("-fx-font-size: 10px; -fx-text-fill: #94A3B8;");
         txt.getChildren().addAll(t1, t2);
 
         row.getChildren().addAll(ico, txt);
 
-        // Séparateur
         VBox wrapper = new VBox(0);
         wrapper.getChildren().add(row);
         Region sep = new Region();
@@ -783,12 +821,58 @@ public class DashboardController implements Initializable {
         return row;
     }
 
-    private VBox infoRow(String label, String value) {
-        VBox box = new VBox(2);
+    /** Version horizontale du parcours patient — 4 étapes en ligne. */
+    private VBox parcoursItemH(String titre, String detail, boolean done, String accentColor) {
+        VBox item = new VBox(4);
+        item.setAlignment(Pos.CENTER);
+        HBox.setHgrow(item, Priority.ALWAYS);
+        item.setStyle("-fx-padding: 10px 8px;");
+
+        // Cercle indicateur
+        Label circle = new Label(done ? "✓" : "○");
+        circle.setStyle(done
+            ? "-fx-text-fill: " + accentColor + "; -fx-font-size: 18px; -fx-font-weight: bold;"
+            : "-fx-text-fill: #CBD5E1; -fx-font-size: 18px;");
+
+        Label t1 = new Label(titre);
+        t1.setStyle(done
+            ? "-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"
+            : "-fx-font-size: 11px; -fx-text-fill: #94A3B8;");
+        t1.setWrapText(true);
+        t1.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        Label t2 = new Label(detail);
+        t2.setStyle("-fx-font-size: 10px; -fx-text-fill: #94A3B8;");
+        t2.setWrapText(true);
+        t2.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        item.getChildren().addAll(circle, t1, t2);
+        return item;
+    }
+
+    /** Ligne d'info stylée avec fond alterné. */
+    private HBox infoRowStyled(String label, String value) {
+        HBox row = new HBox();
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setStyle("-fx-padding: 7px 14px;");
+
+        VBox box = new VBox(1);
+        HBox.setHgrow(box, Priority.ALWAYS);
         Label lbl = new Label(label);
-        lbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #94A3B8;");
+        lbl.setStyle("-fx-font-size: 9px; -fx-text-fill: #94A3B8; -fx-font-weight: bold;");
         Label val = new Label(value);
         val.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
+        box.getChildren().addAll(lbl, val);
+        row.getChildren().add(box);
+        return row;
+    }
+
+    private VBox infoRow(String label, String value) {
+        VBox box = new VBox(1);
+        Label lbl = new Label(label);
+        lbl.setStyle("-fx-font-size: 9px; -fx-text-fill: #94A3B8;");
+        Label val = new Label(value);
+        val.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
         box.getChildren().addAll(lbl, val);
         return box;
     }

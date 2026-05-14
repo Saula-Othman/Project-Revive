@@ -56,6 +56,7 @@ public class ConsultationListController implements Initializable {
     @FXML private Label            lblStatOrdos;
     @FXML private StackPane        overlayBackground;
     @FXML private StackPane        overlayContainer;
+    @FXML private Label            lblSideUserName;
 
     private final ConsultationService cs = new ConsultationService();
     private final OrdonnanceService   os = new OrdonnanceService();
@@ -64,6 +65,11 @@ public class ConsultationListController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Afficher le nom de l'utilisateur connecté dans le chip sidebar
+        if (lblSideUserName != null) {
+            String nom = pro.revive.SessionManager.getFullName();
+            lblSideUserName.setText(nom != null && !nom.isBlank() ? nom : "Médecin");
+        }
         filterCombo.setItems(FXCollections.observableArrayList(
                 "Tous", "En cours", "Cloturees", "Hospitalisation", "Transfert", "Sortie"));
         filterCombo.setValue("Tous");

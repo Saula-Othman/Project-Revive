@@ -40,12 +40,24 @@
 
             <Region VBox.vgrow="ALWAYS"/>
 
-            <VBox spacing="4" style="-fx-padding: 0 10 16 10;">
+            <!-- Chip utilisateur -->
+            <VBox styleClass="user-chip-sidebar" style="-fx-margin: 0 10 8 10;">
+                <padding><Insets top="0" right="10" bottom="0" left="10"/></padding>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Dr" styleClass="user-chip-avatar"/>
+                    <VBox spacing="1">
+                        <Label fx:id="lblStatsUserName" text="Médecin" styleClass="user-chip-name"/>
+                        <Label text="Médecin Urgentiste" styleClass="user-chip-role"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <VBox spacing="4" style="-fx-padding: 6 10 16 10;">
                 <Label text="Module actif" styleClass="sidebar-module-label"/>
                 <Label text="Statistiques" styleClass="sidebar-module-value"/>
-                <Button text="Deconnexion" maxWidth="Infinity"
-                        styleClass="btn-primary"
-                        style="-fx-background-radius: 8; -fx-font-size: 12px; -fx-padding: 8 0;"/>
+                <Button text="Déconnexion" maxWidth="Infinity"
+                        styleClass="btn-deconnexion"
+                        onAction="#onDeconnexion"/>
             </VBox>
         </VBox>
     </left>
@@ -129,9 +141,9 @@
 
                             <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
                                 <HBox alignment="CENTER_LEFT">
-                                    <Label text="📊  Répartition par Orientation" styleClass="section-title"/>
+                                    <Label text="Répartition par Orientation" styleClass="section-title-accent"/>
                                     <Region HBox.hgrow="ALWAYS"/>
-                                    <Label fx:id="lblOrientTotal" text="" styleClass="info-label"/>
+                                    <Label fx:id="lblOrientTotal" text="" styleClass="count-badge"/>
                                 </HBox>
                                 <PieChart fx:id="pieOrientation"
                                           prefHeight="280"
@@ -140,7 +152,7 @@
                             </VBox>
 
                             <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
-                                <Label text="📈  Activité — 7 derniers jours" styleClass="section-title"/>
+                                <Label text="Activité — 7 derniers jours" styleClass="section-title-accent"/>
                                 <BarChart fx:id="barActivite" prefHeight="280"
                                           style="-fx-background-color: transparent;"
                                           animated="false" legendVisible="false">
@@ -155,7 +167,7 @@
                         <HBox spacing="16">
 
                             <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
-                                <Label text="🕐  Consultations par Heure" styleClass="section-title"/>
+                                <Label text="Consultations par Heure" styleClass="section-title-accent"/>
                                 <AreaChart fx:id="areaHeure" prefHeight="260"
                                            style="-fx-background-color: transparent;"
                                            animated="false" legendVisible="false"
@@ -166,7 +178,7 @@
                             </VBox>
 
                             <VBox styleClass="card" spacing="12" prefWidth="380" minWidth="320">
-                                <Label text="🔬  Top Diagnostics" styleClass="section-title"/>
+                                <Label text="Top Diagnostics" styleClass="section-title-accent"/>
                                 <VBox fx:id="vboxDiagnostics" spacing="8"/>
                             </VBox>
 
@@ -177,7 +189,7 @@
 
                             <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="12">
                                 <HBox alignment="CENTER_LEFT">
-                                    <Label text="👨‍⚕️  Top Médecins" styleClass="section-title"/>
+                                    <Label text="Top Médecins" styleClass="section-title-accent"/>
                                     <Region HBox.hgrow="ALWAYS"/>
                                     <Label text="par consultations" styleClass="info-label"/>
                                 </HBox>

@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class PatientEmailService {
 
     private static final String BREVO_API_URL    = "https://api.brevo.com/v3/smtp/email";
-    private static final String BREVO_API_KEY    = "Key";
+    private static final String BREVO_API_KEY    = "key";
     private static final String BREVO_SENDER_EMAIL = "siwarsoltani791@gmail.com";
     private static final String BREVO_SENDER_NAME  = "Urgences REVIVE";
     private static final String HOSPITAL_NAME    = "Urgences REVIVE";
