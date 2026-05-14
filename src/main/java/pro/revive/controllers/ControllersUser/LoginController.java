@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -34,10 +35,14 @@ public class LoginController implements Initializable {
 
     @FXML private TextField     tfIdentifiant;
     @FXML private PasswordField pfMotDePasse;
+    @FXML private TextField     tfMotDePasseVisible;
+    @FXML private Button        btnTogglePassword;
     @FXML private TextField     tfCaptcha;
     @FXML private Canvas        captchaCanvas;
     @FXML private Label         lblError;
     @FXML private StackPane     rightPanel;
+
+    private boolean passwordVisible = false;
 
     private final PersonneService     service    = new PersonneService();
     private final CaptchaService      captcha    = new CaptchaService();
@@ -49,6 +54,15 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         captcha.generate(captchaCanvas);
+
+        // Auto-uppercase identifiant as user types
+        tfIdentifiant.textProperty().addListener((obs, o, n) -> {
+            if (n != null && !n.equals(n.toUpperCase())) {
+                tfIdentifiant.setText(n.toUpperCase());
+                tfIdentifiant.positionCaret(tfIdentifiant.getText().length());
+            }
+        });
+
         // Defer video injection until the panel is fully laid out and has real dimensions
         Platform.runLater(this::startVideoLoop);
         if (rightPanel != null) {
@@ -105,7 +119,7 @@ public class LoginController implements Initializable {
     @FXML
     void handleLogin() {
         String id  = tfIdentifiant.getText().trim();
-        String pwd = pfMotDePasse.getText();
+        String pwd = passwordVisible ? tfMotDePasseVisible.getText() : pfMotDePasse.getText();
         String cap = tfCaptcha.getText().trim();
 
         if (id.isEmpty() || pwd.isEmpty()) {
@@ -173,6 +187,31 @@ public class LoginController implements Initializable {
     @FXML void refreshCaptcha() {
         captcha.generate(captchaCanvas);
         tfCaptcha.clear();
+    }
+
+    @FXML void togglePasswordVisibility() {
+        passwordVisible = !passwordVisible;
+        if (passwordVisible) {
+            // Show plain text field, hide password field
+            tfMotDePasseVisible.setText(pfMotDePasse.getText());
+            tfMotDePasseVisible.setVisible(true);
+            tfMotDePasseVisible.setManaged(true);
+            pfMotDePasse.setVisible(false);
+            pfMotDePasse.setManaged(false);
+            btnTogglePassword.setText("🙈");
+            tfMotDePasseVisible.requestFocus();
+            tfMotDePasseVisible.positionCaret(tfMotDePasseVisible.getText().length());
+        } else {
+            // Show password field, hide plain text field
+            pfMotDePasse.setText(tfMotDePasseVisible.getText());
+            pfMotDePasse.setVisible(true);
+            pfMotDePasse.setManaged(true);
+            tfMotDePasseVisible.setVisible(false);
+            tfMotDePasseVisible.setManaged(false);
+            btnTogglePassword.setText("👁");
+            pfMotDePasse.requestFocus();
+            pfMotDePasse.positionCaret(pfMotDePasse.getText().length());
+        }
     }
 
     @FXML void handleForgotPassword() {

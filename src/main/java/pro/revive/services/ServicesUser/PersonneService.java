@@ -189,22 +189,73 @@ public class PersonneService implements IService<Personne> {
     }
 
     /**
-     * Check if an agent with same nom+prenom already exists.
-     * Returns list of similar agents found.
+     * Check exact duplicate: same nom + prenom + same role → true duplicate, must be blocked.
      */
-    public List<Personne> checkDuplicate(String nom, String prenom) {
+    public boolean isExactDuplicate(String nom, String prenom, String role) {
+        String sql = "SELECT COUNT(*) FROM personnel " +
+                     "WHERE LOWER(nom)=LOWER(?) AND LOWER(prenom)=LOWER(?) AND LOWER(role)=LOWER(?) " +
+                     "AND statut != 'EN_ATTENTE'";
+        try {
+            Connection conn = getConn();
+            if (conn == null) return false;
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, nom.trim());
+            pst.setString(2, prenom.trim());
+            pst.setString(3, role.trim());
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            System.err.println("isExactDuplicate error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Check physical duplicate: same nom + prenom + different role + same date_naissance
+     * → same physical person registered twice with a different role → must be blocked.
+     */
+    public boolean isSamePersonDifferentRole(String nom, String prenom, String role, LocalDate dateNaissance) {
+        if (dateNaissance == null) return false;
+        String sql = "SELECT COUNT(*) FROM personnel " +
+                     "WHERE LOWER(nom)=LOWER(?) AND LOWER(prenom)=LOWER(?) " +
+                     "AND LOWER(role)!=LOWER(?) AND date_naissance=? " +
+                     "AND statut != 'EN_ATTENTE'";
+        try {
+            Connection conn = getConn();
+            if (conn == null) return false;
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, nom.trim());
+            pst.setString(2, prenom.trim());
+            pst.setString(3, role.trim());
+            pst.setDate(4, Date.valueOf(dateNaissance));
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            System.err.println("isSamePersonDifferentRole error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Check soft duplicate: same nom + prenom but different role AND different date_naissance → warning only.
+     * Returns list of agents with same name but different role and different dob.
+     */
+    public List<Personne> checkSameNameDifferentRole(String nom, String prenom, String role) {
         List<Personne> list = new ArrayList<>();
-        String sql = "SELECT * FROM personnel WHERE LOWER(nom)=LOWER(?) AND LOWER(prenom)=LOWER(?)";
+        String sql = "SELECT * FROM personnel " +
+                     "WHERE LOWER(nom)=LOWER(?) AND LOWER(prenom)=LOWER(?) AND LOWER(role)!=LOWER(?) " +
+                     "AND statut != 'EN_ATTENTE'";
         try {
             Connection conn = getConn();
             if (conn == null) return list;
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, nom.trim());
             pst.setString(2, prenom.trim());
+            pst.setString(3, role.trim());
             ResultSet rs = pst.executeQuery();
             while (rs.next()) list.add(map(rs));
         } catch (SQLException e) {
-            System.err.println("checkDuplicate error: " + e.getMessage());
+            System.err.println("checkSameNameDifferentRole error: " + e.getMessage());
         }
         return list;
     }
@@ -326,7 +377,8 @@ public class PersonneService implements IService<Personne> {
 
     // getData4 — authentication (only ACTIF accounts)
     public Personne getData4(String identifiant, String motDePasse) {
-        String sql = "SELECT * FROM personnel WHERE identifiant=? AND mot_de_passe=? AND (statut='ACTIF' OR statut IS NULL OR statut='')";
+        // BINARY keyword forces case-sensitive password comparison
+        String sql = "SELECT * FROM personnel WHERE identifiant=? AND BINARY mot_de_passe=? AND (statut='ACTIF' OR statut IS NULL OR statut='')";
         try {
             Connection conn = getConn();
             if (conn == null) return null;

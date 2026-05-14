@@ -21,9 +21,9 @@ public class CaptchaService {
         draw(canvas, currentCode);
     }
 
-    /** Retourne true si la saisie correspond au code (insensible à la casse). */
+    /** Retourne true si la saisie correspond exactement au code (sensible à la casse). */
     public boolean validate(String input) {
-        return currentCode.equalsIgnoreCase(input == null ? "" : input.trim());
+        return currentCode.equals(input == null ? "" : input.trim());
     }
 
     public String getCurrentCode() { return currentCode; }

@@ -62,13 +62,23 @@ public class M6PersonnelAddController implements Initializable {
         cbPays.getItems().addAll(PAYS);
         cbPays.setValue("+216 Tunisie");
 
-        // Letters-only
+        // Letters-only + auto-capitalize first letter of each word
         tfNom.textProperty().addListener((obs, o, n) -> {
-            if (!n.matches("[a-zA-ZÀ-ÿ\\s\\-']*")) tfNom.setText(o);
+            if (!n.matches("[a-zA-ZÀ-ÿ\\s\\-']*")) { tfNom.setText(o); return; }
+            String capitalized = capitalizeWords(n);
+            if (!capitalized.equals(n)) {
+                tfNom.setText(capitalized);
+                tfNom.positionCaret(capitalized.length());
+            }
             alreadySaved = false;
         });
         tfPrenom.textProperty().addListener((obs, o, n) -> {
-            if (!n.matches("[a-zA-ZÀ-ÿ\\s\\-']*")) tfPrenom.setText(o);
+            if (!n.matches("[a-zA-ZÀ-ÿ\\s\\-']*")) { tfPrenom.setText(o); return; }
+            String capitalized = capitalizeWords(n);
+            if (!capitalized.equals(n)) {
+                tfPrenom.setText(capitalized);
+                tfPrenom.positionCaret(capitalized.length());
+            }
             alreadySaved = false;
         });
 
@@ -149,11 +159,37 @@ public class M6PersonnelAddController implements Initializable {
         if (age < 18) { showError("L'agent doit avoir au moins 18 ans."); return; }
         if (age > 70) { showError("L'age ne peut pas depasser 70 ans."); return; }
 
-        // Duplicate detection
-        java.util.List<Personne> duplicates = service.checkDuplicate(nom, prenom);
-        if (!duplicates.isEmpty() && lblDuplicate != null) {
-            lblDuplicate.setText("⚠ Agent similaire : " + duplicates.get(0).getNom()
-                    + " " + duplicates.get(0).getPrenom() + " (" + duplicates.get(0).getRole() + ")");
+        // ── Duplicate detection ──────────────────────────────────────
+        // 1. Exact duplicate (same nom + prenom + same role) → BLOCK
+        if (service.isExactDuplicate(nom, prenom, role)) {
+            showError("⛔ Cet agent existe deja avec le meme nom, prenom et role.");
+            if (lblDuplicate != null) {
+                lblDuplicate.setText("⛔ Doublon exact : " + nom + " " + prenom + " (" + role + ") existe deja.");
+                lblDuplicate.setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold; -fx-font-size: 12px;");
+                lblDuplicate.setVisible(true); lblDuplicate.setManaged(true);
+            }
+            return; // STOP — do not save
+        }
+
+        // 2. Same nom + prenom + different role + same date de naissance → same physical person → BLOCK
+        if (service.isSamePersonDifferentRole(nom, prenom, role, dob)) {
+            showError("⛔ Cette personne existe deja avec un role different mais la meme date de naissance.");
+            if (lblDuplicate != null) {
+                lblDuplicate.setText("⛔ Meme personne detectee : " + nom + " " + prenom
+                        + " — meme date de naissance, role different.");
+                lblDuplicate.setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold; -fx-font-size: 12px;");
+                lblDuplicate.setVisible(true); lblDuplicate.setManaged(true);
+            }
+            return; // STOP — do not save
+        }
+
+        // 3. Same name but different role AND different dob → WARNING only, allow save
+        java.util.List<Personne> sameNameOtherRole = service.checkSameNameDifferentRole(nom, prenom, role);
+        if (!sameNameOtherRole.isEmpty() && lblDuplicate != null) {
+            lblDuplicate.setText("⚠ Agent similaire existant : " + sameNameOtherRole.get(0).getNom()
+                    + " " + sameNameOtherRole.get(0).getPrenom()
+                    + " (" + sameNameOtherRole.get(0).getRole() + ") — roles differents, enregistrement autorise.");
+            lblDuplicate.setStyle("-fx-text-fill: #D97706; -fx-font-weight: bold; -fx-font-size: 12px;");
             lblDuplicate.setVisible(true); lblDuplicate.setManaged(true);
         } else if (lblDuplicate != null) {
             lblDuplicate.setVisible(false); lblDuplicate.setManaged(false);
@@ -237,5 +273,27 @@ public class M6PersonnelAddController implements Initializable {
     }
     private void hideError() {
         lblError.setVisible(false); lblError.setManaged(false);
+    }
+
+    /**
+     * Capitalizes the first letter of each word, handles spaces, hyphens and apostrophes.
+     * e.g. "jean-pierre" → "Jean-Pierre", "ben ali" → "Ben Ali"
+     */
+    private String capitalizeWords(String input) {
+        if (input == null || input.isEmpty()) return input;
+        StringBuilder sb = new StringBuilder();
+        boolean capitalizeNext = true;
+        for (char c : input.toCharArray()) {
+            if (c == ' ' || c == '-' || c == '\'') {
+                sb.append(c);
+                capitalizeNext = true;
+            } else if (capitalizeNext) {
+                sb.append(Character.toUpperCase(c));
+                capitalizeNext = false;
+            } else {
+                sb.append(Character.toLowerCase(c));
+            }
+        }
+        return sb.toString();
     }
 }

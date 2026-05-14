@@ -11,7 +11,7 @@ public class EmailService {
     private static final String SMTP_HOST    = "smtp.gmail.com";
     private static final int    SMTP_PORT    = 465;
     private static final String SENDER_EMAIL = "boughzala.medsalah@gmail.com";
-    private static final String SENDER_PWD   = "dxoxylee zplpuutw";
+    private static final String SENDER_PWD   = "dxoxyleezplpuutw"; // app password without spaces
 
     // ══════════════════════════════════════════
     // Email de confirmation d'inscription
@@ -285,22 +285,20 @@ public class EmailService {
 
     private static Session buildSession() {
         Properties props = new Properties();
-        props.put("mail.smtp.auth",            "true");
-        props.put("mail.smtp.ssl.enable",      "true");   // SSL direct sur port 465
-        props.put("mail.smtp.host",            SMTP_HOST);
-        props.put("mail.smtp.port",            String.valueOf(SMTP_PORT));
-        props.put("mail.smtp.ssl.trust",       SMTP_HOST);
+        props.put("mail.smtp.auth",              "true");
+        props.put("mail.smtp.ssl.enable",        "true");
+        props.put("mail.smtp.host",              SMTP_HOST);
+        props.put("mail.smtp.port",              String.valueOf(SMTP_PORT));
+        props.put("mail.smtp.ssl.trust",         SMTP_HOST);
         props.put("mail.smtp.connectiontimeout", "15000");
         props.put("mail.smtp.timeout",           "15000");
-        props.put("mail.smtp.user",            SENDER_EMAIL);
-        Session session = Session.getInstance(props, new Authenticator() {
+        props.put("mail.smtp.ssl.protocols",     "TLSv1.2");
+        return Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(SENDER_EMAIL, SENDER_PWD);
             }
         });
-        session.setDebug(true);
-        return session;
     }
 
     private static String buildConfirmationBody(Personne p) {

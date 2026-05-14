@@ -57,7 +57,23 @@
             <!-- Mot de passe -->
             <VBox spacing="4" style="-fx-padding: 0 0 10px 0;">
                <Label text="Mot de passe" style="-fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-font-weight: bold;" />
-               <PasswordField fx:id="pfMotDePasse" promptText="••••••••" styleClass="text-input" />
+               <HBox spacing="0" alignment="CENTER_LEFT">
+                  <PasswordField fx:id="pfMotDePasse" promptText="••••••••" styleClass="text-input"
+                                 HBox.hgrow="ALWAYS"
+                                 style="-fx-background-radius: 8px 0 0 8px; -fx-border-radius: 8px 0 0 8px;" />
+                  <TextField fx:id="tfMotDePasseVisible" promptText="••••••••" styleClass="text-input"
+                             HBox.hgrow="ALWAYS" visible="false" managed="false"
+                             style="-fx-background-radius: 8px 0 0 8px; -fx-border-radius: 8px 0 0 8px;" />
+                  <Button fx:id="btnTogglePassword" text="👁" mnemonicParsing="false"
+                          onAction="#togglePasswordVisibility"
+                          style="-fx-background-color: rgba(255,255,255,0.15);
+                                 -fx-text-fill: white; -fx-font-size: 14px;
+                                 -fx-background-radius: 0 8px 8px 0;
+                                 -fx-border-color: rgba(255,255,255,0.3);
+                                 -fx-border-width: 1.5px; -fx-border-radius: 0 8px 8px 0;
+                                 -fx-padding: 8px 12px; -fx-cursor: hand;
+                                 -fx-min-height: 38px;" />
+               </HBox>
             </VBox>
 
             <!-- CAPTCHA -->
