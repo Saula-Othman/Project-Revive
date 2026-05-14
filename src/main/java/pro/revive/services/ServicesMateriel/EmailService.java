@@ -11,8 +11,8 @@ import java.util.regex.Pattern;
 
 public class EmailService {
 
-    private final String username = "";
-    private final String password = "";
+    private final String username = "waflm21@gmail.com";
+    private final String password = "crtvniylofexjmkx";
 
     // Date du dernier mail traité — on ne retraite pas les anciens
     private java.util.Date lastProcessedDate = null;

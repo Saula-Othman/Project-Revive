@@ -37,11 +37,8 @@
                   <Region VBox.vgrow="ALWAYS" />
                   <Button text="🔓  Déconnexion"
                           onAction="#onDeconnexion"
-                          maxWidth="Infinity" alignment="CENTER_LEFT"
-                          style="-fx-background-color: transparent; -fx-text-fill: #ef4444;
-                                 -fx-font-size: 13px; -fx-font-weight: bold;
-                                 -fx-padding: 12px 20px; -fx-cursor: hand;
-                                 -fx-border-color: transparent;" />
+                          maxWidth="Infinity"
+                          styleClass="nav-logout" />
                   <VBox alignment="CENTER" spacing="5" styleClass="sidebar-card">
                      <children>
                         <Label styleClass="sc-title" text="Module actif" />
@@ -64,6 +61,17 @@
                                     <Label styleClass="page-title" text="Salles Physiques" />
                                  </children>
                               </VBox>
+                              <HBox alignment="CENTER" spacing="10" styleClass="user-chip">
+                                 <children>
+                                    <VBox alignment="CENTER_RIGHT">
+                                       <children>
+                                          <Label fx:id="lblUserName" text="Utilisateur" styleClass="user-name" />
+                                          <Label fx:id="lblUserRole" text="Administrateur" styleClass="user-role" />
+                                       </children>
+                                    </VBox>
+                                    <Label fx:id="lblUserInitial" text="U" styleClass="user-av" />
+                                 </children>
+                              </HBox>
                               <Button onAction="#onVoirMateriel" styleClass="btn, btn-secondary" text="Matériel →" />
                            </children>
                         </HBox>

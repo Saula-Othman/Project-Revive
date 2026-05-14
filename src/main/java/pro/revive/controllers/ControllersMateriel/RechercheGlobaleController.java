@@ -30,6 +30,7 @@ public class RechercheGlobaleController implements Initializable {
 
     @FXML private VBox      sectionAmbulances, sectionSalles, sectionMateriel, sectionVide;
     @FXML private FlowPane  resultatsAmbulances, resultatsSalles, resultatsMateriel;
+    @FXML private Label     lblUserName, lblUserRole, lblUserInitial;
 
     private final AmbulanceService ambulanceService = new AmbulanceService();
     private final SalleService     salleService     = new SalleService();
@@ -45,6 +46,15 @@ public class RechercheGlobaleController implements Initializable {
                 onEffacer();
             }
         });
+
+        // Informations utilisateur
+        String fullName = pro.revive.SessionManager.getFullName();
+        String role = pro.revive.SessionManager.getRole();
+        lblUserName.setText(fullName.isEmpty() ? "Utilisateur" : fullName);
+        lblUserRole.setText(role.isEmpty() ? "Personnel" : role);
+        if (!fullName.isEmpty()) {
+            lblUserInitial.setText(fullName.substring(0, 1).toUpperCase());
+        }
     }
 
     @FXML

@@ -26,11 +26,8 @@
             <Region VBox.vgrow="ALWAYS"/>
             <Button text="🔓  Déconnexion"
                     onAction="#onDeconnexion"
-                    maxWidth="Infinity" alignment="CENTER_LEFT"
-                    style="-fx-background-color: transparent; -fx-text-fill: #ef4444;
-                           -fx-font-size: 13px; -fx-font-weight: bold;
-                           -fx-padding: 12px 20px; -fx-cursor: hand;
-                           -fx-border-color: transparent;"/>
+                    maxWidth="Infinity"
+                    styleClass="nav-logout"/>
             <VBox styleClass="sidebar-card" alignment="CENTER" spacing="2">
                 <Label text="Module actif" styleClass="sc-title"/>
                 <Label text="Logistique" styleClass="sc-alert"/>
@@ -48,6 +45,17 @@
                         <Label text="Recherche dans toute l'application" styleClass="page-sub"/>
                         <Label text="Recherche Globale" styleClass="page-title"/>
                     </VBox>
+                    <HBox alignment="CENTER" spacing="10" styleClass="user-chip">
+                        <children>
+                            <VBox alignment="CENTER_RIGHT">
+                                <children>
+                                    <Label fx:id="lblUserName" text="Utilisateur" styleClass="user-name" />
+                                    <Label fx:id="lblUserRole" text="Administrateur" styleClass="user-role" />
+                                </children>
+                            </VBox>
+                            <Label fx:id="lblUserInitial" text="U" styleClass="user-av" />
+                        </children>
+                    </HBox>
                 </HBox>
             </VBox>
 

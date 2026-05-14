@@ -93,7 +93,7 @@ public class AmbulanceService {
     public void enregistrerTrajet(Trajet trajet) throws SQLException {
         String sql = "INSERT INTO trajets (id_ambulance, localisation_depart, localisation_urgence, " +
                      "distance_km, duree_minutes, statut) VALUES (?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, trajet.getIdAmbulance());
             ps.setString(2, trajet.getLocalisationDepart());
             ps.setString(3, trajet.getLocalisationUrgence());
@@ -101,18 +101,38 @@ public class AmbulanceService {
             ps.setInt(5, trajet.getDureeMinutes());
             ps.setString(6, trajet.getStatut());
             ps.executeUpdate();
+            ResultSet keys = ps.getGeneratedKeys();
+            if (keys.next()) trajet.setIdTrajet(keys.getInt(1));
         }
 
-        // Mettre à jour le kilométrage total de l'ambulance
-        String updateKm = "UPDATE ambulances SET km_total = km_total + ? WHERE id_ambulance = ?";
-        try (PreparedStatement ps = conn.prepareStatement(updateKm)) {
-            ps.setDouble(1, trajet.getDistanceKm());
-            ps.setInt(2, trajet.getIdAmbulance());
+        // Mettre à jour le kilométrage total seulement si la mission est terminée
+        if ("Terminé".equals(trajet.getStatut())) {
+            String updateKm = "UPDATE ambulances SET km_total = km_total + ? WHERE id_ambulance = ?";
+            try (PreparedStatement ps = conn.prepareStatement(updateKm)) {
+                ps.setDouble(1, trajet.getDistanceKm());
+                ps.setInt(2, trajet.getIdAmbulance());
+                ps.executeUpdate();
+            }
+            analyserMaintenanceIA(trajet.getIdAmbulance());
+        }
+    }
+
+    /**
+     * Finalise un trajet "En cours" : le passe à "Terminé" et met à jour le kilométrage.
+     */
+    public void finaliserTrajet(int idTrajet, int idAmbulance, double distanceKm) throws SQLException {
+        String sql = "UPDATE trajets SET statut = 'Terminé' WHERE id_trajet = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idTrajet);
             ps.executeUpdate();
         }
-
-        // Déclencher l'analyse IA de maintenance
-        analyserMaintenanceIA(trajet.getIdAmbulance());
+        String updateKm = "UPDATE ambulances SET km_total = km_total + ? WHERE id_ambulance = ?";
+        try (PreparedStatement ps = conn.prepareStatement(updateKm)) {
+            ps.setDouble(1, distanceKm);
+            ps.setInt(2, idAmbulance);
+            ps.executeUpdate();
+        }
+        analyserMaintenanceIA(idAmbulance);
     }
 
     public List<Trajet> getTrajetsAmbulance(int idAmbulance) throws SQLException {

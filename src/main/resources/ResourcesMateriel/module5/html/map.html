@@ -287,50 +287,43 @@
         }
 
         // ── Show existing trip (called from Java for live tracking) ───
+        // routeJson : JSON string "[[ lat, lon ], ...]" calculé côté Java via OSRM
+        // Si routeJson est vide ou null, on trace une ligne droite de secours.
         function afficherTrajetExistant(baseLat, baseLon, urgLat, urgLon,
-                                        depart, urgence, distanceKm, dureeMin) {
+                                        depart, urgence, distanceKm, dureeMin, routeJson) {
             clearMap();
             setMarker('base',    baseLat, baseLon, '🏥 ' + depart,  '🏥');
             setMarker('urgence', urgLat,  urgLon,  '🚨 ' + urgence, '🚨');
 
-            var osrmUrl = 'https://router.project-osrm.org/route/v1/driving/' +
-                          baseLon + ',' + baseLat + ';' +
-                          urgLon  + ',' + urgLat  +
-                          '?overview=full&geometries=geojson';
+            var coords;
+            try {
+                coords = routeJson ? JSON.parse(routeJson) : null;
+            } catch(e) {
+                coords = null;
+            }
 
-            var controller = new AbortController();
-            var timeoutId  = setTimeout(function() { controller.abort(); }, 8000);
+            // Fallback : ligne droite si la route n'a pas pu être calculée
+            if (!coords || coords.length < 2) {
+                coords = [[baseLat, baseLon], [urgLat, urgLon]];
+            }
 
-            fetch(osrmUrl, { signal: controller.signal })
-                .then(function(r) { clearTimeout(timeoutId); return r.json(); })
-                .then(function(data) {
-                    if (data.routes && data.routes.length > 0) {
-                        var coords = data.routes[0].geometry.coordinates.map(function(c) {
-                            return [c[1], c[0]];
-                        });
-                        drawRoute(coords);
+            drawRoute(coords);
 
-                        var ambIcon = L.divIcon({
-                            html: '<div style="font-size:26px;line-height:1;">🚑</div>',
-                            className: '',
-                            iconSize: [32, 32], iconAnchor: [16, 16]
-                        });
-                        if (ambulanceMarker) map.removeLayer(ambulanceMarker);
-                        ambulanceMarker = L.marker([baseLat, baseLon], { icon: ambIcon }).addTo(map);
-                        ambulanceMarker.bindPopup(
-                            '🚑 En mission<br>' + distanceKm.toFixed(1) + ' km — ' + dureeMin + ' min'
-                        );
+            // Marqueur ambulance positionné au départ
+            var ambIcon = L.divIcon({
+                html: '<div style="font-size:26px;line-height:1;">🚑</div>',
+                className: '',
+                iconSize: [32, 32], iconAnchor: [16, 16]
+            });
+            if (ambulanceMarker) map.removeLayer(ambulanceMarker);
+            ambulanceMarker = L.marker([baseLat, baseLon], { icon: ambIcon }).addTo(map);
+            ambulanceMarker.bindPopup(
+                '🚑 En mission<br>' + parseFloat(distanceKm).toFixed(1) + ' km — ' + dureeMin + ' min'
+            );
 
-                        var group = new L.featureGroup([markers['base'], markers['urgence']]);
-                        map.fitBounds(group.getBounds(), { padding: [60, 60], animate: false });
-                    } else {
-                        drawRoute([[baseLat, baseLon], [urgLat, urgLon]]);
-                    }
-                })
-                .catch(function() {
-                    clearTimeout(timeoutId);
-                    drawRoute([[baseLat, baseLon], [urgLat, urgLon]]);
-                });
+            // Zoom sur les deux points
+            var group = new L.featureGroup([markers['base'], markers['urgence']]);
+            map.fitBounds(group.getBounds(), { padding: [60, 60], animate: false });
 
             return 'SUCCESS';
         }

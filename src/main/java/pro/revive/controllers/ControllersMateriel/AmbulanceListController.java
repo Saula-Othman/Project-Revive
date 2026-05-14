@@ -9,11 +9,14 @@ import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -38,6 +41,7 @@ public class AmbulanceListController implements Initializable {
     @FXML private Label lblDisponibles;
     @FXML private Label lblEnRoute;
     @FXML private Label lblAlertes;
+    @FXML private Label lblUserName, lblUserRole, lblUserInitial;
 
     // ── Données ──────────────────────────────────────────────────────
     private final AmbulanceService ambulanceService = new AmbulanceService();
@@ -51,6 +55,15 @@ public class AmbulanceListController implements Initializable {
         configurerRecherche();
         configurerFiltres();
         chargerDonnees();
+
+        // Informations utilisateur
+        String fullName = pro.revive.SessionManager.getFullName();
+        String role = pro.revive.SessionManager.getRole();
+        lblUserName.setText(fullName.isEmpty() ? "Utilisateur" : fullName);
+        lblUserRole.setText(role.isEmpty() ? "Personnel" : role);
+        if (!fullName.isEmpty()) {
+            lblUserInitial.setText(fullName.substring(0, 1).toUpperCase());
+        }
     }
 
     private void configurerRecherche() {
@@ -129,70 +142,115 @@ public class AmbulanceListController implements Initializable {
     }
 
     private VBox creerCarte(Ambulance amb) {
-        VBox card = new VBox(10);
+        VBox card = new VBox(0);
         card.getStyleClass().add("card-item");
         if (amb == selectedAmbulance) card.getStyleClass().add("card-item-selected");
 
-        // Titre: Numéro de série
-        Label title = new Label("🚑 " + amb.getNumeroSerie());
+        // ── Barre colorée en haut selon l'état ──────────────────────
+        Region topBar = new Region();
+        topBar.setPrefHeight(5);
+        topBar.setMinHeight(5);
+        topBar.setMaxWidth(Double.MAX_VALUE);
+        String barColor = switch (amb.getEtat()) {
+            case "Disponible"    -> "#22C55E";
+            case "En route"      -> "#0B4EA2";
+            case "En panne"      -> "#EF4444";
+            case "En maintenance"-> "#F59E0B";
+            default              -> "#CBD5E1";
+        };
+        topBar.setStyle("-fx-background-color: " + barColor + "; -fx-background-radius: 14 14 0 0;");
+
+        // ── Corps de la carte ────────────────────────────────────────
+        VBox body = new VBox(10);
+        body.setPadding(new Insets(16, 18, 18, 18));
+
+        // En-tête : icône + numéro de série
+        HBox header = new HBox(10);
+        header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+        Label icon = new Label("🚑");
+        icon.setStyle("-fx-font-size: 22px;");
+
+        VBox titleBlock = new VBox(2);
+        Label title = new Label(amb.getNumeroSerie());
         title.getStyleClass().add("card-title");
 
-        // Sous-titre: Marque + Modèle
-        String subtitleText = amb.getMarque() + " " + (amb.getModele() != null ? amb.getModele() : "") + 
-                              (amb.getAnneeFabrication() != null ? " (" + amb.getAnneeFabrication() + ")" : "");
+        String subtitleText = amb.getMarque()
+                + (amb.getModele() != null ? " " + amb.getModele() : "")
+                + (amb.getAnneeFabrication() != null ? "  •  " + amb.getAnneeFabrication() : "");
         Label subtitle = new Label(subtitleText);
         subtitle.getStyleClass().add("card-subtitle");
 
+        titleBlock.getChildren().addAll(title, subtitle);
+        HBox.setHgrow(titleBlock, Priority.ALWAYS);
+        header.getChildren().addAll(icon, titleBlock);
+
         // Badge état
-        HBox badgeContainer = new HBox();
         Label badge = new Label(amb.getEtat());
         badge.getStyleClass().add("card-badge");
         switch (amb.getEtat()) {
-            case "Disponible" -> badge.getStyleClass().add("badge-success");
-            case "En route" -> badge.getStyleClass().add("badge-info");
-            case "En panne" -> badge.getStyleClass().add("badge-danger");
+            case "Disponible"     -> badge.getStyleClass().add("badge-success");
+            case "En route"       -> badge.getStyleClass().add("badge-info");
+            case "En panne"       -> badge.getStyleClass().add("badge-danger");
             case "En maintenance" -> badge.getStyleClass().add("badge-warning");
         }
-        badgeContainer.getChildren().add(badge);
 
-        // Infos
-        VBox info = new VBox(5);
+        // Séparateur
+        Region sep = new Region();
+        sep.setPrefHeight(1);
+        sep.setStyle("-fx-background-color: #EEF4FB;");
+
+        // Infos kilométrage et maintenance
+        VBox info = new VBox(6);
         info.getChildren().addAll(
-            creerInfoRow("Kilométrage:", String.format("%.0f km", amb.getKmTotal())),
-            creerInfoRow("Dernière vidange:", amb.getDateDerniereVidange() != null ? 
-                amb.getDateDerniereVidange().toString() : "N/A")
+            creerInfoRow("🛣  Kilométrage :", String.format("%.0f km", amb.getKmTotal())),
+            creerInfoRow("🔧  Dernière vidange :", amb.getDateDerniereVidange() != null
+                ? amb.getDateDerniereVidange().toString() : "Non renseignée")
         );
 
-        // Si l'ambulance est en route, ajouter un bouton pour voir la localisation
+        // Bouton suivi si en route
         if ("En route".equals(amb.getEtat())) {
-            Button btnLocalisation = new Button("📍 Voir Localisation en Temps Réel");
-            btnLocalisation.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; " +
-                                    "-fx-padding: 8 16; -fx-background-radius: 6; -fx-cursor: hand; " +
-                                    "-fx-font-size: 11px; -fx-font-weight: bold;");
+            Button btnLocalisation = new Button("📍  Suivi en temps réel");
+            btnLocalisation.setStyle(
+                "-fx-background-color: #0B4EA2; -fx-text-fill: white; " +
+                "-fx-padding: 8 16; -fx-background-radius: 8; -fx-cursor: hand; " +
+                "-fx-font-size: 11px; -fx-font-weight: bold; -fx-max-width: infinity;");
+            btnLocalisation.setMaxWidth(Double.MAX_VALUE);
             btnLocalisation.setOnAction(e -> {
-                System.out.println("[AmbulanceList] Clic sur suivi pour ambulance ID: " + amb.getIdAmbulance() + " - " + amb.getNumeroSerie());
                 ouvrirSimulationEnCours(amb);
                 e.consume();
             });
             info.getChildren().add(btnLocalisation);
         }
 
-        // Alertes IA
+        // Alertes maintenance
         try {
             List<AlerteMaintenance> alertes = ambulanceService.getAlertesAmbulance(amb.getIdAmbulance());
             long alertesActives = alertes.stream().filter(a -> "En attente".equals(a.getStatut())).count();
             if (alertesActives > 0) {
-                Label lblAlertes = new Label("⚠️ " + alertesActives + " alerte(s) maintenance");
-                lblAlertes.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px; -fx-font-weight: bold;");
-                info.getChildren().add(lblAlertes);
+                HBox alertRow = new HBox(6);
+                alertRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                alertRow.setStyle(
+                    "-fx-background-color: #FEF2F2; -fx-padding: 7 12; " +
+                    "-fx-background-radius: 8; -fx-border-color: #FECACA; " +
+                    "-fx-border-width: 1; -fx-border-radius: 8;");
+                Label alertLbl = new Label("⚠️  " + alertesActives + " alerte(s) maintenance");
+                alertLbl.setStyle("-fx-text-fill: #DC2626; -fx-font-size: 11px; -fx-font-weight: bold;");
+                alertRow.getChildren().add(alertLbl);
+                info.getChildren().add(alertRow);
             }
         } catch (SQLException e) {
             System.err.println("Erreur alertes: " + e.getMessage());
         }
 
-        card.getChildren().addAll(title, subtitle, badgeContainer, info);
+        // Pied de carte : double-clic hint
+        Label hint = new Label("Double-clic pour les détails");
+        hint.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 10px; -fx-font-style: italic;");
 
-        // Double-clic pour voir les détails
+        body.getChildren().addAll(header, badge, sep, info, hint);
+        card.getChildren().addAll(topBar, body);
+
+        // Interactions souris
         card.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 ouvrirDetails(amb);
@@ -227,13 +285,16 @@ public class AmbulanceListController implements Initializable {
     }
 
     private HBox creerInfoRow(String label, String value) {
-        HBox row = new HBox(10);
+        HBox row = new HBox(8);
         row.getStyleClass().add("card-info-row");
+        row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         Label lbl = new Label(label);
         lbl.getStyleClass().add("card-info-label");
         Label val = new Label(value);
         val.getStyleClass().add("card-info-value");
-        row.getChildren().addAll(lbl, val);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        row.getChildren().addAll(lbl, spacer, val);
         return row;
     }
 

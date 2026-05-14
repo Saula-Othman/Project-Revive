@@ -25,7 +25,7 @@ public class QuickDetailsController {
     @FXML private Label lblDetail1Label, lblDetail1Value, lblDetail2Label, lblDetail2Value;
     @FXML private Label lblExtraValue;
     @FXML private ProgressBar progressCapacity;
-    @FXML private VBox boxWarning;
+    @FXML private HBox boxWarning;
     @FXML private Label lblWarning;
     @FXML private VBox vboxEquipment;
     @FXML private VBox cardExtra;
@@ -57,23 +57,24 @@ public class QuickDetailsController {
         lblHeaderIcon.setText("🏠");
         lblTitle.setText(s.getNom());
         lblSubtitle.setText(s.getType().toUpperCase());
-        
+
         lblStatutBadge.setText(s.getStatut().toUpperCase());
         updateBadgeStyle(s.getStatut());
 
         lblDetail1Label.setText("OCCUPATION");
-        lblDetail1Value.setText(s.getNombreActuel() + " / " + s.getCapaciteMax() + " Patients");
-        
+        lblDetail1Value.setText(s.getNombreActuel() + " / " + s.getCapaciteMax() + " patients");
+
         if (s.getCapaciteMax() > 0) {
             double prog = (double) s.getNombreActuel() / s.getCapaciteMax();
             progressCapacity.setProgress(prog);
-            if (prog >= 0.9) progressCapacity.getStyleClass().add("capacity-bar-danger");
-            else if (prog >= 0.7) progressCapacity.getStyleClass().add("capacity-bar-warning");
+            String accent = prog >= 0.9 ? "#EF4444" : prog >= 0.7 ? "#F59E0B" : "#0B4EA2";
+            progressCapacity.setStyle("-fx-accent: " + accent + ";");
         }
 
         lblDetail2Label.setText("LOCALISATION");
-        lblDetail2Value.setText(s.getLocalisation() != null ? s.getLocalisation() : "Non specifiee");
-        
+        lblDetail2Value.setText(s.getLocalisation() != null && !s.getLocalisation().isEmpty()
+            ? s.getLocalisation() : "Non spécifiée");
+
         chargerEquipements(s.getIdSalle());
 
         boolean hasPatients = s.getNombreActuel() > 0;
@@ -82,7 +83,7 @@ public class QuickDetailsController {
             btnDelete.setOpacity(0.4);
             boxWarning.setVisible(true);
             boxWarning.setManaged(true);
-            lblWarning.setText("Securite : Salle occupee par des patients.");
+            lblWarning.setText("Sécurité : impossible de supprimer une salle occupée par des patients.");
         }
     }
 
@@ -160,30 +161,51 @@ public class QuickDetailsController {
     private void setupMateriel(MaterielUrgence m) {
         lblHeaderIcon.setText("🔧");
         lblTitle.setText(m.getNom());
-        lblSubtitle.setText("MATERIEL D'URGENCE");
+        lblSubtitle.setText("MATÉRIEL D'URGENCE");
         lblStatutBadge.setText(m.getEtat().toUpperCase());
         updateBadgeStyle(m.getEtat());
 
-        lblDetail1Label.setText("QUANTITE");
-        lblDetail1Value.setText(m.getQuantite() + " Unites");
+        lblDetail1Label.setText("QUANTITÉ");
+        lblDetail1Value.setText(m.getQuantite() + " unité(s)");
         progressCapacity.setVisible(false);
         progressCapacity.setManaged(false);
 
         lblDetail2Label.setText("EMPLACEMENT");
-        lblDetail2Value.setText(m.getNomSalle() != null ? m.getNomSalle() : "Reserve Centrale");
-        
+        lblDetail2Value.setText(m.getNomSalle() != null && !m.getNomSalle().isEmpty()
+            ? m.getNomSalle() : "Réserve Centrale");
+
         cardExtra.setVisible(false);
         cardExtra.setManaged(false);
         boxWarning.setVisible(false);
         boxWarning.setManaged(false);
+
+        // Afficher la date de maintenance si disponible
+        if (m.getDateDerniereMaintenance() != null) {
+            lblDetail2Label.setText("DERNIÈRE MAINTENANCE");
+            lblDetail2Value.setText(m.getDateDerniereMaintenance().toString());
+        }
     }
 
     private void updateBadgeStyle(String status) {
-        lblStatutBadge.getStyleClass().removeAll("badge-success", "badge-warning", "badge-danger");
         String s = status.toLowerCase();
-        if (s.contains("disponible") || s.contains("fonctionnel")) lblStatutBadge.getStyleClass().add("badge-success");
-        else if (s.contains("occupe") || s.contains("reviser")) lblStatutBadge.getStyleClass().add("badge-warning");
-        else lblStatutBadge.getStyleClass().add("badge-danger");
+        String bg, fg;
+        if (s.contains("disponible") || s.contains("fonctionnel")) {
+            bg = "#DCFCE7"; fg = "#15803D";
+        } else if (s.contains("occupe") || s.contains("reviser") || s.contains("nettoyage")) {
+            bg = "#FEF3C7"; fg = "#B45309";
+        } else if (s.contains("maintenance") || s.contains("panne")) {
+            bg = "#FEE2E2"; fg = "#DC2626";
+        } else {
+            bg = "#EEF4FB"; fg = "#0B4EA2";
+        }
+        lblStatutBadge.setStyle(
+            "-fx-background-color: " + bg + ";" +
+            "-fx-text-fill: " + fg + ";" +
+            "-fx-font-size: 10px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-padding: 3 12;" +
+            "-fx-background-radius: 20;"
+        );
     }
 
     @FXML

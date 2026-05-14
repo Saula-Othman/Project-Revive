@@ -1,212 +1,236 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="pro.revive.controllers.ControllersMateriel.DashboardController"
-            stylesheets="@../css/styleMateriel.css"
-            prefWidth="1100" prefHeight="720">
+<BorderPane prefHeight="760" prefWidth="1200" stylesheets="@../css/styleMateriel.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pro.revive.controllers.ControllersMateriel.DashboardController">
 
-    <!-- SIDEBAR -->
+    <!-- ══════════════════════════════════════════════════════════════
+         SIDEBAR
+    ══════════════════════════════════════════════════════════════════ -->
     <left>
-        <VBox styleClass="sidebar" prefWidth="250" spacing="0">
-            <VBox styleClass="logo-wrap" alignment="CENTER" spacing="4">
-                <Label text="🏥 REVIVE" styleClass="logo-fallback"/>
-                <Label text="Gestion des Urgences" styleClass="logo-sub"/>
+        <VBox prefWidth="250" spacing="0" styleClass="sidebar">
+            <VBox alignment="CENTER" spacing="4" styleClass="logo-wrap">
+                <Label styleClass="logo-fallback" text="🏥 REVIVE" />
+                <Label styleClass="logo-sub" text="Gestion des Urgences" />
             </VBox>
-            <Label text="NAVIGATION" styleClass="nav-section"/>
-            <Button text="📊  Tableau de Bord"
-                    styleClass="nav-item, active"
-                    maxWidth="Infinity" alignment="CENTER_LEFT"/>
-            <Button text="🏠  Salles Physiques"
-                    styleClass="nav-item" maxWidth="Infinity"
-                    alignment="CENTER_LEFT"
-                    onAction="#onNavSalles" fx:id="btnNavSalles"/>
-            <Button text="🔧  Matériel d'Urgence"
-                    styleClass="nav-item" maxWidth="Infinity"
-                    alignment="CENTER_LEFT"
-                    onAction="#onNavMateriel" fx:id="btnNavMateriel"/>
-            <Button text="🚑  Gestion Ambulances"
-                    styleClass="nav-item" maxWidth="Infinity"
-                    alignment="CENTER_LEFT"
-                    onAction="#onNavAmbulances" fx:id="btnNavAmbulances"/>
-            <Button text="🗺  Simulation Trajet"
-                    styleClass="nav-item" maxWidth="Infinity"
-                    alignment="CENTER_LEFT"
-                    onAction="#onNavSimulation" fx:id="btnNavSimulation"/>
-            <Button text="📋  Historique Missions"
-                    styleClass="nav-item" maxWidth="Infinity"
-                    alignment="CENTER_LEFT"
-                    onAction="#onNavHistorique" fx:id="btnNavHistorique"/>
-            <Region VBox.vgrow="ALWAYS"/>
-            <Button text="🔓  Déconnexion"
-                    onAction="#onDeconnexion"
-                    maxWidth="Infinity" alignment="CENTER_LEFT"
-                    style="-fx-background-color: transparent; -fx-text-fill: #ef4444;
-                           -fx-font-size: 13px; -fx-font-weight: bold;
-                           -fx-padding: 12px 20px; -fx-cursor: hand;
-                           -fx-border-color: transparent;"/>
-            <VBox styleClass="sidebar-card" alignment="CENTER" spacing="2">
-                <Label text="Module actif" styleClass="sc-title"/>
-                <Label text="Logistique" styleClass="sc-alert"/>
+            <Label styleClass="nav-section" text="NAVIGATION" />
+            <Button alignment="CENTER_LEFT" maxWidth="Infinity" styleClass="nav-item, active" text="📊  Tableau de Bord" />
+            <Button fx:id="btnNavSalles" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onNavSalles" styleClass="nav-item" text="🏠  Salles Physiques" />
+            <Button fx:id="btnNavMateriel" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onNavMateriel" styleClass="nav-item" text="🔧  Matériel d'Urgence" />
+            <Button fx:id="btnNavAmbulances" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onNavAmbulances" styleClass="nav-item" text="🚑  Gestion Ambulances" />
+            <Button fx:id="btnNavSimulation" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onNavSimulation" styleClass="nav-item" text="🗺  Simulation Trajet" />
+            <Button fx:id="btnNavHistorique" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#onNavHistorique" styleClass="nav-item" text="📋  Historique Missions" />
+            <Region VBox.vgrow="ALWAYS" />
+            <Button maxWidth="Infinity" onAction="#onDeconnexion" styleClass="nav-logout" text="🔓  Déconnexion" />
+            <VBox alignment="CENTER" spacing="2" styleClass="sidebar-card">
+                <Label styleClass="sc-title" text="Module actif" />
+                <Label styleClass="sc-alert" text="Logistique" />
             </VBox>
         </VBox>
     </left>
 
-    <!-- CONTENU -->
+    <!-- ══════════════════════════════════════════════════════════════
+         CONTENU PRINCIPAL
+    ══════════════════════════════════════════════════════════════════ -->
     <center>
         <VBox spacing="0">
 
-            <!-- HEADER -->
-            <VBox styleClass="topbar" spacing="4">
-                <HBox alignment="CENTER_LEFT">
+            <!-- ── TOPBAR ── -->
+            <VBox spacing="4" styleClass="topbar">
+                <HBox alignment="CENTER_LEFT" spacing="12">
                     <VBox spacing="2" HBox.hgrow="ALWAYS">
-                        <Label text="Gestion des Salles et Matériel" styleClass="page-sub"/>
-                        <Label text="Tableau de Bord" styleClass="page-title"/>
+                        <Label styleClass="page-sub" text="Gestion des Salles et Matériel" />
+                        <Label styleClass="page-title" text="Tableau de Bord" />
                     </VBox>
-                    <Button fx:id="btnTheme" text="🌙  Mode Sombre"
-                            styleClass="btn-secondary"
-                            style="-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white;
-                                   -fx-border-color: rgba(255,255,255,0.40); -fx-border-width: 1px;
-                                   -fx-border-radius: 8px; -fx-background-radius: 8px;
-                                   -fx-font-size: 13px; -fx-font-weight: bold;
-                                   -fx-padding: 9px 18px; -fx-cursor: hand; -fx-margin: 0 8 0 0;"
-                            onAction="#onToggleTheme"/>
-                    <Button fx:id="btnRecherche" text="🔍  Recherche"
-                            style="-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white;
-                                   -fx-border-color: rgba(255,255,255,0.40); -fx-border-width: 1px;
-                                   -fx-border-radius: 8px; -fx-background-radius: 8px;
-                                   -fx-font-size: 13px; -fx-font-weight: bold;
-                                   -fx-padding: 9px 18px; -fx-cursor: hand; -fx-margin: 0 8 0 0;"
-                            onAction="#onOuvrirRecherche"/>
-                    <Button fx:id="btnActualiser" text="⟳  Actualiser"
-                            style="-fx-background-color: white; -fx-text-fill: #0B4EA2;
-                                   -fx-border-width: 0; -fx-background-radius: 8px;
-                                   -fx-font-size: 13px; -fx-font-weight: bold;
-                                   -fx-padding: 9px 18px; -fx-cursor: hand;"
-                            onAction="#onActualiser"/>
+                    <HBox alignment="CENTER" spacing="10" styleClass="user-chip">
+                        <children>
+                            <VBox alignment="CENTER_RIGHT">
+                                <children>
+                                    <Label fx:id="lblUserName" styleClass="user-name" text="Utilisateur" />
+                                    <Label fx:id="lblUserRole" styleClass="user-role" text="Administrateur" />
+                                </children>
+                            </VBox>
+                            <Label fx:id="lblUserInitial" styleClass="user-av" text="U" />
+                        </children>
+                    </HBox>
+                    <Button fx:id="btnRecherche" onAction="#onOuvrirRecherche" style="-fx-background-color: rgba(255,255,255,0.15);                                    -fx-text-fill: white;                                    -fx-border-color: rgba(255,255,255,0.35);                                    -fx-border-width: 1.5; -fx-border-radius: 8;                                    -fx-background-radius: 8;                                    -fx-font-size: 12px; -fx-font-weight: bold;                                    -fx-padding: 8 16; -fx-cursor: hand;" text="🔍  Recherche" />
                 </HBox>
             </VBox>
 
-            <ScrollPane fitToWidth="true" styleClass="scroll" VBox.vgrow="ALWAYS">
-                <VBox spacing="24" styleClass="dashboard-body">
+            <!-- ── SCROLL CONTENT ── -->
+            <ScrollPane fx:id="scrollContent" fitToWidth="true" style="-fx-background-color: #EEF4FB; -fx-background: #EEF4FB;" styleClass="scroll" VBox.vgrow="ALWAYS">
+                <VBox fx:id="dashBody" spacing="28" style="-fx-padding: 28 32; -fx-background-color: #EEF4FB;">
 
-                    <!-- ── CARTES SALLES ── -->
-                    <VBox spacing="12">
-                        <HBox alignment="CENTER_LEFT">
-                            <Label text="🏠  Salles Physiques" styleClass="section-title" HBox.hgrow="ALWAYS"/>
-                            <Button text="Voir tout →" onAction="#onNavSalles"
-                                    style="-fx-background-color: transparent; -fx-text-fill: #3b82f6; -fx-font-size: 12px; -fx-cursor: hand; -fx-border-color: transparent;"/>
+                    <!-- ════════════════════════════════════════════
+                         SECTION SALLES
+                    ════════════════════════════════════════════ -->
+                    <VBox spacing="14">
+                        <!-- Titre section -->
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label style="-fx-text-fill: #0B4EA2; -fx-font-size: 15px;                                           -fx-font-weight: bold;" text="🏠  Salles Physiques" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Button onAction="#onNavSalles" style="-fx-background-color: #EEF4FB;                                            -fx-text-fill: #0B4EA2;                                            -fx-font-size: 12px; -fx-font-weight: bold;                                            -fx-cursor: hand; -fx-border-color: #CBD5E1;                                            -fx-border-radius: 6; -fx-background-radius: 6;                                            -fx-border-width: 1; -fx-padding: 4 12;" text="Voir tout →" />
                         </HBox>
+
+                        <!-- 4 cartes salles -->
                         <HBox spacing="16">
-                            <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS" spacing="6">
-                                <HBox alignment="CENTER_LEFT" spacing="8">
-                                    <Label text="🏥" style="-fx-font-size: 20px;"/>
-                                    <Label text="Total Salles" styleClass="stat-lbl"/>
+
+                            <!-- Total Salles — bleu -->
+                            <VBox fx:id="cardTotalSalles" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-radius: 14; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-padding: 20 22; -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),12,0,0,4);" styleClass="stat-vbox" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <StackPane style="-fx-background-color: #EEF4FB; -fx-background-radius: 10; -fx-padding: 8;">
+                                        <Label style="-fx-font-size: 20px;" text="🏥" />
+                                    </StackPane>
+                                    <Label style="-fx-text-fill: #64748B; -fx-font-size: 12px; -fx-font-weight: bold;" text="Total Salles" />
                                 </HBox>
-                                <Label fx:id="lblTotalSalles" text="0" styleClass="stat-val, blue"/>
-                                <Label text="salles enregistrées" styleClass="stat-hint"/>
+                                <Label fx:id="lblTotalSalles" style="-fx-text-fill: #0B4EA2; -fx-font-size: 42px; -fx-font-weight: bold;" text="0" />
+                                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="salles enregistrées" />
                             </VBox>
-                            <VBox styleClass="stat-card, green" HBox.hgrow="ALWAYS" spacing="6">
-                                <HBox alignment="CENTER_LEFT" spacing="8">
-                                    <Label text="✅" style="-fx-font-size: 20px;"/>
-                                    <Label text="Disponibles" styleClass="stat-lbl"/>
+
+                            <!-- Disponibles — vert -->
+                            <VBox fx:id="cardSallesDisponibles" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-radius: 14; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-padding: 20 22; -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),12,0,0,4);" styleClass="stat-vbox" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <StackPane style="-fx-background-color: #DCFCE7; -fx-background-radius: 10; -fx-padding: 8;">
+                                        <Label style="-fx-font-size: 20px;" text="✅" />
+                                    </StackPane>
+                                    <Label style="-fx-text-fill: #64748B; -fx-font-size: 12px; -fx-font-weight: bold;" text="Disponibles" />
                                 </HBox>
-                                <Label fx:id="lblSallesDisponibles" text="0" styleClass="stat-val, green"/>
-                                <Label text="prêtes à l'usage" styleClass="stat-hint"/>
+                                <Label fx:id="lblSallesDisponibles" style="-fx-text-fill: #16A34A; -fx-font-size: 42px; -fx-font-weight: bold;" text="0" />
+                                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="prêtes à l'usage" />
                             </VBox>
-                            <VBox styleClass="stat-card, orange" HBox.hgrow="ALWAYS" spacing="6">
-                                <HBox alignment="CENTER_LEFT" spacing="8">
-                                    <Label text="🔴" style="-fx-font-size: 20px;"/>
-                                    <Label text="Occupées" styleClass="stat-lbl"/>
+
+                            <!-- Occupées — orange -->
+                            <VBox fx:id="cardSallesOccupees" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-radius: 14; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-padding: 20 22; -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),12,0,0,4);" styleClass="stat-vbox" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <StackPane style="-fx-background-color: #FEF3C7; -fx-background-radius: 10; -fx-padding: 8;">
+                                        <Label style="-fx-font-size: 20px;" text="🔴" />
+                                    </StackPane>
+                                    <Label style="-fx-text-fill: #64748B; -fx-font-size: 12px; -fx-font-weight: bold;" text="Occupées" />
                                 </HBox>
-                                <Label fx:id="lblSallesOccupees" text="0" styleClass="stat-val, orange"/>
-                                <Label text="en cours d'utilisation" styleClass="stat-hint"/>
+                                <Label fx:id="lblSallesOccupees" style="-fx-text-fill: #D97706; -fx-font-size: 42px; -fx-font-weight: bold;" text="0" />
+                                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="en cours d'utilisation" />
                             </VBox>
-                            <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS" spacing="6">
-                                <HBox alignment="CENTER_LEFT" spacing="8">
-                                    <Label text="🧹" style="-fx-font-size: 20px;"/>
-                                    <Label text="Nettoyage" styleClass="stat-lbl"/>
+
+                            <!-- Nettoyage — cyan -->
+                            <VBox fx:id="cardSallesNettoyage" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-radius: 14; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-padding: 20 22; -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),12,0,0,4);" styleClass="stat-vbox" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <StackPane style="-fx-background-color: #E0F2FE; -fx-background-radius: 10; -fx-padding: 8;">
+                                        <Label style="-fx-font-size: 20px;" text="🧹" />
+                                    </StackPane>
+                                    <Label style="-fx-text-fill: #64748B; -fx-font-size: 12px; -fx-font-weight: bold;" text="Nettoyage" />
                                 </HBox>
-                                <Label fx:id="lblSallesNettoyage" text="0" styleClass="stat-val, blue"/>
-                                <Label text="en cours de nettoyage" styleClass="stat-hint"/>
+                                <Label fx:id="lblSallesNettoyage" style="-fx-text-fill: #0284C7; -fx-font-size: 42px; -fx-font-weight: bold;" text="0" />
+                                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="en cours de nettoyage" />
                             </VBox>
+
                         </HBox>
                     </VBox>
 
-                    <!-- ── CARTES MATÉRIEL ── -->
-                    <VBox spacing="12">
-                        <HBox alignment="CENTER_LEFT">
-                            <Label text="🔧  Matériel d'Urgence" styleClass="section-title" HBox.hgrow="ALWAYS"/>
-                            <Button text="Voir tout →" onAction="#onNavMateriel"
-                                    style="-fx-background-color: transparent; -fx-text-fill: #3b82f6; -fx-font-size: 12px; -fx-cursor: hand; -fx-border-color: transparent;"/>
+                    <!-- ════════════════════════════════════════════
+                         SECTION MATÉRIEL
+                    ════════════════════════════════════════════ -->
+                    <VBox spacing="14">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label style="-fx-text-fill: #0B4EA2; -fx-font-size: 15px;                                           -fx-font-weight: bold;" text="🔧  Matériel d'Urgence" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Button onAction="#onNavMateriel" style="-fx-background-color: #EEF4FB;                                            -fx-text-fill: #0B4EA2;                                            -fx-font-size: 12px; -fx-font-weight: bold;                                            -fx-cursor: hand; -fx-border-color: #CBD5E1;                                            -fx-border-radius: 6; -fx-background-radius: 6;                                            -fx-border-width: 1; -fx-padding: 4 12;" text="Voir tout →" />
                         </HBox>
+
                         <HBox spacing="16">
-                            <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS" spacing="6">
-                                <HBox alignment="CENTER_LEFT" spacing="8">
-                                    <Label text="📦" style="-fx-font-size: 20px;"/>
-                                    <Label text="Total Équipements" styleClass="stat-lbl"/>
+
+                            <!-- Total équipements — bleu -->
+                            <VBox fx:id="cardTotalMateriel" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-radius: 14; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-padding: 20 22; -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),12,0,0,4);" styleClass="stat-vbox" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <StackPane style="-fx-background-color: #EEF4FB; -fx-background-radius: 10; -fx-padding: 8;">
+                                        <Label style="-fx-font-size: 20px;" text="📦" />
+                                    </StackPane>
+                                    <Label style="-fx-text-fill: #64748B; -fx-font-size: 12px; -fx-font-weight: bold;" text="Total Équipements" />
                                 </HBox>
-                                <Label fx:id="lblTotalMateriel" text="0" styleClass="stat-val, blue"/>
-                                <Label text="équipements inventoriés" styleClass="stat-hint"/>
+                                <Label fx:id="lblTotalMateriel" style="-fx-text-fill: #0B4EA2; -fx-font-size: 42px; -fx-font-weight: bold;" text="0" />
+                                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="équipements inventoriés" />
                             </VBox>
-                            <VBox styleClass="stat-card, green" HBox.hgrow="ALWAYS" spacing="6">
-                                <HBox alignment="CENTER_LEFT" spacing="8">
-                                    <Label text="✅" style="-fx-font-size: 20px;"/>
-                                    <Label text="Fonctionnels" styleClass="stat-lbl"/>
+
+                            <!-- Fonctionnels — vert -->
+                            <VBox fx:id="cardMaterielFonc" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-radius: 14; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-padding: 20 22; -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),12,0,0,4);" styleClass="stat-vbox" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <StackPane style="-fx-background-color: #DCFCE7; -fx-background-radius: 10; -fx-padding: 8;">
+                                        <Label style="-fx-font-size: 20px;" text="✅" />
+                                    </StackPane>
+                                    <Label style="-fx-text-fill: #64748B; -fx-font-size: 12px; -fx-font-weight: bold;" text="Fonctionnels" />
                                 </HBox>
-                                <Label fx:id="lblMaterielFonctionnel" text="0" styleClass="stat-val, green"/>
-                                <Label text="en bon état" styleClass="stat-hint"/>
+                                <Label fx:id="lblMaterielFonctionnel" style="-fx-text-fill: #16A34A; -fx-font-size: 42px; -fx-font-weight: bold;" text="0" />
+                                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="en bon état" />
                             </VBox>
-                            <VBox styleClass="stat-card, red" HBox.hgrow="ALWAYS" spacing="6">
-                                <HBox alignment="CENTER_LEFT" spacing="8">
-                                    <Label text="⚠️" style="-fx-font-size: 20px;"/>
-                                    <Label text="À Réviser" styleClass="stat-lbl"/>
+
+                            <!-- À réviser — rouge -->
+                            <VBox fx:id="cardMaterielRev" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-radius: 14; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-padding: 20 22; -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),12,0,0,4);" styleClass="stat-vbox" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <StackPane style="-fx-background-color: #FEE2E2; -fx-background-radius: 10; -fx-padding: 8;">
+                                        <Label style="-fx-font-size: 20px;" text="⚠️" />
+                                    </StackPane>
+                                    <Label style="-fx-text-fill: #64748B; -fx-font-size: 12px; -fx-font-weight: bold;" text="À Réviser" />
                                 </HBox>
-                                <Label fx:id="lblMaterielAReviser" text="0" styleClass="stat-val, red"/>
-                                <Label text="nécessitent maintenance" styleClass="stat-hint"/>
+                                <Label fx:id="lblMaterielAReviser" style="-fx-text-fill: #DC2626; -fx-font-size: 42px; -fx-font-weight: bold;" text="0" />
+                                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="nécessitent maintenance" />
                             </VBox>
-                            <VBox styleClass="stat-card, blue" HBox.hgrow="ALWAYS" spacing="6">
-                                <HBox alignment="CENTER_LEFT" spacing="8">
-                                    <Label text="🗄" style="-fx-font-size: 20px;"/>
-                                    <Label text="En Réserve" styleClass="stat-lbl"/>
+
+                            <!-- En réserve — violet -->
+                            <VBox fx:id="cardMaterielRes" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-radius: 14; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-padding: 20 22; -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),12,0,0,4);" styleClass="stat-vbox" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <StackPane style="-fx-background-color: #EDE9FE; -fx-background-radius: 10; -fx-padding: 8;">
+                                        <Label style="-fx-font-size: 20px;" text="🗄" />
+                                    </StackPane>
+                                    <Label style="-fx-text-fill: #64748B; -fx-font-size: 12px; -fx-font-weight: bold;" text="En Réserve" />
                                 </HBox>
-                                <Label fx:id="lblMaterielReserve" text="0" styleClass="stat-val, blue"/>
-                                <Label text="non affectés" styleClass="stat-hint"/>
+                                <Label fx:id="lblMaterielReserve" style="-fx-text-fill: #7C3AED; -fx-font-size: 42px; -fx-font-weight: bold;" text="0" />
+                                <Label style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" text="non affectés" />
                             </VBox>
+
                         </HBox>
                     </VBox>
 
-                    <!-- ── GRAPHIQUES ── -->
-                    <VBox spacing="12">
-                        <Label text="📊  Analyses Graphiques" styleClass="section-title"/>
+                    <!-- ════════════════════════════════════════════
+                         SECTION GRAPHIQUES
+                    ════════════════════════════════════════════ -->
+                    <VBox spacing="14">
+                        <Label style="-fx-text-fill: #0B4EA2; -fx-font-size: 15px;                                       -fx-font-weight: bold;" text="📊  Analyses Graphiques" />
+
                         <HBox spacing="20">
-                            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
+
+                            <!-- PieChart -->
+                            <VBox spacing="12" style="-fx-background-color: white;                                          -fx-background-radius: 16;                                          -fx-border-radius: 16;                                          -fx-border-color: #E2E8F0;                                          -fx-border-width: 1;                                          -fx-padding: 22 24;                                          -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),12,0,0,4);" HBox.hgrow="ALWAYS">
                                 <HBox alignment="CENTER_LEFT">
-                                    <Label text="Répartition des Statuts de Salles" styleClass="card-title" HBox.hgrow="ALWAYS"/>
+                                    <Label style="-fx-text-fill: #1E293B;                                                   -fx-font-size: 13px;                                                   -fx-font-weight: bold;" text="Répartition des Statuts de Salles" HBox.hgrow="ALWAYS" />
                                 </HBox>
-                                <PieChart fx:id="pieStatutSalles"
-                                          styleClass="revive-chart"
-                                          prefHeight="260"
-                                          labelsVisible="true"
-                                          legendVisible="true"/>
+                                <PieChart fx:id="pieStatutSalles" labelsVisible="true" legendVisible="true" prefHeight="300" style="-fx-background-color: transparent;" />
                             </VBox>
-                            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="10">
+
+                            <!-- BarChart -->
+                            <VBox spacing="12" style="-fx-background-color: white;                                          -fx-background-radius: 16;                                          -fx-border-radius: 16;                                          -fx-border-color: #E2E8F0;                                          -fx-border-width: 1;                                          -fx-padding: 22 24;                                          -fx-effect: dropshadow(gaussian,rgba(11,78,162,0.08),12,0,0,4);" HBox.hgrow="ALWAYS">
                                 <HBox alignment="CENTER_LEFT">
-                                    <Label text="Matériel par Salle" styleClass="card-title" HBox.hgrow="ALWAYS"/>
+                                    <Label style="-fx-text-fill: #1E293B;                                                   -fx-font-size: 13px;                                                   -fx-font-weight: bold;" text="Matériel par Salle" HBox.hgrow="ALWAYS" />
                                 </HBox>
-                                <BarChart fx:id="barMaterielParSalle"
-                                          styleClass="revive-chart"
-                                          prefHeight="260"
-                                          legendVisible="true">
-                                    <xAxis><CategoryAxis label="Salle"/></xAxis>
-                                    <yAxis><NumberAxis label="Quantité"/></yAxis>
+                                <BarChart fx:id="barMaterielParSalle" legendVisible="true" prefHeight="300" style="-fx-background-color: transparent;">
+                                    <xAxis>
+                                        <CategoryAxis label="Salle" style="-fx-tick-label-fill: #64748B;                                                              -fx-font-size: 11px;" />
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis label="Quantité" style="-fx-tick-label-fill: #64748B;                                                            -fx-font-size: 11px;" />
+                                    </yAxis>
                                 </BarChart>
                             </VBox>
+
                         </HBox>
                     </VBox>
 
@@ -215,12 +239,12 @@
         </VBox>
     </center>
 
-    <!-- FOOTER -->
+    <!-- ══════════════════════════════════════════════════════════════
+         FOOTER
+    ══════════════════════════════════════════════════════════════════ -->
     <bottom>
-        <HBox alignment="CENTER" style="-fx-padding: 8px;
-                                        -fx-background-color: linear-gradient(to bottom, #0B4EA2, #0E9B8A);">
-            <Label text="REVIVE — Système de Gestion des Urgences"
-                   style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 11px;"/>
+        <HBox alignment="CENTER" style="-fx-padding: 8;                      -fx-background-color: linear-gradient(to right, #0B4EA2, #0E9B8A);">
+            <Label style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 11px;" text="REVIVE — Système de Gestion des Urgences" />
         </HBox>
     </bottom>
 

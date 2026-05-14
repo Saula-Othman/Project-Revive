@@ -1,6 +1,7 @@
 package pro.revive.controllers.ControllersMateriel;
 
 import pro.revive.utils.UtilesMateriel.NotificationService;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
@@ -17,6 +18,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import pro.revive.services.ServicesMateriel.EmailAlert;
@@ -45,6 +47,7 @@ public class AmbulanceSimController implements Initializable {
     @FXML private Label lblSimStatus, lblSimDetail, lblTime, lblDistance;
     @FXML private VBox boxStatus;
     @FXML private Button btnStart, btnAIDispatch;
+    @FXML private Label lblUserName, lblUserRole, lblUserInitial;
 
     private WebEngine webEngine;
     private boolean mapLoaded = false;
@@ -59,6 +62,8 @@ public class AmbulanceSimController implements Initializable {
     private volatile boolean stopPolling = false;
     private Ambulance ambulanceSelectionnee = null;
     private Integer ambulanceASuivreId = null;  // ID de l'ambulance à suivre
+    // ID du trajet en cours (enregistré au démarrage de la mission)
+    private Integer trajetEnCoursId = null;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -138,6 +143,15 @@ public class AmbulanceSimController implements Initializable {
                 );
             }
         });
+
+        // Informations utilisateur
+        String fullName = pro.revive.SessionManager.getFullName();
+        String role = pro.revive.SessionManager.getRole();
+        lblUserName.setText(fullName.isEmpty() ? "Utilisateur" : fullName);
+        lblUserRole.setText(role.isEmpty() ? "Personnel" : role);
+        if (!fullName.isEmpty()) {
+            lblUserInitial.setText(fullName.substring(0, 1).toUpperCase());
+        }
     }
 
     /**
@@ -224,18 +238,24 @@ public class AmbulanceSimController implements Initializable {
                 
                 // Récupérer le dernier trajet de cette ambulance
                 List<Trajet> trajets = ambulanceService.getTrajetsAmbulance(ambulanceASuivreId);
-                if (trajets.isEmpty()) {
+                
+                // Chercher d'abord un trajet "En cours", sinon prendre le plus récent
+                Trajet dernierTrajet = trajets.stream()
+                    .filter(t -> "En cours".equals(t.getStatut()))
+                    .findFirst()
+                    .orElse(trajets.isEmpty() ? null : trajets.get(0));
+                
+                if (dernierTrajet == null) {
                     System.out.println("[Suivi] Aucun trajet trouvé pour " + amb.getNumeroSerie());
-                    Platform.runLater(() -> {
-                        updateStatus("Suivi", "Aucun trajet enregistré pour " + amb.getNumeroSerie());
-                    });
+                    Platform.runLater(() -> updateStatus("Suivi",
+                        "Aucun trajet enregistré pour " + amb.getNumeroSerie() +
+                        ".\nLancez une simulation depuis cette page pour démarrer une mission."));
                     return;
                 }
                 
-                // Prendre le dernier trajet
-                Trajet dernierTrajet = trajets.get(0); // Le plus récent
-                System.out.println("[Suivi] Dernier trajet trouvé: " + dernierTrajet.getLocalisationUrgence() + 
-                                 " (" + dernierTrajet.getDistanceKm() + " km, " + dernierTrajet.getDureeMinutes() + " min)");
+                System.out.println("[Suivi] Trajet trouvé: " + dernierTrajet.getLocalisationUrgence() +
+                                 " (" + dernierTrajet.getDistanceKm() + " km, " + dernierTrajet.getDureeMinutes() + " min)" +
+                                 " statut=" + dernierTrajet.getStatut());
                 System.out.println("[Suivi] Date du trajet: " + dernierTrajet.getDateTrajet());
                 
                 // Calculer le temps écoulé depuis le début du trajet
@@ -304,18 +324,8 @@ public class AmbulanceSimController implements Initializable {
                     cmbAmbulances.setDisable(true);
                     btnStart.setDisable(true);
                     
-                    // Attendre un peu que la carte soit bien initialisée
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(2000); // Attendre 2 secondes
-                            Platform.runLater(() -> {
-                                System.out.println("[Suivi] Affichage du trajet après délai...");
-                                afficherTrajetSurCarte(dernierTrajet);
-                            });
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }).start();
+                    // Afficher le trajet sur la carte (la méthode gère elle-même l'attente)
+                    afficherTrajetSurCarte(dernierTrajet);
                 });
                 
             } catch (Exception e) {
@@ -329,96 +339,123 @@ public class AmbulanceSimController implements Initializable {
     }
 
     private void afficherTrajetSurCarte(Trajet trajet) {
-        if (!mapLoaded) {
-            System.out.println("[Suivi] Carte pas encore chargée, attente...");
-            // Attendre que la carte soit chargée
-            new Thread(() -> {
-                try {
-                    for (int i = 0; i < 10; i++) { // Essayer pendant 10 secondes
-                        Thread.sleep(1000);
-                        if (mapLoaded) {
-                            System.out.println("[Suivi] Carte chargée après " + (i+1) + " secondes");
-                            Platform.runLater(() -> afficherTrajetSurCarte(trajet));
-                            return;
-                        }
-                    }
-                    System.err.println("[Suivi] Timeout: Carte toujours pas chargée après 10 secondes");
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }).start();
-            return;
-        }
-        
-        // Géocoder dans un thread séparé pour ne pas bloquer l'UI
+        // Géocodage + calcul de route dans un thread séparé pour ne pas bloquer l'UI
         new Thread(() -> {
             try {
-                // Préparer les coordonnées
-                String base = "Clinique Hannibal, Tunis";
+                String base    = "Clinique Hannibal, Tunis";
                 String urgence = trajet.getLocalisationUrgence();
-                
-                System.out.println("[Suivi] Géocodage des adresses...");
-                System.out.println("[Suivi] Base: " + base);
-                System.out.println("[Suivi] Urgence: " + urgence);
-                
-                // Géocoder les adresses pour obtenir les vraies coordonnées
+
+                System.out.println("[Suivi] Géocodage: base=" + base + " | urgence=" + urgence);
+
                 double[] baseCoord = geocode(base);
-                double[] urgCoord = geocode(urgence);
-                
+                double[] urgCoord  = geocode(urgence);
+
                 if (baseCoord == null) {
-                    System.err.println("[Suivi] Impossible de géocoder la base: " + base);
-                    // Utiliser des coordonnées par défaut pour la Clinique Hannibal
                     baseCoord = new double[]{36.8065, 10.1815};
-                    System.out.println("[Suivi] Utilisation coordonnées par défaut pour base: " + baseCoord[0] + ", " + baseCoord[1]);
+                    System.out.println("[Suivi] Coordonnées par défaut pour la base");
                 }
-                
                 if (urgCoord == null) {
-                    System.err.println("[Suivi] Impossible de géocoder l'urgence: " + urgence);
-                    // Utiliser des coordonnées par défaut près de la base
                     urgCoord = new double[]{36.8000, 10.1900};
-                    System.out.println("[Suivi] Utilisation coordonnées par défaut pour urgence: " + urgCoord[0] + ", " + urgCoord[1]);
+                    System.out.println("[Suivi] Coordonnées par défaut pour l'urgence");
                 }
-                
-                System.out.println("[Suivi] Coordonnées obtenues:");
-                System.out.println("[Suivi]   Base: " + baseCoord[0] + ", " + baseCoord[1]);
-                System.out.println("[Suivi]   Urgence: " + urgCoord[0] + ", " + urgCoord[1]);
-                
-                // Préparer les coordonnées finales
-                final double baseLat = baseCoord[0];
-                final double baseLon = baseCoord[1];
-                final double urgLat = urgCoord[0];
-                final double urgLon = urgCoord[1];
-                
-                // Appeler la fonction JavaScript sur le thread JavaFX
+
+                System.out.println("[Suivi] Base: " + baseCoord[0] + ", " + baseCoord[1]);
+                System.out.println("[Suivi] Urgence: " + urgCoord[0] + ", " + urgCoord[1]);
+
+                // Calculer la route OSRM côté Java (évite le fetch() bloqué dans WebView)
+                String routeJson = "[]";
+                try {
+                    List<double[]> routePoints = getRoute(baseCoord, urgCoord);
+                    if (!routePoints.isEmpty()) {
+                        StringBuilder sb = new StringBuilder("[");
+                        for (int i = 0; i < routePoints.size(); i++) {
+                            sb.append(String.format(java.util.Locale.US,
+                                "[%f,%f]", routePoints.get(i)[0], routePoints.get(i)[1]));
+                            if (i < routePoints.size() - 1) sb.append(",");
+                        }
+                        sb.append("]");
+                        routeJson = sb.toString();
+                        System.out.println("[Suivi] Route calculée: " + routePoints.size() + " points");
+                    }
+                } catch (Exception e) {
+                    System.err.println("[Suivi] Calcul route échoué, ligne droite utilisée: " + e.getMessage());
+                }
+
+                final double baseLat  = baseCoord[0], baseLon = baseCoord[1];
+                final double urgLat   = urgCoord[0],  urgLon  = urgCoord[1];
+                final String routeFinal = routeJson;
+
                 Platform.runLater(() -> {
                     try {
-                        String script = String.format(java.util.Locale.US,
-                            "if (typeof afficherTrajetExistant === 'function') { " +
-                            "  console.log('[JS] Appel afficherTrajetExistant avec coordonnées'); " +
-                            "  afficherTrajetExistant(%f, %f, %f, %f, '%s', '%s', %f, %d); " +
-                            "} else { " +
-                            "  console.error('[JS] Fonction afficherTrajetExistant non disponible'); " +
-                            "}",
-                            baseLat, baseLon, urgLat, urgLon,
-                            base.replace("'", "\\'"), urgence.replace("'", "\\'"), 
-                            trajet.getDistanceKm(), trajet.getDureeMinutes()
-                        );
-                        
-                        System.out.println("[Suivi] Exécution script JS...");
-                        Object result = webEngine.executeScript(script);
-                        System.out.println("[Suivi] Résultat JS: " + result);
-                        System.out.println("[Suivi] Trajet affiché sur la carte: " + urgence);
+                        // Attendre que la carte soit prête (poll toutes les 300ms, max 10s)
+                        attendreCarteEtAfficher(baseLat, baseLon, urgLat, urgLon,
+                            base, urgence, trajet.getDistanceKm(),
+                            trajet.getDureeMinutes(), routeFinal, 0);
                     } catch (Exception e) {
-                        System.err.println("[Suivi] Erreur exécution JS: " + e.getMessage());
-                        e.printStackTrace();
+                        System.err.println("[Suivi] Erreur affichage JS: " + e.getMessage());
                     }
                 });
-                
+
             } catch (Exception e) {
                 System.err.println("[Suivi] Erreur affichage trajet: " + e.getMessage());
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    /**
+     * Attend que la carte Leaflet soit initialisée, puis appelle afficherTrajetExistant.
+     * Réessaie toutes les 300 ms, jusqu'à 10 secondes (33 tentatives).
+     */
+    private void attendreCarteEtAfficher(double baseLat, double baseLon,
+                                          double urgLat, double urgLon,
+                                          String base, String urgence,
+                                          double distanceKm, int dureeMin,
+                                          String routeJson, int tentative) {
+        if (tentative > 33) {
+            System.err.println("[Suivi] Timeout: carte non prête après 10s");
+            return;
+        }
+
+        // Vérifier si Leaflet est prêt
+        Object mapReady;
+        try {
+            mapReady = webEngine.executeScript("typeof map !== 'undefined' && map !== null");
+        } catch (Exception e) {
+            mapReady = false;
+        }
+
+        if (Boolean.TRUE.equals(mapReady)) {
+            // Carte prête — appeler la fonction JS
+            String escapedBase    = base.replace("'", "\\'");
+            String escapedUrgence = urgence.replace("'", "\\'");
+            // Échapper les ] dans le JSON pour éviter tout problème de parsing JS
+            String safeRouteJson  = routeJson.replace("</", "<\\/");
+
+            String script = String.format(java.util.Locale.US,
+                "afficherTrajetExistant(%f, %f, %f, %f, '%s', '%s', %f, %d, '%s')",
+                baseLat, baseLon, urgLat, urgLon,
+                escapedBase, escapedUrgence,
+                distanceKm, dureeMin,
+                safeRouteJson
+            );
+
+            System.out.println("[Suivi] Appel JS (tentative " + (tentative + 1) + ")");
+            try {
+                Object result = webEngine.executeScript(script);
+                System.out.println("[Suivi] Résultat JS: " + result);
+            } catch (Exception e) {
+                System.err.println("[Suivi] Erreur JS: " + e.getMessage());
+            }
+        } else {
+            // Carte pas encore prête — réessayer dans 300ms
+            System.out.println("[Suivi] Carte pas prête, tentative " + (tentative + 1) + "/33...");
+            PauseTransition pause = new PauseTransition(Duration.millis(300));
+            pause.setOnFinished(e -> attendreCarteEtAfficher(
+                baseLat, baseLon, urgLat, urgLon,
+                base, urgence, distanceKm, dureeMin, routeJson, tentative + 1));
+            pause.play();
+        }
     }
 
     private void chargerAmbulances() {
@@ -560,9 +597,26 @@ public class AmbulanceSimController implements Initializable {
                     webEngine.executeScript("drawRoute(" + sb.toString() + ")");
                     webEngine.executeScript("animateAmbulance(" + sb.toString() + ", " + (int)totalDuration + ")");
                     
-                    // NE PAS enregistrer le trajet maintenant - il sera enregistré à la fin de la mission
-                    // L'enregistrement se fera dans finaliserMission() quand le chronomètre atteint 0
-                    
+                    // Enregistrer le trajet EN COURS dès le démarrage
+                    // → visible immédiatement si on clique "Suivi en temps réel" depuis la liste
+                    new Thread(() -> {
+                        try {
+                            double distKm = Math.round((totalDistance / 1000.0) * 10.0) / 10.0;
+                            int dureeMin  = (int)(totalDuration / 60);
+                            Trajet trajet = new Trajet(
+                                ambulanceSelectionnee.getIdAmbulance(),
+                                txtBase.getText(), txtUrgence.getText(),
+                                distKm, dureeMin
+                            );
+                            trajet.setStatut("En cours");
+                            ambulanceService.enregistrerTrajet(trajet);
+                            trajetEnCoursId = trajet.getIdTrajet();
+                            System.out.println("[Mission] Trajet enregistré EN COURS, id=" + trajetEnCoursId);
+                        } catch (Exception ex) {
+                            System.err.println("[Mission] Erreur enregistrement trajet: " + ex.getMessage());
+                        }
+                    }).start();
+
                     btnStart.setDisable(false);
                 });
 
@@ -631,8 +685,9 @@ public class AmbulanceSimController implements Initializable {
                     if (!trajets.isEmpty()) {
                         Trajet dernierTrajet = trajets.get(0);
                         if ("En cours".equals(dernierTrajet.getStatut())) {
-                            ambulanceService.changerStatutTrajet(dernierTrajet.getIdTrajet(), "Terminé");
-                            System.out.println("[Mission] ✅ Trajet ID " + dernierTrajet.getIdTrajet() + " marqué comme 'Terminé'");
+                            ambulanceService.finaliserTrajet(dernierTrajet.getIdTrajet(),
+                                ambulanceASuivreId, dernierTrajet.getDistanceKm());
+                            System.out.println("[Mission] ✅ Trajet ID " + dernierTrajet.getIdTrajet() + " finalisé");
                         }
                     }
                     
@@ -650,27 +705,29 @@ public class AmbulanceSimController implements Initializable {
                 }
                 // Si on est en mode simulation normale
                 else if (ambulanceSelectionnee != null) {
-                    // Enregistrer le trajet maintenant (à la fin de la mission)
-                    String depart = txtBase.getText();
-                    String urgence = txtUrgence.getText();
                     double distanceKm = totalDistance / 1000.0;
                     int dureeMin = (int)(totalDuration / 60);
-                    
-                    System.out.println("[Mission] Enregistrement du trajet : " + distanceKm + " km, " + dureeMin + " min");
-                    
-                    // Créer le trajet avec statut "Terminé" (car la mission est finie)
-                    Trajet trajet = new Trajet(ambulanceSelectionnee.getIdAmbulance(), depart, urgence, distanceKm, dureeMin);
-                    trajet.setStatut("Terminé");
-                    ambulanceService.enregistrerTrajet(trajet);
-                    
-                    System.out.println("[Mission] ✅ Trajet enregistré");
-                    
+
+                    if (trajetEnCoursId != null) {
+                        // Finaliser le trajet déjà enregistré au démarrage
+                        ambulanceService.finaliserTrajet(trajetEnCoursId,
+                            ambulanceSelectionnee.getIdAmbulance(), distanceKm);
+                        System.out.println("[Mission] ✅ Trajet ID " + trajetEnCoursId + " finalisé");
+                        trajetEnCoursId = null;
+                    } else {
+                        // Fallback : créer le trajet maintenant (ne devrait pas arriver)
+                        Trajet trajet = new Trajet(ambulanceSelectionnee.getIdAmbulance(),
+                            txtBase.getText(), txtUrgence.getText(), distanceKm, dureeMin);
+                        trajet.setStatut("Terminé");
+                        ambulanceService.enregistrerTrajet(trajet);
+                        System.out.println("[Mission] ✅ Trajet créé en fallback");
+                    }
+
                     // Remettre l'ambulance à "Disponible"
                     ambulanceService.changerEtat(ambulanceSelectionnee.getIdAmbulance(), "Disponible");
                     ambulanceSelectionnee.setEtat("Disponible");
                     System.out.println("[Mission] ✅ Ambulance " + ambulanceSelectionnee.getNumeroSerie() + " remise à 'Disponible'");
-                    
-                    // Réactiver les contrôles
+
                     Platform.runLater(() -> {
                         cmbAmbulances.setDisable(false);
                         btnStart.setDisable(false);

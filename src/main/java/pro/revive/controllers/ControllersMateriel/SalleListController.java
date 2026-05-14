@@ -52,6 +52,7 @@ public class SalleListController implements Initializable {
     @FXML private Button    btnMateriel;
     @FXML private Button    btnDashboard;
     @FXML private Label     lblTotal;
+    @FXML private Label     lblUserName, lblUserRole, lblUserInitial;
 
     // ── Données ──────────────────────────────────────────────────────
     private final SalleService    salleService    = new SalleService();
@@ -68,6 +69,15 @@ public class SalleListController implements Initializable {
         configurerRecherche();
         chargerDonnees();
         updateButtonStates();
+
+        // Informations utilisateur
+        String fullName = pro.revive.SessionManager.getFullName();
+        String role = pro.revive.SessionManager.getRole();
+        lblUserName.setText(fullName.isEmpty() ? "Utilisateur" : fullName);
+        lblUserRole.setText(role.isEmpty() ? "Personnel" : role);
+        if (!fullName.isEmpty()) {
+            lblUserInitial.setText(fullName.substring(0, 1).toUpperCase());
+        }
     }
 
     private void updateButtonStates() {
@@ -237,17 +247,44 @@ public class SalleListController implements Initializable {
         return card;
     }
 
-    private VBox creerCarteMateriel(MaterielUrgence m) {
-        VBox card = new VBox(4);
+    private HBox creerCarteMateriel(MaterielUrgence m) {
+        HBox card = new HBox(12);
         card.getStyleClass().add("mini-card");
 
+        // 1. Icône Wrap
+        StackPane iconWrap = new StackPane();
+        iconWrap.getStyleClass().add("mini-card-icon-wrap");
+        Label icon = new Label("📦");
+        icon.getStyleClass().add("mini-card-icon");
+        iconWrap.getChildren().add(icon);
+
+        // 2. Infos (Nom + Quantité)
+        VBox infoBox = new VBox(2);
+        infoBox.getStyleClass().add("mini-card-info");
+        
         Label title = new Label(m.getNom());
         title.getStyleClass().add("mini-card-title");
-
-        Label subtitle = new Label("Quantité: " + m.getQuantite() + " | " + m.getEtat());
+        
+        Label subtitle = new Label("Qté: " + m.getQuantite());
         subtitle.getStyleClass().add("mini-card-subtitle");
+        
+        infoBox.getChildren().addAll(title, subtitle);
 
-        card.getChildren().addAll(title, subtitle);
+        // 3. Spacing & Badge
+        javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
+        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+
+        Label badge = new Label(m.getEtat().equals("Fonctionnel") ? "OK" : "!");
+        badge.getStyleClass().add("mini-card-badge");
+        if (m.getEtat().equals("Fonctionnel")) {
+            badge.getStyleClass().add("badge-mini-success");
+            Tooltip.install(badge, new Tooltip("Fonctionnel"));
+        } else {
+            badge.getStyleClass().add("badge-mini-danger");
+            Tooltip.install(badge, new Tooltip("À réviser"));
+        }
+
+        card.getChildren().addAll(iconWrap, infoBox, spacer, badge);
 
         // Début du Drag
         card.setOnDragDetected(event -> {

@@ -33,6 +33,7 @@ public class HistoriqueMissionsController implements Initializable {
     @FXML private DatePicker        dpDebut, dpFin;
     @FXML private Label             lblTotal, lblTotalMissions, lblDistanceTotale,
                                     lblDureeMoyenne, lblMissionsAujourdhui, lblFooter;
+    @FXML private Label             lblUserName, lblUserRole, lblUserInitial;
 
     private final AmbulanceService ambulanceService = new AmbulanceService();
     private final ObservableList<TrajetRow> data     = FXCollections.observableArrayList();
@@ -75,6 +76,14 @@ public class HistoriqueMissionsController implements Initializable {
                     "   |   " + row.getStatut());
             }
         });
+        // Informations utilisateur
+        String fullName = pro.revive.SessionManager.getFullName();
+        String role = pro.revive.SessionManager.getRole();
+        lblUserName.setText(fullName.isEmpty() ? "Utilisateur" : fullName);
+        lblUserRole.setText(role.isEmpty() ? "Personnel" : role);
+        if (!fullName.isEmpty()) {
+            lblUserInitial.setText(fullName.substring(0, 1).toUpperCase());
+        }
     }
 
     private void configurerColonnes() {

@@ -46,6 +46,7 @@ public class MaterielListController implements Initializable {
     @FXML private Button           btnRetourSalles;
     @FXML private Button           btnDashboard;
     @FXML private Label            lblTotal;
+    @FXML private Label            lblUserName, lblUserRole, lblUserInitial;
 
     // ── Données ──────────────────────────────────────────────────────
     private final MaterielService materielService = new MaterielService();
@@ -62,6 +63,15 @@ public class MaterielListController implements Initializable {
         chargerFiltresSalle();
         chargerDonnees();
         updateButtonStates();
+
+        // Informations utilisateur
+        String fullName = pro.revive.SessionManager.getFullName();
+        String role = pro.revive.SessionManager.getRole();
+        lblUserName.setText(fullName.isEmpty() ? "Utilisateur" : fullName);
+        lblUserRole.setText(role.isEmpty() ? "Personnel" : role);
+        if (!fullName.isEmpty()) {
+            lblUserInitial.setText(fullName.substring(0, 1).toUpperCase());
+        }
     }
 
     private void updateButtonStates() {

@@ -17,10 +17,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -35,6 +38,7 @@ public class DashboardController implements Initializable {
     // ── Cartes statistiques ──────────────────────────────────────────
     @FXML private Label lblTotalSalles, lblSallesDisponibles, lblSallesOccupees, lblSallesNettoyage;
     @FXML private Label lblTotalMateriel, lblMaterielFonctionnel, lblMaterielAReviser, lblMaterielReserve;
+    @FXML private Label lblUserName, lblUserRole, lblUserInitial;
 
     // ── Graphiques ───────────────────────────────────────────────────
     @FXML private PieChart pieStatutSalles;
@@ -42,7 +46,11 @@ public class DashboardController implements Initializable {
 
     // ── Navigation ───────────────────────────────────────────────────
     @FXML private Button btnNavSalles, btnNavMateriel, btnNavAmbulances, btnNavSimulation;
-    @FXML private Button btnNavHistorique, btnActualiser, btnTheme, btnRecherche;
+    @FXML private Button btnNavHistorique, btnActualiser, btnRecherche;
+
+    // ── Conteneurs pour le mode sombre ───────────────────────────────
+    @FXML private ScrollPane scrollContent;
+    @FXML private VBox       dashBody;
 
     // ── Services ─────────────────────────────────────────────────────
     private final SalleService    salleService    = new SalleService();
@@ -56,12 +64,21 @@ public class DashboardController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         chargerStatistiques();
         demarrerAutoRefresh();
-        
-        // Appliquer le thème sauvegardé
+
+        // Informations utilisateur
+        String fullName = pro.revive.SessionManager.getFullName();
+        String role = pro.revive.SessionManager.getRole();
+        lblUserName.setText(fullName.isEmpty() ? "Utilisateur" : fullName);
+        lblUserRole.setText(role.isEmpty() ? "Personnel" : role);
+        if (!fullName.isEmpty()) {
+            lblUserInitial.setText(fullName.substring(0, 1).toUpperCase());
+        }
+
+        // Appliquer le thème sauvegardé dès que la scène est disponible
         Platform.runLater(() -> {
-            if (btnNavSalles.getScene() != null) {
-                ThemeManager.register(btnNavSalles.getScene());
-                mettreAJourBoutonTheme();
+            Scene scene = btnActualiser.getScene();
+            if (scene != null) {
+                ThemeManager.register(scene);
             }
         });
     }
@@ -177,20 +194,6 @@ public class DashboardController implements Initializable {
         }).start();
     }
 
-    // ── Thème clair/sombre ────────────────────────────────────────────
-    @FXML
-    private void onToggleTheme() {
-        ThemeManager.toggle();
-        mettreAJourBoutonTheme();
-        // Ré-appliquer à la scène courante
-        ThemeManager.register(btnTheme.getScene());
-    }
-
-    private void mettreAJourBoutonTheme() {
-        if (btnTheme != null) {
-            btnTheme.setText(ThemeManager.getToggleLabel());
-        }
-    }
 
     // ── Recherche globale ─────────────────────────────────────────────
     @FXML
